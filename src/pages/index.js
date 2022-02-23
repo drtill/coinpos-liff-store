@@ -11,10 +11,15 @@ import ProductCard from '@component/product/ProductCard';
 import MainCarousel from '@component/carousel/MainCarousel';
 import FeatureCategory from '@component/category/FeatureCategory';
 
+//const liff = window.liff;
+
 const Home = ({ products, popularProducts, discountProducts }) => {
   const [value, set] = useSessionstorage('products', products);
 
+  //console.log(products);
+  //alert(products);
   return (
+    
     <>
       <Layout>
         <div className="min-h-screen">
@@ -72,6 +77,7 @@ const Home = ({ products, popularProducts, discountProducts }) => {
                   {popularProducts?.slice(0, 18).map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
+                  
                 </div>
               </div>
             </div>
@@ -108,6 +114,7 @@ const Home = ({ products, popularProducts, discountProducts }) => {
                   {discountProducts?.slice(0, 18).map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}
+                  
                 </div>
               </div>
             </div>
@@ -119,15 +126,18 @@ const Home = ({ products, popularProducts, discountProducts }) => {
 };
 
 export const getStaticProps = async () => {
-  const products = await ProductServices.getShowingProducts();
-
-  const popularProducts = products.filter((p) => p.discount === 0);
-  const discountProducts = products.filter((p) => p.discount >= 5);
+  const products = await ProductServices.getShowingProducts();//.getCoinPOSProductService({
+    //registerEmail,
+    //password,
+  //});//.getShowingProducts();//.getCoinPOSProduct();//
+  
+  const popularProducts = products;//.filter((p) => p.discount === 0);
+  const discountProducts = products;//.filter((p) => p.discount >= 5);
 
   return {
     props: {
       products: products,
-      popularProducts: popularProducts.slice(0, 50),
+      popularProducts: popularProducts,//.slice(0, 50),
       discountProducts: discountProducts,
     },
     revalidate: 60,

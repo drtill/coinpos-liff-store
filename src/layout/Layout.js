@@ -21,7 +21,11 @@ const Layout = ({ title, description, children }) => {
               : 'KachaBazar - React Grocery & Organic Food Store e-commerce Template'}
           </title>
           {description && <meta name="description" content={description} />}
+
+          <script src="https://static.line-scdn.net/liff/edge/2.1/liff.js"></script>
+          
           <link ref="icon" href="/favicon.png" />
+
         </Head>
         <NavBarTop />
         <Navbar />

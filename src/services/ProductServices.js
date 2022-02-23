@@ -12,6 +12,12 @@ const ProductServices = {
   getProductBySlug(slug) {
     return requests.get(`/products/${slug}`);
   },
+  getCoinPOSProduct(){
+    return requests.get('/products/coinpos');
+  },
+  getCoinPOSProductService(body){
+    return requests.post('/products/coinpos_service',body);
+  }
 };
 
 export default ProductServices;
