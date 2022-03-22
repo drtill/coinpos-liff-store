@@ -18,8 +18,9 @@ const EmailVerification = ({ params }) => {
 
   useEffect(() => {
     setLoading(true);
-    UserServices.userRegister(params?.token)
+    UserServices.coinposUserRegister(params?.token)
       .then((res) => {
+        alert(JSON.stringify(res));
         router.push('/');
         setLoading(false);
         setSuccess(res.message);

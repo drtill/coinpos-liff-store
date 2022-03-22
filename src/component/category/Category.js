@@ -11,12 +11,25 @@ import { SidebarContext } from '@context/SidebarContext';
 import CategoryServices from '@services/CategoryServices';
 import CategoryCard from '@component/category/CategoryCard';
 
-const Category = () => {
+const Category = ({FilterProduct}) => {
   const { categoryDrawerOpen, closeCategoryDrawer } =
     useContext(SidebarContext);
-  const { data, loading, error } = useAsync(() =>
-    CategoryServices.getShowingCategory()
-  );
+  //  const { data, loading, error } = useAsync(() =>
+  //   CategoryServices.getShowingCategory()
+  // ); 
+
+  var loading = true;
+  var error = '';
+  var categories = [];
+    if(sessionStorage.getItem('categories'))
+    {
+      //alert("Get Category");
+      var categoriesJson = sessionStorage.getItem('categories'); 
+      //console.log(categories);
+      categories = JSON.parse(categoriesJson);
+      //alert(JSON.stringify(categories));
+      loading = false;
+    }
 
   return (
     <div className="flex flex-col w-full h-full bg-white cursor-pointer scrollbar-hide">
@@ -53,16 +66,25 @@ const Category = () => {
           <p className="flex justify-center align-middle items-center m-auto text-xl text-red-500">
             <span> {error}</span>
           </p>
-        ) : data.length === 0 ? (
+        ) : 
+        //data.length === 0
+        categories.length === 0 
+        ? (
           <Loading loading={loading} />
-        ) : (
+        ) 
+        : 
+        (
           <div className="relative grid gap-2 p-6">
-            {data?.map((category) => (
-              <CategoryCard
+            {categories?.map((category) => (
+              //categories.map((category) => (
+              
+                //category._id
+                <CategoryCard
                 key={category._id}
                 title={category.parent}
                 icon={category.icon}
                 nested={category.children}
+                FilterProduct={FilterProduct}
               />
             ))}
           </div>

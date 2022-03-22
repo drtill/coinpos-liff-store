@@ -11,6 +11,48 @@ const ResetPassword = ({ setShowResetPassword, setModalOpen }) => {
   const { handleSubmit, submitHandler, register, errors, loading } =
     useLoginSubmit(setModalOpen);
 
+    const submitReset = async (event) => 
+    {
+      event.preventDefault();
+      var data = {};
+
+      var verifyEmail = event.target.verifyEmail.value;
+
+
+      if(verifyEmail.length > 0)
+      {
+        data["verifyEmail"] = verifyEmail;
+        
+        var companyName = '';
+        var companyId = 0;
+        var locationEmail = '';
+  
+        if(sessionStorage.getItem('companyName'))
+        {
+          companyName = sessionStorage.getItem('companyName'); 
+            
+        }
+        if(sessionStorage.getItem('companyId'))
+        {
+          companyId = sessionStorage.getItem('companyId'); 
+          alert("CompanyId = " + companyId);
+            
+        }
+        if(sessionStorage.getItem('locationEmail'))
+        {
+          locationEmail = sessionStorage.getItem('locationEmail'); 
+            
+        }
+        data["companyId"] = companyId;
+        data["companyName"] = companyName;
+        data["locationEmail"] = locationEmail;
+      
+      
+
+      alert("Login Handle")
+      submitHandler(data)
+      }
+    }
   return (
     <>
       <div className="text-center mb-6">
@@ -22,7 +64,7 @@ const ResetPassword = ({ setShowResetPassword, setModalOpen }) => {
         </p>
       </div>
       <form
-        onSubmit={handleSubmit(submitHandler)}
+        onSubmit={submitReset}
         className="flex flex-col justify-center"
       >
         <div className="grid grid-cols-1 gap-5">

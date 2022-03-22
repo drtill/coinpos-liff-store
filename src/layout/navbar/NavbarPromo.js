@@ -7,7 +7,7 @@ import { ChevronDownIcon } from '@heroicons/react/outline';
 import { pages } from '@utils/data';
 import Category from '@component/category/Category';
 
-const NavbarPromo = () => {
+const NavbarPromo = ({FilterProduct}) => {
   return (
     <>
       <div className="hidden lg:block xl:block bg-white border-b">
@@ -42,24 +42,24 @@ const NavbarPromo = () => {
                       >
                         <Popover.Panel className="absolute z-10 -ml-1 mt-1 transform w-screen max-w-xs c-h-65vh bg-white">
                           <div className="rounded-md shadow-lg ring-1 ring-black ring-opacity-5 overflow-y-scroll flex-grow scrollbar-hide w-full h-full">
-                            <Category />
+                            <Category FilterProduct={FilterProduct}/>
                           </div>
                         </Popover.Panel>
                       </Transition>
                     </Popover>
 
-                    <Link href="/about-us">
+                    {/* <Link href="/about-us">
                       <a className="font-serif mx-4 py-2 text-sm font-medium hover:text-emerald-600">
                         About Us
                       </a>
-                    </Link>
+                    </Link> */}
                     <Link href="/contact-us">
                       <a className="font-serif mx-4 py-2 text-sm font-medium hover:text-emerald-600">
                         Contact Us
                       </a>
                     </Link>
 
-                    <Popover className="relative font-serif">
+                   {/*  <Popover className="relative font-serif">
                       <Popover.Button className="group inline-flex items-center py-2 text-sm font-medium hover:text-emerald-600 focus:outline-none">
                         <span>Pages</span>
                         <ChevronDownIcon
@@ -99,7 +99,7 @@ const NavbarPromo = () => {
                           </div>
                         </Popover.Panel>
                       </Transition>
-                    </Popover>
+                    </Popover> */}
                     <Link href="/offer">
                       <a className="relative inline-flex items-center h-6 bg-red-100 font-serif ml-4 py-0 px-2 rounded text-sm font-medium text-red-500 hover:text-emerald-600">
                         Offers

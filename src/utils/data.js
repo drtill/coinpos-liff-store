@@ -39,6 +39,11 @@ const pages = [
     icon: IoBagCheckOutline,
   },
   {
+    title: 'Catalog',
+    href: '/catalog',
+    icon: IoBagCheckOutline,
+  },
+  {
     title: 'FAQ',
     href: '/faq',
     icon: FiHelpCircle,

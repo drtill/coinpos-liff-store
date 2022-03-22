@@ -4,6 +4,7 @@ import Label from '@component/form/Label';
 const InputArea = ({
   register,
   defaultValue,
+  dataValue,
   name,
   label,
   type,
@@ -26,6 +27,7 @@ const InputArea = ({
             required: `${label} is required!`,
           })}
           defaultValue={defaultValue}
+          value={dataValue}
           type={type}
           placeholder={placeholder}
           name={name}

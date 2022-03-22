@@ -6,33 +6,46 @@ import { CopyToClipboard } from 'react-copy-to-clipboard';
 //internal import
 import useAsync from '@hooks/useAsync';
 import CouponServices from '@services/CouponServices';
+import ProductServices from '@services/ProductServices';
 import OfferTimer from '@component/coupon/OfferTimer';
 
-const Coupon = ({ couponInHome }) => {
+const Coupon = ({ couponInHome, companyId, promotions, ApplyPromotionCode }) => {
   const [copiedCode, setCopiedCode] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const { data, error } = useAsync(CouponServices.getAllCoupons);
-
+  //alert(companyId);
+  //const { data, error } = useAsync(() => ProductServices.getAllCoinPOSCoupons({companyId}))//useAsync(ProductServices.getAllCoinPOSCoupons({companyId}));
+  //const { data, error } = useAsync(CouponServices.getAllCoupons)
+  //const promotionDatas = promotions;
   const handleCopied = (code) => {
-    setCopiedCode(code);
-    setCopied(true);
+    //setCopiedCode(code);
+    //setCopied(true);
+
+    ApplyPromotionCode(code);
   };
+  const error = '';
 
   return (
     <>
-      {error ? (
+      {error 
+      ? 
+      (
         <p className="flex justify-center align-middle items-center m-auto text-xl text-red-500">
           <span> {error}</span>
         </p>
-      ) : couponInHome ? (
-        data?.slice(0, 2).map((coupon) => (
+      ) 
+      : 
+      couponInHome 
+      ? 
+      (
+        
+        promotions?.slice(0, 2).map((coupon) => (
           <div
             key={coupon._id}
             className="coupon coupon-home mx-4 my-5 block md:flex lg:flex md:justify-between lg:justify-between items-center bg-white rounded-md shadow"
           >
             <div className="tengah py-2 px-3 flex items-center justify-items-start">
-              <figure>
+              {/* <figure>
                 <Image
                   src={coupon.logo}
                   alt={coupon.title}
@@ -40,7 +53,7 @@ const Coupon = ({ couponInHome }) => {
                   height={100}
                   className="rounded-lg"
                 />
-              </figure>
+              </figure> */}
               <div className="ml-3">
                 <div className="flex items-center font-serif">
                   <h6 className="pl-1 text-base font-medium text-gray-600">
@@ -64,6 +77,7 @@ const Coupon = ({ couponInHome }) => {
                 <h2 className="pl-1 font-serif text-base text-gray-700 leading-6 font-semibold mb-2">
                   {coupon.title}
                 </h2>
+                
                 {dayjs().isAfter(dayjs(coupon.endTime)) ? (
                   <span className="inline-block mb-2">
                     <div className="flex items-center font-semibold">
@@ -121,15 +135,17 @@ const Coupon = ({ couponInHome }) => {
                   </div>
                   <p className="text-xs leading-4 text-gray-500 mt-2">
                     * This coupon apply when shopping more then{' '}
-                    <span className="font-bold"> ${coupon.minimumAmount}</span>{' '}
+                    <span className="font-bold"> {coupon.currencySign}{coupon.minimumAmount}</span>{' '}
                   </p>
                 </div>
               </div>
             </div>
           </div>
         ))
-      ) : (
-        data?.map((coupon) => (
+      )
+      : 
+      (
+        promotions?.map((coupon) => (
           <div
             key={coupon._id}
             className="coupon block md:flex lg:flex md:justify-between lg:justify-between items-center bg-white rounded-md shadow-sm"
@@ -229,7 +245,7 @@ const Coupon = ({ couponInHome }) => {
                     </span>{' '}
                     and when you shopping more then{' '}
                     <span className="font-bold text-gray-700">
-                      ${coupon.minimumAmount}
+                      {coupon.currencySign}{coupon.minimumAmount}
                     </span>{' '}
                   </p>
                 </div>
@@ -237,7 +253,8 @@ const Coupon = ({ couponInHome }) => {
             </div>
           </div>
         ))
-      )}
+      )
+      }
     </>
   );
 };

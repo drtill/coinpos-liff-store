@@ -28,20 +28,59 @@ const useLoginSubmit = (setModalOpen) => {
     registerEmail,
     verifyEmail,
     password,
+    companyId,
+    companyName,
+    locationEmail,
+    paramPath
   }) => {
+    alert("Loading");
     setLoading(true);
     if (registerEmail && password) {
-      UserServices.userLogin({
+      alert("Email " + registerEmail + " password " + password);
+      //return;
+      UserServices.coinposUserLogin({
         registerEmail,
         password,
+        companyId,
+        paramPath
+
       })
         .then((res) => {
           setLoading(false);
           setModalOpen(false);
-          router.push(redirect || '/');
+          alert(JSON.stringify(res));
+          //return;
+          //router.push(redirect || '/checkout');
+          router.push(redirect || '/' + res.paramPath);
+          //router.push(redirect);
+
+          sessionStorage.setItem('customerId', res.customerId);
+          sessionStorage.setItem('customerFirstName', res.firstName);
+          sessionStorage.setItem('customerLastName', res.lastName);
+          sessionStorage.setItem('customerEmail', res.email);
+          sessionStorage.setItem('customerPhoneNumber', res.phone);
+
+          sessionStorage.setItem('customerAddressId', res.customerAddressId);
+
+
+          sessionStorage.setItem('address1', res.address1);
+          sessionStorage.setItem('countryId', res.countryId);
+          sessionStorage.setItem('provinceId', res.provinceId);
+          sessionStorage.setItem('cityId', res.cityId);
+          sessionStorage.setItem('districtId', res.districtId);
+          sessionStorage.setItem('postalcode', res.postalcode);
+
+          sessionStorage.setItem('countrys', JSON.stringify(res.countrys));
+          sessionStorage.setItem('provinces', JSON.stringify(res.provinces));
+          sessionStorage.setItem('cities', JSON.stringify(res.cities));
+          sessionStorage.setItem('districts', JSON.stringify(res.districts));
+
+
           notifySuccess('Login Success!');
           dispatch({ type: 'USER_LOGIN', payload: res });
           Cookies.set('userInfo', JSON.stringify(res));
+
+          localStorage.setItem('userInfo', JSON.stringify(res));
         })
         .catch((err) => {
           notifyError(err ? err.response.data.message : err.message);
@@ -49,19 +88,27 @@ const useLoginSubmit = (setModalOpen) => {
         });
     }
     if (name && email && password) {
-      UserServices.verifyEmailAddress({ name, email, password })
+      alert("Name = " + name + " email = " + email + " password = " + password + " companyId = " + companyId);
+      //return;
+      UserServices.verifyCoinPOSEmailAddress({ name, email, password, companyName, locationEmail, companyId })
         .then((res) => {
+          alert(res.message)
           setLoading(false);
           setModalOpen(false);
           notifySuccess(res.message);
         })
         .catch((err) => {
           setLoading(false);
+          
           notifyError(err.response.data.message);
+          alert(err.response.data.message);
         });
     }
     if (verifyEmail) {
-      UserServices.forgetPassword({ verifyEmail })
+      alert("verifyEmail");
+      //UserServices.forgetPassword({ verifyEmail })
+
+      UserServices.forgetCoinPOSCustomerPassword({ email:verifyEmail, companyName:companyName, locationEmail:locationEmail,companyId:companyId })
         .then((res) => {
           setLoading(false);
           notifySuccess(res.message);
@@ -84,6 +131,10 @@ const useLoginSubmit = (setModalOpen) => {
         setModalOpen(false);
         notifySuccess('Login success!');
         router.push(redirect || '/');
+        
+
+
+
         dispatch({ type: 'USER_LOGIN', payload: res });
         Cookies.set('userInfo', JSON.stringify(res));
       })

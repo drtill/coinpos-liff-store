@@ -1,14 +1,37 @@
 import dynamic from 'next/dynamic';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { IoBagHandleOutline } from 'react-icons/io5';
 import { useCart } from 'react-use-cart';
 
 //internal import
 import { SidebarContext } from '@context/SidebarContext';
 
-const StickyCart = () => {
-  const { totalItems, cartTotal } = useCart();
+const StickyCart = ({currencySign}) => {
+  const { totalItems, cartTotal, items } = useCart();
   const { toggleCartDrawer } = useContext(SidebarContext);
+
+  const [totalDiscount, setTotalDiscount] = useState(0);
+
+  useEffect(() =>
+  {
+    if(sessionStorage.getItem('discountDetails'))
+    {
+      var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
+      
+      var disDetails = JSON.parse(discountDetailsJson);
+      if(disDetails !== null)
+      {
+        var totalDiscountVal = disDetails.reduce((discountTotal, item) => (discountTotal += item.discount),0);
+        setTotalDiscount(totalDiscountVal);
+      }
+    }
+
+  },[]) 
+  
+
+  //alert("Discount Total = " + discountTotal);
+  
+
 
   return (
     <button aria-label="Cart" onClick={toggleCartDrawer} className="absolute">
@@ -22,7 +45,7 @@ const StickyCart = () => {
           </span>
         </div>
         <div className="flex flex-col items-center justify-center bg-emerald-700 p-2 text-white text-base font-serif font-medium rounded-bl-lg mx-auto">
-          ${cartTotal.toFixed(2)}
+          {currencySign}{cartTotal === null ? 0.00 : (cartTotal - totalDiscount).toFixed(2)}
         </div>
       </div>
     </button>

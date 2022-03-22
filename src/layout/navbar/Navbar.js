@@ -15,14 +15,14 @@ import LoginModal from '@component/modal/LoginModal';
 import CartDrawer from '@component/drawer/CartDrawer';
 import { SidebarContext } from '@context/SidebarContext';
 
-const Navbar = () => {
+const Navbar = ({companyLogo, RefreshProductList, FilterProduct}) => {
   const [imageUrl, setImageUrl] = useState('');
   const [searchText, setSearchText] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const { toggleCartDrawer } = useContext(SidebarContext);
   const { totalItems } = useCart();
   const router = useRouter();
-
+  
   const {
     state: { userInfo },
   } = useContext(UserContext);
@@ -30,19 +30,40 @@ const Navbar = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchText) {
-      router.push(`/search?query=${searchText}`, null, { scroll: false });
+      RefreshProductList(searchText);
+      //router.push(`/search?query=${searchText}`, null, { scroll: false });
       setSearchText('');
     } else {
-      router.push(`/ `, null, { scroll: false });
+      RefreshProductList('');
+      //router.push(`/ `, null, { scroll: false });
       setSearchText('');
     }
   };
 
+  
   useEffect(() => {
-    if (Cookies.get('userInfo')) {
-      const user = JSON.parse(Cookies.get('userInfo'));
-      setImageUrl(user.image);
-    }
+    if(Cookies.get('userInfo'))
+      {
+        Cookies.remove('userInfo');
+      } 
+      var userLocalJson = localStorage.getItem('userInfo');
+      if(userLocalJson === null)
+      {
+
+      }
+      else
+      {
+        Cookies.set('userInfo', userLocalJson);
+        var userLocal = JSON.parse(userLocalJson)
+        alert("User Info " + JSON.stringify(userInfo));
+        if (Cookies.get('userInfo')) {
+          alert(JSON.stringify(Cookies.get('userInfo')));
+          const user = JSON.parse(Cookies.get('userInfo'));
+          alert("Cookie = " + JSON.stringify(user));
+          setImageUrl(user.image);
+        }
+      }
+      
   }, []);
 
   return (
@@ -58,9 +79,9 @@ const Navbar = () => {
             <Link href="/">
               <a className="mr-3 lg:mr-12 xl:mr-12 hidden md:hidden lg:block">
                 <Image
-                  width={110}
-                  height={40}
-                  src="/logo/logo-light.svg"
+                  width={70}
+                  height={70}
+                  src={companyLogo === undefined ? 'http://coinpos-uat.azurewebsites.net/img/logo2.png' : companyLogo}
                   alt="logo"
                 />
               </a>
@@ -143,7 +164,7 @@ const Navbar = () => {
         </div>
 
         {/* second header */}
-        <NavbarPromo />
+        <NavbarPromo FilterProduct={FilterProduct}/>
       </div>
     </>
   );

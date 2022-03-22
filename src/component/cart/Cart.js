@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useCart } from 'react-use-cart';
 import { IoBagCheckOutline, IoClose, IoBagHandle } from 'react-icons/io5';
 
@@ -16,17 +16,80 @@ const Cart = () => {
   const { isEmpty, items, cartTotal } = useCart();
   const { toggleCartDrawer, closeCartDrawer } = useContext(SidebarContext);
 
+  
+  
+
+  var disDetailsData = [];
+
+  var totalDiscountData = 0;
+  if(sessionStorage.getItem('discountDetails'))
+    {
+      var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
+      
+      //alert(discountDetailsJson);
+      disDetailsData = JSON.parse(discountDetailsJson);
+      //var f = disDetails.find(d => d.id===2541)
+      //var s = disDetails.find(d => d.id===835)
+      //alert("f = " + JSON.stringify(f));
+      //alert("fD = " + f.discount);
+
+      if(disDetailsData !== null)
+      {
+        totalDiscountData = disDetailsData.reduce((discountTotal, item) => (discountTotal += item.discount),0);
+        //setTotalDiscount(totalDiscountVal);
+      }
+    }
+
+    const [discountDetails, setDiscountDetail] = useState(disDetailsData);
+  const [totalDiscount, setTotalDiscount] = useState(totalDiscountData);
+  var currencySign = '';
+    if(sessionStorage.getItem('currencySign'))
+    {
+      currencySign = sessionStorage.getItem('currencySign'); 
+      //alert('liffId = ' + sessionStorage.getItem('liffId'))
+    }
+
+
   const {
     state: { userInfo },
   } = useContext(UserContext);
 
   const handleOpenLogin = () => {
-    if (router.push('/?redirect=/checkout')) {
+    //if (router.push('/?redirect=/checkout')) 
+    {
       toggleCartDrawer();
       setModalOpen(!modalOpen);
     }
   };
 
+  const UpdateTotal = (id,qty,discountRate) =>
+  {
+    //alert("UpdateTotal");
+    var totalDiscountValue = 0;
+    for(var i=0;i<items.length;i++)
+    {
+      var item = items[i];
+      if(item.id === id)
+      {
+        totalDiscountValue += (qty * item.price) * discountRate; 
+
+      }
+      else
+      {
+        for(var j=0;j<discountDetails.length;j++)
+        {
+          var discountItem = discountDetails[j];
+          if(discountItem.id === item.id)
+          {
+            totalDiscountValue += (item.quantity * item.price * discountItem.discountRate);
+          } 
+        }
+        
+      }
+    }
+    //alert(totalDiscountValue);
+    setTotalDiscount(totalDiscountValue);
+  }
   const checkoutClass = (
     <button
       onClick={closeCartDrawer}
@@ -36,7 +99,7 @@ const Cart = () => {
         Proceed To Checkout
       </span>
       <span className="rounded-lg font-bold font-serif py-2 px-3 bg-white text-emerald-600">
-        ${cartTotal.toFixed(2)}
+        {currencySign}{cartTotal === null ? 0.00 : (cartTotal-totalDiscount).toFixed(2)}
       </span>
     </button>
   );
@@ -85,7 +148,7 @@ const Cart = () => {
           )}
 
           {items.map((item, i) => (
-            <CartItem key={i + 1} item={item} />
+            <CartItem key={i + 1} item={item} discountDetails={discountDetails} UpdateTotal={UpdateTotal}/>
           ))}
         </div>
         <div className="mx-5 my-3">
@@ -96,7 +159,7 @@ const Cart = () => {
               {!userInfo ? (
                 <div onClick={handleOpenLogin}>{checkoutClass}</div>
               ) : (
-                <Link href="/checkout">
+                <Link href="/checkout" onClick={() => handleCheckout}>
                   <a>{checkoutClass}</a>
                 </Link>
               )}

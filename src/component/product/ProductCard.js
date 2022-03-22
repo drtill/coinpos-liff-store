@@ -1,23 +1,173 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useCart } from 'react-use-cart';
+import getConfig from 'next/config'
 import { IoBagAddSharp, IoAdd, IoRemove } from 'react-icons/io5';
 
+import ProductServices from '@services/ProductServices';
 import Price from '@component/common/Price';
 import Discount from '@component/common/Discount';
 import ProductModal from '@component/modal/ProductModal';
+import { order } from 'tailwindcss/defaulttheme';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId, companyId, locationId, pictureUrl }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { items, addItem, updateItemQuantity, inCart } = useCart();
 
-  const handleAddItem = (p) => {
-    const newItem = {
-      ...p,
-      id: p._id,
-    };
-    addItem(newItem);
+  const { serverRuntimeConfig} = getConfig()
+
+  const handleUpdateItem = async(item,_qty, _updateType) =>{
+    updateItemQuantity(item.id,_qty);
+
+    if(_qty === 0)
+    {
+      if(liffId.length > 0)
+      {
+        removeCoinPOSCartDetail(item,liffId,linePOSId,orderId,pictureUrl);
+      }
+      
+    }
+    else
+    {
+      if(liffId.length > 0)
+      {
+        updateCoinPOSCartDetail(item, _qty,liffId, lineUserId, linePOSId, groupId, orderId, companyId, locationId, pictureUrl, _updateType)
+      }
+      
+    }
+    
+  }
+  const handleAddItem = async (p) => {
+
+    //alert("Add Item")
+    
+    if(liffId.length > 0) //liff
+    {
+      //alert("Liff");
+      const newItem = {
+        ...p,
+        id: p._id,
+      };
+      //alert(p._id)
+      addItem(newItem);
+      if(liffId.length > 0)
+      {
+        AddProductToCart(p,liffId, lineUserId, linePOSId, groupId, orderId, companyId, locationId, pictureUrl);
+      }
+      
+    }
+    else//WebCatalog
+    {
+      //alert("Catalog");
+      const newItem = {
+        ...p,
+        id: p._id,
+      };
+      //alert(p._id)
+      addItem(newItem);
+    }
+    
   };
+
+  const checkItemInCart = (_id) => {
+    var isInCart = false;
+    for(var i = 0;i<items.length;i++)
+    {
+      var item = items[i];
+      
+      
+      if(item !== null)
+      {
+        
+        if(item.id === _id)
+        {
+          //alert("match");
+          isInCart = true;
+        }
+        
+      }
+    }
+    
+    return isInCart;
+
+  }
+  const removeCoinPOSCartDetail = async(req,_liffId, _linePOSId, _orderId, _pictureUrl) => 
+  {
+    var liffId = _liffId;
+    var linePOSId = _linePOSId;
+    var orderId = _orderId;
+    var pvId = req.id;
+    var pictureUrl = _pictureUrl;
+    
+
+
+    const detail = ProductServices.removeCoinPOSCartDetail({
+      orderId,
+      pvId,
+      linePOSId,
+      liffId,
+      pictureUrl
+
+    })
+  }
+
+  const updateCoinPOSCartDetail = async(req, _qty,_liffId, _lineUserId, _linePOSId, _groupId, _orderId, _companyId, _locationId, _pictureUrl, _updateType) => 
+  {
+    var liffId = _liffId;
+    var lineUserId = _lineUserId;
+    var linePOSId = _linePOSId;
+    var groupId = _groupId;
+    var orderId = _orderId;
+    var companyId = _companyId;
+    var locationId = _locationId;
+    var orderDetailId = 0;
+    var quantity = _qty;
+    var pvId = req.id;
+    var updateType = _updateType;
+    var pictureUrl = _pictureUrl;
+    var userId = 1;
+
+
+    const detail = await ProductServices.updateCoinPOSCartDetail({
+      orderDetailId,
+      userId,
+      quantity,
+      companyId,
+      orderId,
+      pvId,
+      updateType,
+      linePOSId,
+      liffId,
+      pictureUrl
+    })
+  }
+  const AddProductToCart = async(req,_liffId, _lineUserId, _linePOSId, _groupId, _orderId, _companyId, _locationId, _pictureUrl) => 
+  {
+    var liffId = _liffId;
+    var lineUserId = _lineUserId;
+    var linePOSId = _linePOSId;
+    var groupId = _groupId;
+    var orderId = _orderId;
+    var companyId = _companyId;
+    var locationId = _locationId;
+    var pictureUrl = _pictureUrl;
+
+    var pvId = req._id;
+
+    //alert("liffId = " + liffId + " lineUserId = " + lineUserId + " OrderId = " + orderId)
+    const products = await ProductServices.addToCoinPOSCart({
+      orderId,
+      pvId,
+      companyId,locationId,
+      lineUserId,
+      linePOSId,
+      groupId,
+      liffId,
+      pictureUrl
+    });
+    //alert(products);
+};
+
 
   return (
     <>
@@ -59,18 +209,20 @@ const ProductCard = ({ product }) => {
 
           <div className="flex justify-between items-center text-heading text-sm sm:text-base space-s-2 md:text-base lg:text-xl">
             <Price product={product} card={true} />
-            {inCart(product._id) ? (
+            {checkItemInCart(product._id) ? (
               <div>
                 {items.map(
                   (item) =>
-                    item.id === product._id && (
+                    item.id === product._id 
+                    ? 
+                    (
                       <div
                         key={item.id}
                         className="h-9 w-auto flex flex-wrap items-center justify-evenly py-1 px-2 bg-emerald-500 text-white rounded"
                       >
                         <button
                           onClick={() =>
-                            updateItemQuantity(item.id, item.quantity - 1)
+                            handleUpdateItem(item, item.quantity - 1,'Dec')
                           }
                         >
                           <span className="text-dark text-base">
@@ -82,7 +234,7 @@ const ProductCard = ({ product }) => {
                         </p>
                         <button
                           onClick={() =>
-                            updateItemQuantity(item.id, item.quantity + 1)
+                            handleUpdateItem(item, item.quantity + 1, 'Inc')
                           }
                           disabled={product.quantity === item.quantity}
                         >
@@ -92,6 +244,9 @@ const ProductCard = ({ product }) => {
                         </button>
                       </div>
                     )
+                    :
+                    <></>
+                    
                 )}{' '}
               </div>
             ) : (
