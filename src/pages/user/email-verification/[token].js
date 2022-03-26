@@ -21,7 +21,8 @@ const EmailVerification = ({ params }) => {
     UserServices.coinposUserRegister(params?.token)
       .then((res) => {
         alert(JSON.stringify(res));
-        router.push('/');
+        //router.push('/');
+        router.push('/catalog/2-MyCustomer');
         setLoading(false);
         setSuccess(res.message);
         notifySuccess('Register Success!');

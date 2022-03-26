@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import InputPayment from '@component/form/InputPayment';
 import BankTransferPayment from '@component/form/BankTransferPayment';
 import ProductServices from '@services/ProductServices';
@@ -22,12 +22,17 @@ const PaymentMethod = ({salesOrderId, lineLiffId, lineLiffUserId, lineCompanyId}
   const [qrUrl, setQRUrl] = useState('');
   var bankTransferList = [];
 
-  if(sessionStorage.getItem('bankNameAndAccounts'))
+  useEffect(() => 
   {
-    var bankTransferJson = sessionStorage.getItem('bankNameAndAccounts'); 
-    bankTransferList = JSON.parse(bankTransferJson);
-    //alert(JSON.stringify(bankTransferList))
-  }
+    if(sessionStorage.getItem('bankNameAndAccounts'))
+    {
+      var bankTransferJson = sessionStorage.getItem('bankNameAndAccounts'); 
+      bankTransferList = JSON.parse(bankTransferJson);
+      //alert(JSON.stringify(bankTransferList))
+    }
+
+  });
+  
 
   const [bankTransfers, setBankTransfers] = useState(bankTransferList);
   const handleBankTransferClick = async() =>

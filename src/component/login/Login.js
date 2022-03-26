@@ -28,13 +28,19 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
       if(sessionStorage.getItem('companyId'))
       {
         companyId = sessionStorage.getItem('companyId'); 
-        alert("CompanyId = " + companyId);
+        //alert("CompanyId = " + companyId);
           
       }
-      if(sessionStorage.getItem('catalogName'))
+      /*if(sessionStorage.getItem('catalogName'))
       {
         paramPath = '/catalog/' + sessionStorage.getItem('catalogName'); 
-        alert("catalogName = " + paramPath);
+        //alert("catalogName = " + paramPath);
+          
+      }*/
+      if(sessionStorage.getItem('dataPath'))
+      {
+        paramPath = sessionStorage.getItem('dataPath'); 
+        //alert("catalogName = " + paramPath);
           
       }
       
@@ -44,7 +50,7 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
       
       
 
-      alert("Login Handle")
+      //alert("Login Handle")
       submitHandler(data)
       }
     }
@@ -103,7 +109,7 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
           <button
             disabled={loading}
             type="submit"
-            className="w-full text-center py-3 rounded bg-emerald-500 text-white hover:bg-emerald-600 transition-all focus:outline-none my-1"
+            className="w-full text-center py-3 rounded bg-cyan-500 text-white hover:bg-cyan-600 transition-all focus:outline-none my-1"
           >
             Login
           </button>

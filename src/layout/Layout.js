@@ -9,7 +9,7 @@ import MobileFooter from '@layout/footer/MobileFooter';
 import FeatureCard from '@component/feature-card/FeatureCard';
 import NavBarTop from './navbar/NavBarTop';
 
-const Layout = ({ title, description, children, companyName, locationName, companyLogo,
+const Layout = ({ title, description,dataPath, children, companyName, locationName, companyLogo,
   locationAddress1,locationAddress2,locationCity,locationStateOrProvince,locationCountry,locationPostalCode,
   locationEmail,locationTel,
   RefreshProductList, FilterProduct }) => {
@@ -46,8 +46,8 @@ const Layout = ({ title, description, children, companyName, locationName, compa
           {description && <meta name="description" content={description} />}
           <link ref="icon" href="/favicon.ico"/>
         </Head>
-        <NavBarTop />
-        <Navbar companyLogo={companyLogo} RefreshProductList={RefreshProductList} FilterProduct={FilterProduct}/>
+        {/* <NavBarTop /> */}
+        <Navbar companyLogo={companyLogo} dataPath={dataPath} RefreshProductList={RefreshProductList} FilterProduct={FilterProduct}/>
         <div className="bg-gray-50">{children}</div>
         <MobileFooter />
         <div className="w-full">
@@ -57,7 +57,7 @@ const Layout = ({ title, description, children, companyName, locationName, compa
           </div> */}
           {/* <hr className="hr-line"></hr> */}
           <div className="border-t border-gray-100 w-full">
-            <Footer companyName={companyName} companyLogo={companyLogo} locationName={locationName}
+            <Footer companyName={companyName} dataPath={dataPath} companyLogo={companyLogo} locationName={locationName}
             locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
             locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
             locationEmail={locationEmail} locationTel={locationTel}

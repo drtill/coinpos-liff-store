@@ -14,7 +14,7 @@ import {
 //internal import
 import { UserContext } from '@context/UserContext';
 
-const Footer = ({companyLogo, companyName, locationName, locationAddress1,locationAddress2,locationCity,locationStateOrProvince,locationCountry,locationPostalCode,
+const Footer = ({companyLogo,dataPath, companyName, locationName, locationAddress1,locationAddress2,locationCity,locationStateOrProvince,locationCountry,locationPostalCode,
   locationEmail,locationTel,
   }) => {
   const {
@@ -46,30 +46,30 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
               Company
             </h3>
             <ul className="text-sm flex flex-col space-y-3">
-              {/* <li className="flex items-baseline">
-                <Link href="/about-us">
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
-                    About Us
+              <li className="flex items-baseline">
+                <Link href="/">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
+                    Offers
                   </a>
                 </Link>
-              </li> */}
+              </li>
               <li className="flex items-baseline">
                 <Link href="/contact-us">
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Contact us
                   </a>
                 </Link>
               </li>
               {/* <li className="flex items-baseline">
                 <Link href="#">
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Careers
                   </a>
                 </Link>
               </li>
               <li className="flex items-baseline">
                 <Link href="#">
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Latest news
                   </a>
                 </Link>
@@ -84,7 +84,7 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
               <li className="flex items-baseline">
                 {/* <Link href={`${userInfo?.email ? '/user/dashboard' : '#'}`}> */}
                 <Link href='/user/dashboard'>
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Dashboard
                   </a>
                 </Link>
@@ -94,7 +94,7 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
                 href='/user/my-orders'
                 // href={`${userInfo?.email ? '/user/my-orders' : '#'}`}
                 >
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     My Orders
                   </a>
                 </Link>
@@ -103,7 +103,7 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
                 <Link 
                 href={`${userInfo?.email ? '/user/dashboard' : '#'}`}
                 >
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Recent Orders
                   </a>
                 </Link>
@@ -113,7 +113,7 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
                   /* href={`${userInfo?.email ? '/user/update-profile' : '#'}`} */
                   href='/user/update-profile'
                 >
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Updated Profile
                   </a>
                 </Link>
@@ -127,7 +127,7 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
             <ul className="text-sm lg:text-15px flex flex-col space-y-3">
               <li className="flex items-baseline">
                 <Link href="/search?Category=fish--meat">
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Fish & Meat
                   </a>
                 </Link>
@@ -135,21 +135,21 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
 
               <li className="flex items-baseline">
                 <Link href="/search?Category=drinks">
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Soft Drinks
                   </a>
                 </Link>
               </li>
               <li className="flex items-baseline">
                 <Link href="search?Category=baby-care">
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Baby Care
                   </a>
                 </Link>
               </li>
               <li className="flex items-baseline">
                 <Link href="search?Category=beauty--health">
-                  <a className="text-gray-600 inline-block w-full hover:text-emerald-500">
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Beauty & Health
                   </a>
                 </Link>
@@ -158,7 +158,7 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
           </div>
           
           <div className="pb-3.5 sm:pb-0 col-span-1 md:col-span-2 lg:col-span-3">
-            <Link href="/">
+            <Link href={"/" + dataPath}>
               <a className="mr-3 lg:mr-12 xl:mr-12" rel="noreferrer">
                 <Image
                   width={70}
@@ -254,7 +254,7 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
               <p className="text-base leading-7 font-medium block">
                 Call Us Today!
               </p>
-              <h5 className="text-2xl font-bold text-emerald-500 leading-7">{locationTel}</h5>
+              <h5 className="text-2xl font-bold text-cyan-500 leading-7">{locationTel}</h5>
             </div>
             <div className="col-span-1 hidden lg:block md:block">
               {/* <ul className="lg:text-right">
@@ -280,7 +280,7 @@ const Footer = ({companyLogo, companyName, locationName, locationAddress1,locati
             <a
               target="_blank"
               rel="noopener noreferrer"
-              className="text-emerald-500"
+              className="text-cyan-500"
             >
               HtmlLover
             </a>

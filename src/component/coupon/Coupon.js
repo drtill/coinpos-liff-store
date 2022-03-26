@@ -9,19 +9,32 @@ import CouponServices from '@services/CouponServices';
 import ProductServices from '@services/ProductServices';
 import OfferTimer from '@component/coupon/OfferTimer';
 
-const Coupon = ({ couponInHome, companyId, promotions, ApplyPromotionCode }) => {
+const Coupon = ({ couponInHome, companyId, promotions, catalogName, ApplyPromotionCode }) => {
   const [copiedCode, setCopiedCode] = useState('');
   const [copied, setCopied] = useState(false);
 
-  //alert(companyId);
+  //alert("promotions = " + JSON.stringify(promotions));
   //const { data, error } = useAsync(() => ProductServices.getAllCoinPOSCoupons({companyId}))//useAsync(ProductServices.getAllCoinPOSCoupons({companyId}));
   //const { data, error } = useAsync(CouponServices.getAllCoupons)
   //const promotionDatas = promotions;
-  const handleCopied = (code) => {
+  const handleCopied = (code,discountPercentage,isForAllProduct, minimumAmount, productIdList) => {
     //setCopiedCode(code);
     //setCopied(true);
 
-    ApplyPromotionCode(code);
+    //alert("minimumAmount = " + minimumAmount)
+    //alert("productIdList = " + productIdList)
+    //if(catalogName !== undefined)
+    //{
+    //  setCopiedCode(code);
+    //  setCopied(true);
+    //}
+    //else
+    //{
+      setCopiedCode(code);
+      setCopied(true);
+      ApplyPromotionCode(code,discountPercentage,isForAllProduct, minimumAmount, productIdList);
+    //}
+    
   };
   const error = '';
 
@@ -68,7 +81,7 @@ const Coupon = ({ couponInHome, companyId, promotions, ApplyPromotionCode }) => 
                         Inactive
                       </span>
                     ) : (
-                      <span className="text-emerald-600 inline-block px-4 py-1 rounded-full font-medium text-xs bg-emerald-100">
+                      <span className="text-cyan-600 inline-block px-4 py-1 rounded-full font-medium text-xs bg-cyan-100">
                         Active
                       </span>
                     )}
@@ -114,18 +127,18 @@ const Coupon = ({ couponInHome, companyId, promotions, ApplyPromotionCode }) => 
               <div className="info flex items-center">
                 <div className="w-full">
                   <div className="block">
-                    <div className="font-serif border border-dashed bg-emerald-50 py-1 border-emerald-300 rounded-lg text-center block">
+                    <div className="font-serif border border-dashed bg-cyan-50 py-1 border-cyan-300 rounded-lg text-center block">
                       <CopyToClipboard
                         text={coupon.couponCode}
-                        onCopy={() => handleCopied(coupon.couponCode)}
+                        onCopy={() => handleCopied(coupon.couponCode,coupon.discountPercentage,coupon.isForAllProduct,coupon.minimumAmount,coupon.productPromotion)}
                       >
                         <button className="block w-full">
                           {copied && coupon.couponCode === copiedCode ? (
-                            <span className="text-emerald-600 text-sm leading-7 font-semibold">
+                            <span className="text-cyan-600 text-sm leading-7 font-semibold">
                               Copied!
                             </span>
                           ) : (
-                            <span className="uppercase font-serif font-semibold text-sm leading-7 text-emerald-600">
+                            <span className="uppercase font-serif font-semibold text-sm leading-7 text-cyan-600">
                               {coupon.couponCode}{' '}
                             </span>
                           )}
@@ -133,10 +146,34 @@ const Coupon = ({ couponInHome, companyId, promotions, ApplyPromotionCode }) => 
                       </CopyToClipboard>
                     </div>
                   </div>
+                  
                   <p className="text-xs leading-4 text-gray-500 mt-2">
-                    * This coupon apply when shopping more then{' '}
-                    <span className="font-bold"> {coupon.currencySign}{coupon.minimumAmount}</span>{' '}
+                    กดรหัสด้านบน เพื่อใช้ส่วนลด
                   </p>
+                  
+                  {
+                    coupon.productType !== null ?
+                      <>
+                        <p className="text-xs leading-5 text-gray-500 mt-2">
+                          * คูปองนี้ใช้ได้กับ{' '}
+                          <span className="font-bold text-gray-700">
+                            สินค้า ประเภท {coupon.productType}
+                          </span>{' '}
+                          และ เมื่อยอดมากกว่า{' '}
+                          <span className="font-bold text-gray-700">
+                            {coupon.currencySign}{coupon.minimumAmount}
+                          </span>{' '}
+                        </p>
+                      </>
+                    :
+                      <>
+                        <p className="text-xs leading-4 text-gray-500 mt-2">
+                        * คูปองนี้ใช้ได้เมื่อยอดมากกว่า{' '}
+                        <span className="font-bold"> {coupon.currencySign}{coupon.minimumAmount}</span>{' '}
+                      </p>
+                      </>
+                  }
+                  
                 </div>
               </div>
             </div>
@@ -212,25 +249,25 @@ const Coupon = ({ couponInHome, companyId, promotions, ApplyPromotionCode }) => 
                             Inactive
                           </span>
                         ) : (
-                          <span className="text-emerald-600 inline-block">
+                          <span className="text-cyan-600 inline-block">
                             Active
                           </span>
                         )}
                       </div>
                     </div>
 
-                    <div className="font-serif border border-dashed bg-emerald-50 py-2 border-emerald-300 rounded-lg text-center block">
+                    <div className="font-serif border border-dashed bg-cyan-50 py-2 border-cyan-300 rounded-lg text-center block">
                       <CopyToClipboard
                         text={coupon.couponCode}
                         onCopy={() => handleCopied(coupon.couponCode)}
                       >
                         <button className="block w-full">
                           {copied && coupon.couponCode === copiedCode ? (
-                            <span className="text-emerald-600 text-base leading-7 font-semibold">
+                            <span className="text-cyan-600 text-base leading-7 font-semibold">
                               Copied!
                             </span>
                           ) : (
-                            <span className="uppercase font-serif font-semibold text-base leading-7 text-emerald-600">
+                            <span className="uppercase font-serif font-semibold text-base leading-7 text-cyan-600">
                               {coupon.couponCode}{' '}
                             </span>
                           )}

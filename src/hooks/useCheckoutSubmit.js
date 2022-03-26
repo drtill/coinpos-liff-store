@@ -202,7 +202,7 @@ const useCheckoutSubmit = () => {
       discount: discountAmount,
       total: total,
     };
-    alert("submitHandler3 ");
+    //alert("submitHandler3 ");
     if (data.paymentMethod === 'Card') {
       if (!stripe) {
         return;
@@ -274,7 +274,7 @@ const useCheckoutSubmit = () => {
         
       }
       
-      alert(data.firstName);
+      //alert(data.firstName);
 
       var firstName = data.firstName;
       var lastName = data.lastName;
@@ -292,7 +292,7 @@ const useCheckoutSubmit = () => {
         address1,country,city,stateOrProvince,postalCode
       })
         .then((res) => {
-          alert(res)
+          //alert(res)
           //return
           //router.push(`/order/${res._id}`);
           router.push(`/order/${res}`);
@@ -308,7 +308,7 @@ const useCheckoutSubmit = () => {
         });
     }
     if (data.paymentMethod === undefined) {
-      alert("submitHandler " + data.firstName);
+      //alert("submitHandler " + data.firstName);
       if(sessionStorage.getItem('orderId'))
       {
         orderId = sessionStorage.getItem('orderId'); 
@@ -349,7 +349,7 @@ const useCheckoutSubmit = () => {
       var orderDetails = data.orderDetails;
       var catalogName = data.catalogName;
       var email = data.email;
-      alert("contact = " + data.contact)
+      //alert("contact = " + data.contact)
 
       //alert("orderId = " + orderId + " shippingId = " + shippingId + " shippingName = " + shippingName + " shippingFee = " + shippingFee + " companyId = " + companyId + " linePOSId = " + linePOSId + " liffId = " + liffId+ " pictureUrl = " +pictureUrl);
       shippingFee = shippingCost;

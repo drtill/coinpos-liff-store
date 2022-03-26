@@ -79,7 +79,14 @@ const Order = ({ params }) => {
 
   var catalogName = '';
 
+  var dataPath = dataPath;
 
+  if(sessionStorage.getItem('dataPath'))
+  {
+    dataPath = sessionStorage.getItem('dataPath'); 
+    
+          
+  }
   if(sessionStorage.getItem('catalogName'))
   {
     catalogName = sessionStorage.getItem('catalogName'); 
@@ -225,7 +232,7 @@ const Order = ({ params }) => {
                   )
                   paymentContentData.push(
                   <Link href={data.trackingUrl}>
-                    <a className="mb-3 sm:mb-0 md:mb-0 lg:mb-0 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white transition-all font-serif text-sm font-semibold h-10 py-2 px-5 rounded-md">
+                    <a className="mb-3 sm:mb-0 md:mb-0 lg:mb-0 flex items-center justify-center bg-cyan-500 hover:bg-cyan-600 text-white transition-all font-serif text-sm font-semibold h-10 py-2 px-5 rounded-md">
                       Tracking {' '}
                       <span className="text-xl mr-2">
                         <IoLink />
@@ -314,7 +321,7 @@ const Order = ({ params }) => {
         else
         {
           //alert('Login 5');
-          alert('Logout');
+          //alert('Logout');
           dispatch({ type: 'USER_LOGOUT' });
           Cookies.remove('userInfo');
           Cookies.remove('couponInfo');
@@ -333,6 +340,7 @@ const Order = ({ params }) => {
 
       if(data !== undefined)
       {
+        //alert("data = " + JSON.stringify(data));
         setPaymentStatusId(data.paymentStatusId);
         setOrderStatusId(data.orderStatusId);
         setcurrencySign(data.currencySign);
@@ -402,7 +410,7 @@ const Order = ({ params }) => {
     
   
   return (
-    <Layout title="Invoice" description="order confirmation page" companyName={companyName} locationName={locationName} companyLogo={companyLogo}
+    <Layout title="Invoice" description="order confirmation page" dataPath={dataPath} companyName={companyName} locationName={locationName} companyLogo={companyLogo}
       locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
       locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
       locationEmail={locationEmail} locationTel={locationTel}>
@@ -410,18 +418,20 @@ const Order = ({ params }) => {
         <Loading loading={loading} />
       ) : (
         <div className="max-w-screen-2xl mx-auto py-10 px-3 sm:px-6">
-          <div className="bg-emerald-100 rounded-md mb-5 px-4 py-3">
+          <div className="bg-cyan-100 rounded-md mb-5 px-4 py-3">
             <label>
-              Thank you{' '}
-              {/* <span className="font-bold text-emerald-600">{data.name},</span>{' '} */}
-              <span className="font-bold text-emerald-600">{data.customerName},</span>{' '}
-              Your order have been received !
+              ขอบคุณที่ใช้บริการ{' '}
+              {/* <span className="font-bold text-cyan-600">{data.name},</span>{' '} */}
+              <span className="font-bold text-cyan-600">{data.customerName},</span>{' '}
+              เราได้รับคำสั่งซื้อของคุณแล้ว !
 
               
             </label>
           </div>
           <div className="bg-white rounded-lg shadow-sm">
-            <Invoice data={data} printRef={printRef} companyName={companyName} locationName={locationName} companyLogo={companyLogo} currencySign={currencySign}/>
+            <Invoice data={data} printRef={printRef} companyName={companyName} locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
+      locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
+       locationName={locationName} companyLogo={companyLogo} currencySign={data.currencySign}/>
             <div className="bg-white p-8 rounded-b-xl">
               <div className="flex lg:flex-row md:flex-row sm:flex-row flex-col justify-between">
                 {/* <p>{JSON.stringify(data)}</p>
@@ -434,7 +444,7 @@ const Order = ({ params }) => {
                     loading ? (
                       'Loading...'
                     ) : (
-                      <button className="mb-3 sm:mb-0 md:mb-0 lg:mb-0 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white transition-all font-serif text-sm font-semibold h-10 py-2 px-5 rounded-md">
+                      <button className="mb-3 sm:mb-0 md:mb-0 lg:mb-0 flex items-center justify-center bg-cyan-500 hover:bg-cyan-600 text-white transition-all font-serif text-sm font-semibold h-10 py-2 px-5 rounded-md">
                         Download Invoice{' '}
                         <span className="ml-2 text-base">
                           <IoCloudDownloadOutline />
@@ -446,7 +456,7 @@ const Order = ({ params }) => {
 
                 <ReactToPrint
                   trigger={() => (
-                    <button className="mb-3 sm:mb-0 md:mb-0 lg:mb-0 flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 text-white transition-all font-serif text-sm font-semibold h-10 py-2 px-5 rounded-md">
+                    <button className="mb-3 sm:mb-0 md:mb-0 lg:mb-0 flex items-center justify-center bg-cyan-500 hover:bg-cyan-600 text-white transition-all font-serif text-sm font-semibold h-10 py-2 px-5 rounded-md">
                       Print Invoice{' '}
                       <span className="ml-2">
                         <IoPrintOutline />
@@ -456,10 +466,12 @@ const Order = ({ params }) => {
                   content={() => printRef.current}
                   documentTitle="Invoice"
                 />
+                
               </div>
             </div>
+            
             {
-              paymentStatusId === 1 //UnPaid
+              data.paymentStatusId === 1 //UnPaid
               ?
                 <PaymentMethod salesOrderId={orderId} lineLiffId={liffId} lineLiffUserId={lineUserId} lineCompanyId={companyId} />
               :

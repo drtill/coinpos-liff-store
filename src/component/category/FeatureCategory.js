@@ -45,7 +45,7 @@ const FeatureCategory = ({categories,FilterCategory, FilterProduct}) => {
                       .join('-')}`
                   ) */
                   FilterCategory(category._id)
-                } className="text-sm text-gray-600 cursor-pointer font-serif font-medium leading-tight line-clamp-1 group-hover:text-emerald-500">
+                } className="text-sm text-gray-600 cursor-pointer font-serif font-medium leading-tight line-clamp-1 group-hover:text-cyan-500">
                       {category.parent}
                     </h3>
                     <ul className="pt-1 mt-1">
@@ -58,10 +58,10 @@ const FeatureCategory = ({categories,FilterCategory, FilterProduct}) => {
                               .split(' ')
                               .join('-')}`} */
                               
-                              onClick={() => FilterProduct(children._id)}
+                              onClick={() => FilterProduct(category._id,children._id)}
                           >
-                            <a className="flex items-center font-serif text-xs text-gray-400 hover:text-emerald-600 cursor-pointer">
-                              <span className="text-xs text-gray-400 hover:text-emerald-600">
+                            <a className="flex items-center font-serif text-xs text-gray-400 hover:text-cyan-600 cursor-pointer">
+                              <span className="text-xs text-gray-400 hover:text-cyan-600">
                                 <IoChevronForwardSharp />
                               </span>
                               {children.title}

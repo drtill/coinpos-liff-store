@@ -182,7 +182,7 @@ const InvoiceForDownload = ({ data }) => {
             <View>
               <Text style={styles.title}>INVOICE TO</Text>
               <Text style={styles.info}>{data.customerName}</Text>
-              <Text style={styles.info}> {data.shippingToAddress === null ? "" : data.shippingToAddress.substring(0, 25)}</Text>
+              <Text style={styles.info}> {data.shippingToAddress === null ? "" : (data.shippingToAddress === undefined ? "" : data.shippingToAddress.substring(0, 25))}</Text>
               {/* <Text style={styles.info}>
                 {data.city}, {data.country}, {data.zipCode}
               </Text> */}

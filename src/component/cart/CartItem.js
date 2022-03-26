@@ -10,13 +10,13 @@ import { SidebarContext } from '@context/SidebarContext';
 
 import ProductServices from '@services/ProductServices';
 
-const CartItem = ({ item, discountDetails, UpdateTotal }) => {
+const CartItem = ({ item, UpdateTotal }) => {
   const { updateItemQuantity, removeItem } = useCart();
   const { closeCartDrawer } = useContext(SidebarContext);
   const { handleIncreaseQuantity } = useAddToCart();
 
   
-  //alert(JSON.stringify(discountDetail));
+  //alert(JSON.stringify(discountDetails));
   var liffId = '';
     var linePOSId = '';
     var lineUserId = '';
@@ -31,7 +31,7 @@ const CartItem = ({ item, discountDetails, UpdateTotal }) => {
     var discountData = 0;
     var discountDataRate = 0;
 
-    for(var i=0;i<discountDetails.length;i++)
+    /*for(var i=0;i<discountDetails.length;i++)
     {
       var dDetail = discountDetails[i]
       if(dDetail.id === item.id)
@@ -41,10 +41,53 @@ const CartItem = ({ item, discountDetails, UpdateTotal }) => {
         discountDataRate = dDetail.discountRate;
       }
 
-    }
+    }*/
     
-    const [discount,setDiscount] = useState(discountData);
-    const [discountRate,setDiscountRate] = useState(discountDataRate);
+    const [discountDataDetails, setDiscountDetails] = useState([]);
+    const [discount,setDiscount] = useState(0);
+    const [discountRate,setDiscountRate] = useState(0.0);
+
+    
+
+    useEffect(() =>
+    {
+      if(sessionStorage.getItem('discountDetails'))
+      {
+        var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
+        //var promotionmProductIdListJson = sessionStorage.getItem('promotionmProductIdList'); 
+        
+        var disDetails = JSON.parse(discountDetailsJson);
+        //var promoProductIdList = JSON.parse(promotionmProductIdListJson);
+
+        
+        if(disDetails !== null)
+        {
+          
+          for(var i=0;i<disDetails.length;i++)
+          {
+            var dDetail = disDetails[i];
+            if(dDetail.id === item.id)
+            {
+              //alert('Discount = ' + dDetail.discount)
+              discountData = dDetail.discount;
+              discountDataRate = dDetail.discountRate;
+            }
+
+          }
+          setDiscountDetails(disDetails);
+          setDiscount(discountData);
+          setDiscountRate(discountDataRate);
+          
+          
+        }
+      }
+        //alert("Loop Set = " + JSON.stringify(discountDetails));
+      
+        
+
+      
+    })
+    
     //var discountVal = discountDetail === null ? 0 : discountDetail.discount;
 
     //const [discount, setDiscount] = useState(discountVal); 
@@ -100,7 +143,23 @@ const CartItem = ({ item, discountDetails, UpdateTotal }) => {
   const handleRemoveItem = async(item) => {
     removeItem(item.id)
 
-    removeCoinPOSCartDetail(item,liffId,linePOSId,orderId,pictureUrl);
+    for(var i=0;i<discountDataDetails.length;i++)
+    {
+      var dDetail = discountDataDetails[i]
+      if(dDetail.id === item.id)
+      {
+        discountDataDetails.splice(i,1);
+        
+      }
+
+    }
+    sessionStorage.setItem('discountDetails',JSON.stringify(discountDataDetails)); 
+
+    if(liffId.length > 0)
+    {
+      removeCoinPOSCartDetail(item,liffId,linePOSId,orderId,pictureUrl);
+    }
+    
   };
 
   const handleDecrease = (_id, _qty) => {
@@ -109,8 +168,19 @@ const CartItem = ({ item, discountDetails, UpdateTotal }) => {
 
     updateItemQuantity(_id, _qty)
     var discountVal = (_qty * item.price)*discountRate;
-    //alert(discountVal);
-    setDiscount(discountVal);
+    
+    for(var i=0;i<discountDataDetails.length;i++)
+    {
+      var dDetail = discountDataDetails[i]
+      if(dDetail.id === _id)
+      {
+        discountDataDetails[i].discount = discountVal;
+        
+      }
+
+    }
+    
+    sessionStorage.setItem('discountDetails',JSON.stringify(discountDataDetails)); 
     
     if(liffId.length > 0)
     {
@@ -130,12 +200,24 @@ const CartItem = ({ item, discountDetails, UpdateTotal }) => {
 
   const handleIncrease = (_id, _qty) => {
 
-    
-    
+    //alert(JSON.stringify(discountDataDetails))
     updateItemQuantity(_id, _qty)
     var discountVal = (_qty * item.price)*discountRate;
+
+    for(var i=0;i<discountDataDetails.length;i++)
+    {
+      var dDetail = discountDataDetails[i]
+      if(dDetail.id === _id)
+      {
+        discountDataDetails[i].discount = discountVal;
+        
+      }
+
+    }
+    
+    sessionStorage.setItem('discountDetails',JSON.stringify(discountDataDetails)); 
     //alert(discountVal);
-    setDiscount(discountVal);
+    //setDiscount(discountVal);
     if(liffId.length > 0)
     {
       var _updateType = 'Inc';
@@ -272,10 +354,10 @@ const CartItem = ({ item, discountDetails, UpdateTotal }) => {
           </a>
         </Link>
         <span className="text-xs text-gray-400 mb-1">
-          Item Price {currencySign}{item.price}
+          ราคาสินค้า {currencySign}{item.price}
         </span>
         <span className="text-xs text-gray-400 mb-1">
-          Discount {currencySign}{discount}
+          ส่วนลด {currencySign}{discount}
         </span>
         
         <div className="flex items-center justify-between">

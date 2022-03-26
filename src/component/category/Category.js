@@ -25,16 +25,29 @@ const Category = ({FilterProduct}) => {
     {
       //alert("Get Category");
       var categoriesJson = sessionStorage.getItem('categories'); 
+      //alert("Get Category = " + categoriesJson);
       //console.log(categories);
-      categories = JSON.parse(categoriesJson);
-      //alert(JSON.stringify(categories));
-      loading = false;
+      if(categoriesJson !== undefined)
+      {
+        try
+        {
+          categories = JSON.parse(categoriesJson);
+          //alert(JSON.stringify(categories));
+          loading = false;
+        }
+        catch(ex)
+        {
+          //alert("Catagory error : " + ex.message)
+        }
+        
+      }
+      
     }
 
   return (
     <div className="flex flex-col w-full h-full bg-white cursor-pointer scrollbar-hide">
       {categoryDrawerOpen && (
-        <div className="w-full flex justify-between items-center h-16 px-6 py-4 bg-emerald-500 text-white border-b border-gray-100">
+        <div className="w-full flex justify-between items-center h-16 px-6 py-4 bg-cyan-500 text-white border-b border-gray-100">
           <h2 className="font-semibold font-serif text-lg m-0 text-heading flex align-center">
             <Link href="/">
               <a className="mr-10">
@@ -90,7 +103,7 @@ const Category = ({FilterProduct}) => {
           </div>
         )}
 
-        {categoryDrawerOpen && (
+        {/* {categoryDrawerOpen && (
           <div className="relative grid gap-2 mt-5">
             <h3 className="font-semibold font-serif text-lg m-0 text-heading flex align-center border-b px-8 py-3">
               Pages
@@ -100,20 +113,20 @@ const Category = ({FilterProduct}) => {
                 <a
                   key={item.title}
                   href={item.href}
-                  className="p-2 flex font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600"
+                  className="p-2 flex font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-cyan-600"
                 >
                   <item.icon
                     className="flex-shrink-0 h-4 w-4"
                     aria-hidden="true"
                   />
-                  <p className="inline-flex items-center justify-between ml-2 text-sm font-medium w-full hover:text-emerald-600">
+                  <p className="inline-flex items-center justify-between ml-2 text-sm font-medium w-full hover:text-cyan-600">
                     {item.title}
                   </p>
                 </a>
               ))}
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

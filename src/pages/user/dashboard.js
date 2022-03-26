@@ -49,6 +49,12 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
   
   var catalogName = '';
   var customerEmail = '';
+  var dataPath = '';
+  if(sessionStorage.getItem('dataPath'))
+  {
+    dataPath = sessionStorage.getItem('dataPath'); 
+      
+  }
 
   if(sessionStorage.getItem('customerEmail'))
   {
@@ -171,7 +177,8 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
     dispatch({ type: 'USER_LOGOUT' });
     Cookies.remove('userInfo');
     Cookies.remove('couponInfo');
-    router.push('/');
+    localStorage.removeItem('userInfo');
+    router.push('/' + dataPath);
   };
 
   useEffect(async() => {

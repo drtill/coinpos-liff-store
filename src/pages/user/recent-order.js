@@ -34,39 +34,44 @@ const RecentOrder = () => {
   var catalogName = '';
   var customerEmail = '';
 
-  if(sessionStorage.getItem('customerEmail'))
+  useEffect(() => 
   {
-    customerEmail = sessionStorage.getItem('customerEmail'); 
-      
-  }
+    if(sessionStorage.getItem('customerEmail'))
+    {
+      customerEmail = sessionStorage.getItem('customerEmail'); 
+        
+    }
 
-  if(sessionStorage.getItem('catalogName'))
-  {
-    catalogName = sessionStorage.getItem('catalogName'); 
-    
+    if(sessionStorage.getItem('catalogName'))
+    {
+      catalogName = sessionStorage.getItem('catalogName'); 
+      
+            
+    }
+    if(sessionStorage.getItem('liffId'))
+        {
           
-  }
-  if(sessionStorage.getItem('liffId'))
-      {
-        
-        liffId = sessionStorage.getItem('liffId'); 
-        //alert("Liff id = " + liffId)
-      }
-      if(sessionStorage.getItem('linePOSId'))
-      {
-        linePOSId = sessionStorage.getItem('linePOSId'); 
-        //alert("LinePOS id = " + linePOSId)
-      }
-      if(sessionStorage.getItem('lineUserId'))
-      {
-        lineUserId = sessionStorage.getItem('lineUserId'); 
-        
-      }
-      if(sessionStorage.getItem('companyId'))
-      {
-        companyId = sessionStorage.getItem('companyId'); 
-        
-      }
+          liffId = sessionStorage.getItem('liffId'); 
+          //alert("Liff id = " + liffId)
+        }
+        if(sessionStorage.getItem('linePOSId'))
+        {
+          linePOSId = sessionStorage.getItem('linePOSId'); 
+          //alert("LinePOS id = " + linePOSId)
+        }
+        if(sessionStorage.getItem('lineUserId'))
+        {
+          lineUserId = sessionStorage.getItem('lineUserId'); 
+          
+        }
+        if(sessionStorage.getItem('companyId'))
+        {
+          companyId = sessionStorage.getItem('companyId'); 
+          
+        }
+
+  });
+  
 
       const pagingManager = (countPage,currentPage) =>
     {

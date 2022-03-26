@@ -21,6 +21,9 @@ const ProductServices = {
   getCoinPOSProductService(body){
     return requests.post('/products/show1',body);
   },
+  getDefaultDataCompany(body){
+    return requests.post('/products/GetDefaultDataCompany',body);
+  },
   addToCoinPOSCart(body){
     return requests.post('/products/AddToCoinPOSCart',body);
   },

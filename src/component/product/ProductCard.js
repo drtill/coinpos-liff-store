@@ -66,6 +66,99 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
       //alert(p._id)
       addItem(newItem);
     }
+
+    //alert("AddItem")
+    if(sessionStorage.getItem('discountRate'))
+    {
+      
+      const discountDetails = [];
+      
+      if(sessionStorage.getItem('discountDetails'))
+      {
+        var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
+        
+        //alert("discountDetailsJson = " + discountDetailsJson);
+        discountDetails = JSON.parse(discountDetailsJson);
+        
+      }
+      
+      var isForAllProduct = true;
+      if(sessionStorage.getItem('isForAllProduct'))
+      {
+        isForAllProduct = sessionStorage.getItem('isForAllProduct'); 
+      }
+
+      
+      if(isForAllProduct === true)
+      {
+        //alert("Is For All = " + isForAllProduct);
+        var discountRate = sessionStorage.getItem('discountRate'); 
+          var discountDetail = {
+            id: Number(p._id),
+            discount:Number(p.price * discountRate),
+            discountRate:Number(discountRate)
+          }
+          discountDetails.push(discountDetail);
+      }
+      else
+      {
+        //alert("Is For All = " + isForAllProduct);
+
+        var isDiscount = false;
+        //alert("Check Session");
+        if(sessionStorage.getItem('promotionProductIdList'))
+        {
+          //alert("Found");
+          var promotionmProductIdListJson = sessionStorage.getItem('promotionProductIdList');
+          //alert("promotionmProductIdList = " + promotionmProductIdListJson);
+          var promotionmProductIdList = JSON.parse(promotionmProductIdListJson);
+          //alert("Parsed = " + promotionmProductIdList);
+          
+          for(var i = 0;i<promotionmProductIdList.length;i++)
+          {
+            //alert("Get Product Id at index = " + i);
+            var promotionProductId = promotionmProductIdList[i];
+            //alert("p.tag = " + JSON.stringify(p) + " promotionProductId = " + promotionProductId);
+
+            if(Number(promotionProductId) === Number(p.tag))
+            {
+              //alert("Discount")
+              isDiscount = true;
+            }
+
+          }
+        }
+
+        if(isDiscount === true)
+        {
+          
+          var discountRate = sessionStorage.getItem('discountRate'); 
+          var discountDetail = {
+            id: Number(p._id),
+            discount:Number(p.price * discountRate),
+            discountRate:Number(discountRate)
+          }
+          discountDetails.push(discountDetail);
+        }
+        else
+        {
+          
+          var discountRate = sessionStorage.getItem('discountRate'); 
+          var discountDetail = {
+            id: Number(p._id),
+            discount:Number(0),
+            discountRate:Number(0)
+          }
+          discountDetails.push(discountDetail);
+        }
+      }
+
+      
+      
+      
+      sessionStorage.setItem('discountDetails', JSON.stringify(discountDetails));
+
+    }
     
   };
 
@@ -218,7 +311,7 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
                     (
                       <div
                         key={item.id}
-                        className="h-9 w-auto flex flex-wrap items-center justify-evenly py-1 px-2 bg-emerald-500 text-white rounded"
+                        className="h-9 w-auto flex flex-wrap items-center justify-evenly py-1 px-2 bg-cyan-500 text-white rounded"
                       >
                         <button
                           onClick={() =>
@@ -254,7 +347,7 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
                 onClick={() => handleAddItem(product)}
                 disabled={product.quantity < 1}
                 aria-label="cart"
-                className="h-9 w-9 flex items-center justify-center border border-gray-200 rounded text-emerald-500 hover:border-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"
+                className="h-9 w-9 flex items-center justify-center border border-gray-200 rounded text-cyan-500 hover:border-cyan-500 hover:bg-cyan-500 hover:text-white transition-all"
               >
                 {' '}
                 <span className="text-xl">

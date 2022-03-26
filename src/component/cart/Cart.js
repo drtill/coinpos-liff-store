@@ -16,32 +16,32 @@ const Cart = () => {
   const { isEmpty, items, cartTotal } = useCart();
   const { toggleCartDrawer, closeCartDrawer } = useContext(SidebarContext);
 
+  //const [totalDiscount, setTotalDiscount] = useState(0);
   
-  
-
+  var totalDiscountData = 0;
   var disDetailsData = [];
 
-  var totalDiscountData = 0;
-  if(sessionStorage.getItem('discountDetails'))
+  const [discountDetails, setDiscountDetail] = useState(disDetailsData);
+  const [totalDiscount, setTotalDiscount] = useState(totalDiscountData);
+  useEffect(() =>
+  {
+    if(sessionStorage.getItem('discountDetails'))
     {
       var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
       
       //alert(discountDetailsJson);
-      disDetailsData = JSON.parse(discountDetailsJson);
-      //var f = disDetails.find(d => d.id===2541)
-      //var s = disDetails.find(d => d.id===835)
-      //alert("f = " + JSON.stringify(f));
-      //alert("fD = " + f.discount);
-
-      if(disDetailsData !== null)
+      var disDetails = JSON.parse(discountDetailsJson);
+      if(disDetails !== null)
       {
-        totalDiscountData = disDetailsData.reduce((discountTotal, item) => (discountTotal += item.discount),0);
-        //setTotalDiscount(totalDiscountVal);
+        var totalDiscountVal = disDetails.reduce((discountTotal, item) => (discountTotal += item.discount),0);
+        setTotalDiscount(totalDiscountVal);
+        setDiscountDetail(disDetails);
       }
     }
 
-    const [discountDetails, setDiscountDetail] = useState(disDetailsData);
-  const [totalDiscount, setTotalDiscount] = useState(totalDiscountData);
+    
+  })
+
   var currencySign = '';
     if(sessionStorage.getItem('currencySign'))
     {
@@ -93,17 +93,19 @@ const Cart = () => {
   const checkoutClass = (
     <button
       onClick={closeCartDrawer}
-      className="w-full py-3 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 flex items-center justify-between bg-heading text-sm sm:text-base text-white focus:outline-none transition duration-300"
+      className="w-full py-3 px-3 rounded-lg bg-cyan-500 hover:bg-cyan-600 flex items-center justify-between bg-heading text-sm sm:text-base text-white focus:outline-none transition duration-300"
     >
       <span className="align-middle font-medium font-serif">
-        Proceed To Checkout
+        ดำเนินการชำระเงิน
       </span>
-      <span className="rounded-lg font-bold font-serif py-2 px-3 bg-white text-emerald-600">
+      <span className="rounded-lg font-bold font-serif py-2 px-3 bg-white text-cyan-600">
         {currencySign}{cartTotal === null ? 0.00 : (cartTotal-totalDiscount).toFixed(2)}
       </span>
     </button>
   );
 
+
+  
   return (
     <>
       {modalOpen && (
@@ -131,8 +133,8 @@ const Cart = () => {
           {isEmpty && (
             <div className="flex flex-col h-full justify-center">
               <div className="flex flex-col items-center">
-                <div className="flex justify-center items-center w-20 h-20 rounded-full bg-emerald-100">
-                  <span className="text-emerald-600 text-4xl block">
+                <div className="flex justify-center items-center w-20 h-20 rounded-full bg-cyan-100">
+                  <span className="text-cyan-600 text-4xl block">
                     <IoBagHandle />
                   </span>
                 </div>

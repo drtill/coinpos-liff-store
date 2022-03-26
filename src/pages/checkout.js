@@ -141,8 +141,21 @@ const Checkout = () => {
   var locationTel = '';
 
   var catalogName = '';
+  var dataPath = '';
+  var customerId = 0;
 
-
+  if(sessionStorage.getItem('customerId'))
+  {
+    customerId = sessionStorage.getItem('customerId'); 
+    
+          
+  }
+  if(sessionStorage.getItem('dataPath'))
+  {
+    dataPath = sessionStorage.getItem('dataPath'); 
+    
+          
+  }
   if(sessionStorage.getItem('catalogName'))
   {
     catalogName = sessionStorage.getItem('catalogName'); 
@@ -414,13 +427,13 @@ const Checkout = () => {
   const submitContact = async (event) => {
     event.preventDefault();
     
-    alert(`submitContact`);
-    alert(`So your name is ${firstName}?`);
+    //alert(`submitContact`);
+    //alert(`So your name is ${firstName}?`);
     var data = {};
 
     data["firstName"] = firstName;
     data["lastName"] = lastName;
-    alert(email);
+    //alert(email);
     data["email"] = email;
 
 
@@ -446,7 +459,7 @@ const Checkout = () => {
 
     var postalCodeString = postalcode;
 
-    alert(phoneNumber);
+    //alert(phoneNumber);
 
     data["address"] = address1;//event.target.address.value;
     data["contact"] = phoneNumber;//event.target.contact.value;
@@ -462,7 +475,7 @@ const Checkout = () => {
     //var districtItem = districts.find(x => x.Id == event.target.district.value);
     data["district"] = districtString;//districtItem === null ? "" : districtItem.Name_th;
 
-    alert(postalCodeString);
+    //alert(postalCodeString);
     data["postalCode"] = postalCodeString;//event.target.postalCode.value;
     
 
@@ -616,7 +629,7 @@ const PopulatePostalCode = (id) =>
 
 const AcceptCustomerInfo = async () =>
 {
-  alert("AcceptCustomerInfo");
+  //alert("AcceptCustomerInfo");
   setEditCustomerInfo(false);
   setDisableCustomerInfo(true);
   setApproveCustomerInfo(true);
@@ -658,8 +671,8 @@ const SaveCustomerInfo = async (companyId) =>
     var districtString = districtItem === null ? "" : districtItem.Name_th;
 
     var postalCodeString = postalcode;
-    alert(companyId)
-    alert(firstName);
+    //alert(companyId)
+    //alert(firstName);
     //return;
     var customerData = await ProductServices.saveCustomerInfo(
       {
@@ -675,12 +688,14 @@ const SaveCustomerInfo = async (companyId) =>
         city:cityString,
         stateOrProvince:provinceString,
         country:countryString,
+        countryId:countryId,
         postalcode:postalCodeString,
         companyId:companyId,
-        catalogName:catalogName
+        catalogName:catalogName,
+        customerId:customerId
 
       });
-      alert(JSON.stringify(customerData));
+      //alert(JSON.stringify(customerData));
       var customerAddressId = customerData.customerAddressId;
       setCustomerAddressId(customerAddressId);
       setEditCustomerInfo(false);
@@ -697,7 +712,7 @@ const SaveCustomerInfo = async (companyId) =>
     
   return (
     <>
-      <Layout title="Checkout" description="this is checkout page" companyName={companyName} locationName={locationName} companyLogo={companyLogo}  
+      <Layout title="Checkout" description="this is checkout page" dataPath={dataPath} companyName={companyName} locationName={locationName} companyLogo={companyLogo}  
       locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
       locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
       locationEmail={locationEmail} locationTel={locationTel}>
@@ -710,7 +725,7 @@ const SaveCustomerInfo = async (companyId) =>
                 <form onSubmit={submitContact}>
                   <div className="form-group">
                     <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
-                      01. Personal Details
+                      01. ข้อมูลส่วนบุคคล
                     </h2>
                     <div className="grid grid-cols-6 gap-6">
                       <div className="col-span-6 sm:col-span-3">
@@ -724,7 +739,7 @@ const SaveCustomerInfo = async (companyId) =>
                         /> */}
                         
                         <EditableCustomerInput register={register}
-                        label="First Name" 
+                        label="ชื่อต้น" 
                         name="firstName"
                         type="text"
                         placeholder="John"
@@ -746,7 +761,7 @@ const SaveCustomerInfo = async (companyId) =>
                           dataValue={lastName}
                         /> */}
                         <EditableCustomerInput register={register}
-                        label="Last Name" 
+                        label="นามสกุล" 
                         name="lastName"
                         type="text"
                         placeholder="Doe"
@@ -791,7 +806,7 @@ const SaveCustomerInfo = async (companyId) =>
                           dataValue={phoneNumber}
                         /> */}
                         <EditableCustomerInput register={register}
-                        label="Phone number"
+                        label="เบอร์ติดต่อ"
                         name="contact"
                         type="tel"
                         placeholder="+062-6532956"
@@ -808,7 +823,7 @@ const SaveCustomerInfo = async (companyId) =>
 
                   <div className="form-group mt-12">
                     <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
-                      02. Shipping Address
+                      02. ที่อยู่ขนส่ง
                     </h2>
 
                     <div className="grid grid-cols-6 gap-6 mb-8">
@@ -822,7 +837,7 @@ const SaveCustomerInfo = async (companyId) =>
                           dataValue={address1}
                         /> */}
                         <EditableCustomerInput register={register}
-                        label="Street address"
+                        label="บ้านเลขที่ ซอย ถนน"
                         name="address"
                         type="text"
                         placeholder="123 Boulevard Rd, Beverley Hills"
@@ -844,7 +859,7 @@ const SaveCustomerInfo = async (companyId) =>
                         /> */}
                         
                         <CountryFormSelect register={register}
-                          label="Country"
+                          label="ประเทศ"
                           name="province1"
                           type="text"
                           isDisable={IsDisableCustomerInfo}
@@ -864,7 +879,7 @@ const SaveCustomerInfo = async (companyId) =>
                           placeholder="United States"
                         /> */}
                         <ProvinceFormSelect register={register}
-                          label="Province"
+                          label="จังหวัด"
                           name="province"
                           type="text"
                           isDisable={IsDisableCustomerInfo}
@@ -883,7 +898,7 @@ const SaveCustomerInfo = async (companyId) =>
                           placeholder="2345"
                         /> */}
                         <CityFormSelect register={register}
-                          label="City"
+                          label="เขต/อำเภอ"
                           name="province2"
                           type="text"
                           isDisable={IsDisableCustomerInfo}
@@ -901,7 +916,7 @@ const SaveCustomerInfo = async (companyId) =>
                           placeholder="2345"
                         /> */}
                         <DistrictFormSelect register={register}
-                          label="District"
+                          label="แขวง/ตำบล"
                           name="district"
                           type="text"
                           isDisable={IsDisableCustomerInfo}
@@ -921,7 +936,7 @@ const SaveCustomerInfo = async (companyId) =>
                         /> */}
                         <EditableCustomerInput register={register}
                         id="postalCode"
-                        label="ZIP / Postal"
+                        label="รหัสไปรษณีย์"
                         name="zipCode"
                         type="input"
                         placeholder="12345"
@@ -950,9 +965,9 @@ const SaveCustomerInfo = async (companyId) =>
                             type="button"
                             disabled={isEmpty || !stripe || isCheckoutSubmit}
                             onClick={() => SaveCustomerInfo(lineCompanyId)}
-                            className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                            className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
                           >
-                            Save Customer Info{' '}
+                            บันทึกข้อมูลลูกค้า{' '}
                             <span className="text-xl ml-2">
                               {' '}
                               <IoSaveOutline />
@@ -972,7 +987,7 @@ const SaveCustomerInfo = async (companyId) =>
                                 onClick={() => CancelCustomerInfo()}
                                 className="bg-indigo-50 border border-indigo-100 rounded py-3 text-center text-sm font-medium text-gray-700 hover:text-gray-800 hover:border-gray-300 transition-all flex justify-center font-serif w-full"
                               >
-                                Cancel{' '}
+                                ยกเลิก{' '}
                                 <span className="text-xl ml-2">
                                   {' '}
                                   <IoSaveOutline />
@@ -984,9 +999,9 @@ const SaveCustomerInfo = async (companyId) =>
                                 type="button"
                                 disabled={isEmpty || !stripe || isCheckoutSubmit}
                                 onClick={() => SaveCustomerInfo(lineCompanyId)}
-                                className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
                               >
-                                Save Customer Info{' '}
+                                บันทึกข้อมูลลูกค้า{' '}
                                 <span className="text-xl ml-2">
                                   {' '}
                                   <IoSaveOutline />
@@ -1004,7 +1019,7 @@ const SaveCustomerInfo = async (companyId) =>
                                 onClick={() => AcceptCustomerInfo()}
                                 className="bg-orange-500 hover:bg-orange-600 border border-orange-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
                               >
-                                Approve Customer Info{' '}
+                                อนุมัติข้อมูลลูกค้า{' '}
                                 <span className="text-xl ml-2">
                                   {' '}
                                   <IoSaveOutline />
@@ -1016,9 +1031,9 @@ const SaveCustomerInfo = async (companyId) =>
                                 type="button"
                                 disabled={isEmpty || !stripe || isCheckoutSubmit}
                                 onClick={() => EditCustomerInfo()}
-                                className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
                               >
-                                Edit Customer Info{' '}
+                                แก้ไขข้อมูลลูกค้า{' '}
                                 <span className="text-xl ml-2">
                                   {' '}
                                   <IoSaveOutline />
@@ -1051,7 +1066,7 @@ const SaveCustomerInfo = async (companyId) =>
                     <>
                       <div className="form-group mt-12">
                             <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
-                              03. Shipping Method
+                              03. รูปแบบขนส่ง
                             </h2>
                             <div className="grid grid-cols-6 gap-6">
                               <div className="col-span-6 sm:col-span-3">
@@ -1070,12 +1085,12 @@ const SaveCustomerInfo = async (companyId) =>
       
                           <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
                             <div className="col-span-6 sm:col-span-3">
-                              <Link href="/">
+                              <Link href={dataPath}>
                                 <a className="bg-indigo-50 border border-indigo-100 rounded py-3 text-center text-sm font-medium text-gray-700 hover:text-gray-800 hover:border-gray-300 transition-all flex justify-center font-serif w-full">
                                   <span className="text-xl mr-2">
                                     <IoReturnUpBackOutline />
                                   </span>
-                                  Continue Shopping
+                                  ช็อบต่อ
                                 </a>
                               </Link>
                             </div>
@@ -1083,9 +1098,9 @@ const SaveCustomerInfo = async (companyId) =>
                               <button
                                 type="submit"
                                 disabled={isEmpty || !stripe || isCheckoutSubmit}
-                                className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
                               >
-                                Confirm Order{' '}
+                                อนุมัติ คำสั่งขาย{' '}
                                 <span className="text-xl ml-2">
                                   {' '}
                                   <IoArrowForward />
@@ -1104,7 +1119,7 @@ const SaveCustomerInfo = async (companyId) =>
             <div className="md:w-full lg:w-2/5 lg:ml-10 xl:ml-14 md:ml-6 flex flex-col h-full md:sticky lg:sticky top-28 md:order-2 lg:order-2">
               <div className="border p-5 lg:px-8 lg:py-8 rounded-lg bg-white order-1 sm:order-2">
                 <h2 className="font-semibold font-serif text-lg pb-4">
-                  Order Summary
+                  สรุป คำสั่งขาย
                 </h2>
 
                 <div className="overflow-y-scroll flex-grow scrollbar-hide w-full max-h-64 bg-gray-50 block">
@@ -1118,7 +1133,7 @@ const SaveCustomerInfo = async (companyId) =>
                         <IoBagHandle />
                       </span>
                       <h2 className="font-medium font-serif text-sm pt-2 text-gray-600">
-                        No Item Added Yet!
+                        ยังไม่มีข้อมูลสินค้า!
                       </h2>
                     </div>
                   )}
@@ -1127,9 +1142,9 @@ const SaveCustomerInfo = async (companyId) =>
                 <div className="flex items-center mt-4 py-4 lg:py-4 text-sm w-full font-semibold text-heading last:border-b-0 last:text-base last:pb-0">
                   <form className="w-full">
                     {couponInfo.couponCode ? (
-                      <span className="bg-emerald-50 px-4 py-3 leading-tight w-full rounded-md flex justify-between">
+                      <span className="bg-cyan-50 px-4 py-3 leading-tight w-full rounded-md flex justify-between">
                         {' '}
-                        <p className="text-emerald-600">Coupon Applied </p>{' '}
+                        <p className="text-cyan-600">ใช้คูปองแล้ว </p>{' '}
                         <span className="text-red-500 text-right">
                           {couponInfo.couponCode}
                         </span>
@@ -1140,39 +1155,39 @@ const SaveCustomerInfo = async (companyId) =>
                           ref={couponRef}
                           type="text"
                           placeholder="Input your coupon code"
-                          className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-emerald-500 placeholder-gray-500 placeholder-opacity-75"
+                          className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-cyan-500 placeholder-gray-500 placeholder-opacity-75"
                         />
                         <button
                           onClick={handleCouponCode}
-                          className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-emerald-500 h-12 text-sm lg:text-base w-full sm:w-auto"
+                          className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-cyan-500 h-12 text-sm lg:text-base w-full sm:w-auto"
                         >
-                          Apply
+                          ใช้รหัสคูปอง
                         </button>
                       </div>
                     )}
                   </form>
                 </div>
                 <div className="flex items-center py-2 text-sm w-full font-semibold text-gray-500 last:border-b-0 last:text-base last:pb-0">
-                  Subtotal
+                  ยอดขาย
                   <span className="ml-auto flex-shrink-0 text-gray-800 font-bold">
                     {currencySign}{cartTotal.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex items-center py-2 text-sm w-full font-semibold text-gray-500 last:border-b-0 last:text-base last:pb-0">
-                  Shipping Cost
+                  ค่าขนส่ง
                   <span className="ml-auto flex-shrink-0 text-gray-800 font-bold">
                   {currencySign}{shippingCost.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex items-center py-2 text-sm w-full font-semibold text-gray-500 last:border-b-0 last:text-base last:pb-0">
-                  Discount
+                  ส่วนลด
                   <span className="ml-auto flex-shrink-0 font-bold text-orange-400">
                   {currencySign}{totalDiscount.toFixed(2)}
                   </span>
                 </div>
                 <div className="border-t mt-4">
                   <div className="flex items-center font-bold font-serif justify-between pt-5 text-sm uppercase">
-                    Total cost
+                    ยอดชำระรวม
                     <span className="font-serif font-extrabold text-lg">
                       {' '}
                       {currencySign}{Math.round(total-totalDiscount)}.00

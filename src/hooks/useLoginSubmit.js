@@ -33,10 +33,10 @@ const useLoginSubmit = (setModalOpen) => {
     locationEmail,
     paramPath
   }) => {
-    alert("Loading");
+    //alert("Loading");
     setLoading(true);
     if (registerEmail && password) {
-      alert("Email " + registerEmail + " password " + password);
+      //alert("Email " + registerEmail + " password " + password);
       //return;
       UserServices.coinposUserLogin({
         registerEmail,
@@ -48,7 +48,7 @@ const useLoginSubmit = (setModalOpen) => {
         .then((res) => {
           setLoading(false);
           setModalOpen(false);
-          alert(JSON.stringify(res));
+          //alert(JSON.stringify(res));
           //return;
           //router.push(redirect || '/checkout');
           router.push(redirect || '/' + res.paramPath);
@@ -88,7 +88,7 @@ const useLoginSubmit = (setModalOpen) => {
         });
     }
     if (name && email && password) {
-      alert("Name = " + name + " email = " + email + " password = " + password + " companyId = " + companyId);
+      //alert("Name = " + name + " email = " + email + " password = " + password + " companyId = " + companyId);
       //return;
       UserServices.verifyCoinPOSEmailAddress({ name, email, password, companyName, locationEmail, companyId })
         .then((res) => {
@@ -105,7 +105,7 @@ const useLoginSubmit = (setModalOpen) => {
         });
     }
     if (verifyEmail) {
-      alert("verifyEmail");
+      //alert("verifyEmail");
       //UserServices.forgetPassword({ verifyEmail })
 
       UserServices.forgetCoinPOSCustomerPassword({ email:verifyEmail, companyName:companyName, locationEmail:locationEmail,companyId:companyId })

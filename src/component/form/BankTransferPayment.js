@@ -29,8 +29,8 @@ const BankTransferPayment = (
         var bankTransferOptionIndent = [];
         for(var i=0;i<dataList.length;i++)
         {
-            bankTransferOptionIndent.push(<div className="flex item-center justify-between"><div className="flex items-center"><span className="text-xl mr-3 text-gray-400"><Icon /></span><h6 className="font-serif font-medium text-sm text-gray-600">{dataList[i].bankName}</h6></div><label className="form-radio outline-none focus:ring-0 text-emerald-500">{dataList[i].bankAccount}</label><input type="radio" value={dataList[i].bankAccount} onClick={() => setBankAccount(
-              dataList[i].bankAccount,dataList[i].bankName)} name="bankMethod" className="form-radio outline-none focus:ring-0 text-emerald-500"/></div>)
+            bankTransferOptionIndent.push(<div className="flex item-center justify-between"><div className="flex items-center"><span className="text-xl mr-3 text-gray-400"><Icon /></span><h6 className="font-serif font-medium text-sm text-gray-600">{dataList[i].bankName}</h6></div><label className="form-radio outline-none focus:ring-0 text-cyan-500">{dataList[i].bankAccount}</label><input type="radio" value={dataList[i].bankAccount} onClick={() => setBankAccount(
+              dataList[i].bankAccount,dataList[i].bankName)} name="bankMethod" className="form-radio outline-none focus:ring-0 text-cyan-500"/></div>)
             
         }
   
@@ -71,7 +71,7 @@ const BankTransferPayment = (
         {bankTransferOptionIndent}
       </label>
       <div className='row'>
-          <DatePicker id="bankTransfer-datePicker" className="py-2 pl-10 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12"
+          <DatePicker id="bankTransfer-datePicker" className="py-2 pl-10 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-cyan-500 h-11 md:h-12"
             selected={startDate}
             onChange={handleChange}
             name="startDate"
@@ -87,7 +87,7 @@ const BankTransferPayment = (
 
       <button
         type="button" onClick={() => InformBankTransfer()}
-        className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+        className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
       >
         แจ้งการโอน{' '}
       <span className="text-xl ml-2">

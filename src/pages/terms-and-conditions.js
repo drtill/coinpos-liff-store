@@ -1,4 +1,4 @@
-import React,{useState} from 'react';
+import React,{useState, useEffect} from 'react';
 import Link from 'next/link';
 
 //internal import
@@ -26,93 +26,98 @@ const TermAndConditions = () => {
   const [liffId, setLiffId] = useState('');
   const [pictureUrl, setPictureUrl] = useState('');
 
-  if(sessionStorage.getItem('companyLogo'))
+  useEffect(() => 
   {
-    companyLogo = sessionStorage.getItem('companyLogo'); 
-    
-  }
-  if(sessionStorage.getItem('companyName'))
-  {
-    
-    companyName = sessionStorage.getItem('companyName'); 
-    //alert(companyName);
-  }
-  if(sessionStorage.getItem('locationName'))
-  {
-    locationName = sessionStorage.getItem('locationName'); 
-    
-  }
-  if(sessionStorage.getItem('locationAddress1'))
-  {
-    locationAddress1 = sessionStorage.getItem('locationAddress1'); 
-    
-  }
-  if(sessionStorage.getItem('locationAddress2'))
-  {
-    locationAddress2 = sessionStorage.getItem('locationAddress2'); 
-    
-  }
-  if(sessionStorage.getItem('locationCity'))
-  {
-    locationCity = sessionStorage.getItem('locationCity'); 
-    
-  }
-  if(sessionStorage.getItem('locationStateOrProvince'))
-  {
-    locationStateOrProvince = sessionStorage.getItem('locationStateOrProvince'); 
-    
-  }
-  if(sessionStorage.getItem('locationCountry'))
-  {
-    locationCountry = sessionStorage.getItem('locationCountry'); 
-    
-  }
-  if(sessionStorage.getItem('locationPostalCode'))
-  {
-    locationPostalCode = sessionStorage.getItem('locationPostalCode'); 
-    
-  }
-  if(sessionStorage.getItem('locationEmail'))
-  {
-    locationEmail = sessionStorage.getItem('locationEmail'); 
-    
-  }
-  if(sessionStorage.getItem('locationTel'))
-  {
-    locationTel = sessionStorage.getItem('locationTel'); 
-    
-  }
-      if(sessionStorage.getItem('liffId'))
-      {
-        
-        liffId = sessionStorage.getItem('liffId'); 
-        //alert("Liff id = " + liffId)
-      }
-      if(sessionStorage.getItem('linePOSId'))
-      {
-        linePOSId = sessionStorage.getItem('linePOSId'); 
-        //alert("LinePOS id = " + linePOSId)
-      }
-      if(sessionStorage.getItem('lineUserId'))
-      {
-        lineUserId = sessionStorage.getItem('lineUserId'); 
-        
-      }
-      if(sessionStorage.getItem('companyId'))
-      {
-        companyId = sessionStorage.getItem('companyId'); 
-        
-      }
-      if(sessionStorage.getItem('locationId'))
-      {
-        locationId = sessionStorage.getItem('locationId'); 
-        
-      }
-      if(sessionStorage.getItem('groupId'))
-      {
-        groupId = sessionStorage.getItem('groupId'); 
-        
-      }
+    if(sessionStorage.getItem('companyLogo'))
+    {
+      companyLogo = sessionStorage.getItem('companyLogo'); 
+      
+    }
+    if(sessionStorage.getItem('companyName'))
+    {
+      
+      companyName = sessionStorage.getItem('companyName'); 
+      //alert(companyName);
+    }
+    if(sessionStorage.getItem('locationName'))
+    {
+      locationName = sessionStorage.getItem('locationName'); 
+      
+    }
+    if(sessionStorage.getItem('locationAddress1'))
+    {
+      locationAddress1 = sessionStorage.getItem('locationAddress1'); 
+      
+    }
+    if(sessionStorage.getItem('locationAddress2'))
+    {
+      locationAddress2 = sessionStorage.getItem('locationAddress2'); 
+      
+    }
+    if(sessionStorage.getItem('locationCity'))
+    {
+      locationCity = sessionStorage.getItem('locationCity'); 
+      
+    }
+    if(sessionStorage.getItem('locationStateOrProvince'))
+    {
+      locationStateOrProvince = sessionStorage.getItem('locationStateOrProvince'); 
+      
+    }
+    if(sessionStorage.getItem('locationCountry'))
+    {
+      locationCountry = sessionStorage.getItem('locationCountry'); 
+      
+    }
+    if(sessionStorage.getItem('locationPostalCode'))
+    {
+      locationPostalCode = sessionStorage.getItem('locationPostalCode'); 
+      
+    }
+    if(sessionStorage.getItem('locationEmail'))
+    {
+      locationEmail = sessionStorage.getItem('locationEmail'); 
+      
+    }
+    if(sessionStorage.getItem('locationTel'))
+    {
+      locationTel = sessionStorage.getItem('locationTel'); 
+      
+    }
+        if(sessionStorage.getItem('liffId'))
+        {
+          
+          liffId = sessionStorage.getItem('liffId'); 
+          //alert("Liff id = " + liffId)
+        }
+        if(sessionStorage.getItem('linePOSId'))
+        {
+          linePOSId = sessionStorage.getItem('linePOSId'); 
+          //alert("LinePOS id = " + linePOSId)
+        }
+        if(sessionStorage.getItem('lineUserId'))
+        {
+          lineUserId = sessionStorage.getItem('lineUserId'); 
+          
+        }
+        if(sessionStorage.getItem('companyId'))
+        {
+          companyId = sessionStorage.getItem('companyId'); 
+          
+        }
+        if(sessionStorage.getItem('locationId'))
+        {
+          locationId = sessionStorage.getItem('locationId'); 
+          
+        }
+        if(sessionStorage.getItem('groupId'))
+        {
+          groupId = sessionStorage.getItem('groupId'); 
+          
+        }
+
+  });
+  
   return (
     <Layout
       title="Terms & Conditions"
