@@ -8,7 +8,7 @@ import ProductServices from '@services/ProductServices';
 import Price from '@component/common/Price';
 import Discount from '@component/common/Discount';
 import ProductModal from '@component/modal/ProductModal';
-import { order } from 'tailwindcss/defaulttheme';
+//import { order } from 'tailwindcss/defaulttheme';
 
 const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId, companyId, locationId, pictureUrl }) => {
   const [modalOpen, setModalOpen] = useState(false);
