@@ -58,9 +58,9 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
   return (
     <>
       <div className="text-center mb-6">
-        <h2 className="text-3xl font-bold font-serif">Login</h2>
+        <h2 className="text-3xl font-bold font-serif">เข้าสู่ระบบ</h2>
         <p className="text-sm md:text-base text-gray-500 mt-2 mb-8 sm:mb-10">
-          Login with your email and password
+          เข้าสู่ระบบด้วย Email และรหัสผ่าน
         </p>
       </div>
       <form
@@ -102,7 +102,7 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
                 onClick={() => setShowResetPassword(true)}
                 className="text-end text-sm text-heading ps-3 underline hover:no-underline focus:outline-none"
               >
-                Forgot password?
+                ลืมรหัสผ่าน?
               </button>
             </div>
           </div>
@@ -111,7 +111,7 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
             type="submit"
             className="w-full text-center py-3 rounded bg-cyan-500 text-white hover:bg-cyan-600 transition-all focus:outline-none my-1"
           >
-            Login
+            เข้าสู่ระบบ
           </button>
         </div>
       </form>

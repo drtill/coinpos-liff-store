@@ -13,6 +13,7 @@ import {
     IoWalletSharp,
   } from 'react-icons/io5';
   import { ImCreditCard } from 'react-icons/im';
+  import Loading from '@component/preloader/Loading';
 
 const PaymentMethod = ({salesOrderId, lineLiffId, lineLiffUserId, lineCompanyId}) => {
 
@@ -20,6 +21,7 @@ const PaymentMethod = ({salesOrderId, lineLiffId, lineLiffUserId, lineCompanyId}
     const [qrShow, setQRShow] = useState(false);
   const [bankShow, setBankShow] = useState(false);
   const [qrUrl, setQRUrl] = useState('');
+  const [qrLoading, setQRLoading] = useState(false);
   var bankTransferList = [];
 
   useEffect(() => 
@@ -42,6 +44,7 @@ const PaymentMethod = ({salesOrderId, lineLiffId, lineLiffUserId, lineCompanyId}
     }
     const handleQRPaymentClick = async() =>
 {
+  setQRLoading(true);
   var orderId = salesOrderId;
   var liffId = lineLiffId;
   var lineUserId = lineLiffUserId;
@@ -64,6 +67,7 @@ const PaymentMethod = ({salesOrderId, lineLiffId, lineLiffUserId, lineCompanyId}
   setQRShow(true);
   //setBankShow(false);  
   //setQRShow(true);
+  setQRLoading(false);
 }
 
   return (
@@ -81,38 +85,47 @@ const PaymentMethod = ({salesOrderId, lineLiffId, lineLiffUserId, lineCompanyId}
           </div>
           <div className="text-center">
             <h3 className="text-xl md:text-2xl lg:text-3xl font-bold font-serif mb-3">
-              Payment Method
+              รูปแบบการชำระเงิน
             </h3>
-            <p className="text-base opacity-90 leading-7">
+            <p className="text-base opacity-90 leading-7 mb-3">
               Please select your paymeny meyhod.
             </p>
-            {bankShow && (
-                      <div className="mb-3">
-                        <BankTransferPayment 
-                          
-                          name="BankTransfer"
-                          value="Card"
-                          dataList={bankTransfers}
-                          orderId={salesOrderId}
-                          liffId={lineLiffId}
-                          lineUserId={lineLiffUserId}
-                          companyId={lineCompanyId}
-                          Icon={ImCreditCard}/>
-                        {/* <p className="text-red-400 text-sm mt-1">{error}</p> */}
-                      </div>
-                    )}
-                    {qrShow && (
-                      <div className="mb-3">
-                        
-                        <QRPaymentPayment 
-                        
-                          name="QR Payment"
-                          value="Card"
-                          qrUrl={qrUrl}
-                          Icon={ImCreditCard}/>
-                        {/* <p className="text-red-400 text-sm mt-1">{error}</p> */}
-                      </div>
-                    )}
+                    {
+                      qrLoading === true 
+                      ?
+                        <Loading loading={qrLoading} />
+                      :
+                      <>
+                        {bankShow && (
+                          <div className="mb-3">
+                            <BankTransferPayment 
+                              
+                              name="BankTransfer"
+                              value="Card"
+                              dataList={bankTransfers}
+                              orderId={salesOrderId}
+                              liffId={lineLiffId}
+                              lineUserId={lineLiffUserId}
+                              companyId={lineCompanyId}
+                              Icon={ImCreditCard}/>
+                            {/* <p className="text-red-400 text-sm mt-1">{error}</p> */}
+                          </div>
+                        )}
+                        {qrShow && (
+                          <div className="mb-3">
+                            
+                            <QRPaymentPayment 
+                            
+                              name="QR Payment"
+                              value="Card"
+                              qrUrl={qrUrl}
+                              Icon={ImCreditCard}/>
+                            {/* <p className="text-red-400 text-sm mt-1">{error}</p> */}
+                          </div>
+                        )}
+                      </>
+                    }
+                    
             <div className="mt-8">
             <div className="grid grid-cols-6 gap-6">
                       <div className="col-span-6 sm:col-span-3">

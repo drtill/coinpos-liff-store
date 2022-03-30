@@ -48,8 +48,14 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
 
     const [loading, setLoading] = useState(true);
 
+    const [categoryLoading, setCategoryLoading] = useState(true);
+    const [newProductLoading, setNewProductLoading] = useState(true);
+
+    const [promotionLoading, setPromotionLoading] = useState(false);
+
     //this.setState({liffId:liffData});
     const [productList, setProductList] = useState([]);
+    const [newProductList, setNewProductList] = useState([]);
     const [categoryList, setCategoryList] = useState([]);
     const [lineProfileImage, setProfileImage] = useState('');
     const [lineUserId, setLineUserId] = useState('');
@@ -73,6 +79,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
     const [locationTelData, setLocationTel] = useState(locationTel);
     const [discountDataDetails,setDiscountDetail] = useState('');
 
+    const [promotionCode,setPromotionCode] = useState('');
 
 
     const { setItems,clearCartMetadata,emptyCart, addItem, items } = useCart();
@@ -147,6 +154,26 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         }
       }
       
+      var getPromotionCode = localStorage.getItem('promotionCode')
+
+      if(localStorage.getItem('promotionCode'))
+      {
+        var discountDetailsJson = sessionStorage.getItem('discountDetails');
+
+        var discountRate = sessionStorage.getItem('discountRate');
+        var promotionCode = sessionStorage.getItem('promotionCode');
+        var promotionMinimumAmount = sessionStorage.getItem('promotionMinimumAmount');
+        var promotionProductIdListJson = sessionStorage.getItem('promotionProductIdList');
+        var isForAllProduct = sessionStorage.getItem('isForAllProduct');
+
+        sessionStorage.setItem('discountDetails', discountDetailsJson);
+        sessionStorage.setItem('discountRate', discountRate);
+        sessionStorage.setItem('promotionCode', promotionCode);
+        sessionStorage.setItem('promotionMinimumAmount', promotionMinimumAmount);
+        sessionStorage.setItem('promotionProductIdList', promotionProductIdListJson);
+        sessionStorage.setItem('isForAllProduct', isForAllProduct);
+        setPromotionCode(promotionCode);
+      }
       
       sessionStorage.setItem('dataPath',dataPath);
       sessionStorage.setItem('catalogName',catalogName);
@@ -246,8 +273,9 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         await GetProductData('','','','',0,catalogCompanyId,catalogLocationId,companyName,locationName,companyCode,catalogName,0,9,1,itemPerPage,'','','');
         
           
-
-          setLoading(false);
+        setCategoryLoading(false);
+        setNewProductLoading(false);
+        setLoading(false);
       }
       catch (err) 
       {
@@ -293,6 +321,8 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
       var productVariants = [];//products.productVariantPresenters;
       var productCategories = [];
 
+      var newProductVariants = [];
+
       if(products.productVariantPresenters !== null)
       {
         for(var i = 0;i < products.productVariantPresenters.length; i++)
@@ -319,6 +349,31 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         }
       }
   
+      if(products.newProductVariantPresenters !== null)
+      {
+        for(var i = 0;i < products.newProductVariantPresenters.length; i++)
+        {
+          var productItem = {};
+          productItem['_id'] = Number(products.newProductVariantPresenters[i].ProductVariantId);
+          productItem['title'] = products.newProductVariantPresenters[i].Name;
+          productItem['quantity'] = products.newProductVariantPresenters[i].StockLevel;
+          productItem['image'] = products.newProductVariantPresenters[i].ImageUrl;
+          productItem['unit'] = products.newProductVariantPresenters[i].UPC;
+          productItem['slug'] = products.newProductVariantPresenters[i].UPC;
+          productItem['tag'] = products.newProductVariantPresenters[i].ProductId;
+          productItem['originalPrice'] = products.newProductVariantPresenters[i].Price;
+          productItem['price'] = products.newProductVariantPresenters[i].Price;
+          productItem['type'] = 'W';
+          productItem['sku'] = products.newProductVariantPresenters[i].SKU;
+          productItem['discount'] = 0;
+          productItem['description'] = products.newProductVariantPresenters[i].Description;
+          productItem['currencySign'] = products.currencySign;
+        
+
+
+          newProductVariants.push(productItem);
+        }
+      }
 
       if(products.productCategoryPresenters !== null)
       {
@@ -380,13 +435,54 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
       setCategoryList(productCategories);
       setProductList(productVariants);
 
+      setNewProductList(newProductVariants);
+
     
 
+}
+
+const CancelPromotionCode = async(promotionCode) =>
+{
+  var orderId = catalogOrderId;
+      
+      var companyId = catalogCompanyId;
+      var locationId = catalogLocationId;
+      var qrPromotion = promotionCode;
+      var pictureUrl = '';
+      var orderDetails = []
+
+
+      
+      
+      //setItems(productDs);
+          sessionStorage.removeItem('discountDetails')
+          sessionStorage.removeItem('discountRate');
+          sessionStorage.removeItem('promotionCode');
+          sessionStorage.removeItem('promotionMinimumAmount');
+          sessionStorage.removeItem('promotionProductIdList');
+          sessionStorage.removeItem('isForAllProduct');
+
+          setPromotionCode(undefined);
+
+          localStorage.removeItem('discountDetails');
+          localStorage.removeItem('discountRate');
+          localStorage.removeItem('promotionCode');
+          localStorage.removeItem('promotionMinimumAmount');
+          localStorage.removeItem('promotionProductIdList');
+          localStorage.removeItem('isForAllProduct');
+
+          setDiscountDetail(undefined)
 }
 
 
     const ApplyPromotionCode = async(promotionCode,discountPercentage, isForAllProduct, minimumAmount, productIdList) =>
     {
+      //alert(sessionStorage.getItem('discountDetails'));
+      //if(getPromotionCode !== null)
+      //{
+      //   localStorage.getItem('promotionCode')
+      //}
+
       var orderDetails = []
 
       for(var i = 0; i<items.length;i++)
@@ -448,9 +544,9 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
             discountDetails.push(discountDetail);
           }
 
-          alert(JSON.stringify(productDs))
-          alert(JSON.stringify(discountDetails))
-          alert(JSON.stringify(productIdList))
+          //alert(JSON.stringify(productDs))
+          //alert(JSON.stringify(discountDetails))
+          //alert(JSON.stringify(productIdList))
           setItems(productDs);
           sessionStorage.setItem('discountDetails', JSON.stringify(discountDetails));
           sessionStorage.setItem('discountRate', (discountPercentage/100));
@@ -459,7 +555,18 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
           sessionStorage.setItem('promotionProductIdList', JSON.stringify(productIdList));
           sessionStorage.setItem('isForAllProduct', isForAllProduct);
 
+          setPromotionCode(promotionCode);
+
+          localStorage.setItem('discountDetails',JSON.stringify(discountDetails));
+          localStorage.setItem('discountRate', (discountPercentage/100));
+          localStorage.setItem('promotionCode', promotionCode);
+          localStorage.setItem('promotionMinimumAmount', minimumAmount);
+          localStorage.setItem('promotionProductIdList', JSON.stringify(productIdList));
+          localStorage.setItem('isForAllProduct', isForAllProduct);
+
           setDiscountDetail(JSON.stringify(discountDetails))
+
+          
 
     }
     const SearchProduct = async (searchText) => 
@@ -509,7 +616,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         companyName,
         
         locationName,
-        catalogName,
+        catalogName:"",
         promotionId,customerTypeId,page,itemPerPage,query:query,category,product
       });
 
@@ -650,7 +757,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
             <div className="mx-auto py-5 max-w-screen-2xl px-3 sm:px-10">
               <div className="flex w-full">
                 {/* {dataPath} */}
-              <OfferCard promotions={promotions} companyId={catalogCompanyId} catalogName={catalogName} ApplyPromotionCode={ApplyPromotionCode}/>
+              <OfferCard promotions={promotions} selectedPromotion={promotionCode} companyId={catalogCompanyId} catalogName={catalogName} ApplyPromotionCode={ApplyPromotionCode} CancelPromotionCode={CancelPromotionCode}/>
                 {/* <div className="grid gap-4 mb-8 md:grid-cols-2 xl:grid-cols-2">
                   
                   <OfferCard promotions={promotions} companyId={catalogCompanyId} ApplyPromotionCode={ApplyPromotionCode}/>
@@ -668,6 +775,37 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
             </div>
           </div>
 
+          <div id="newProduct"
+            className="bg-gray-50 lg:py-16 py-10 mx-auto max-w-screen-2xl px-3 sm:px-10"
+          >
+            <div className="mb-10 flex justify-center">
+              <div className="text-center w-full lg:w-2/5">
+                <h2 className="text-xl lg:text-2xl mb-2 font-serif font-semibold">
+                  Latest New Products
+                </h2>
+                
+              </div>
+            </div>
+            {
+                newProductLoading ? (
+                  <Loading loading={newProductLoading} />
+                )
+                :
+                (
+                  <div className="flex">
+                    <div className="w-full">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3">
+                        {newProductList.map((product) => (
+                          <ProductCard key={product._id} product={product} liffId={""} lineUserId={""} 
+                          linePOSId={""} groupId={""} orderId={catalogOrderId} companyId={catalogCompanyId} locationId={catalogLocationId} pictureUrl={lineProfileImage} />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+            
+          </div>
           {/* feature category's */}
           <div className="bg-gray-100 lg:py-16 py-10">
             <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
@@ -682,8 +820,8 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
                 </div>
               </div>
               {
-                loading ? (
-                  <Loading loading={loading} />
+                categoryLoading ? (
+                  <Loading loading={categoryLoading} />
                 )
                 :
                 (

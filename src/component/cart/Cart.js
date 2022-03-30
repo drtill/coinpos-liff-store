@@ -37,6 +37,16 @@ const Cart = () => {
         setTotalDiscount(totalDiscountVal);
         setDiscountDetail(disDetails);
       }
+      else
+      {
+        setTotalDiscount(0);
+        setDiscountDetail([]);
+      }
+    }
+    else
+    {
+      setTotalDiscount(0);
+      setDiscountDetail([]);
     }
 
     

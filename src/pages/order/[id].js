@@ -27,6 +27,7 @@ import UserServices from '@services/UserServices';
 import ProductServices from '@services/ProductServices';
 import { UserContext } from '@context/UserContext';
 import InvoiceForDownload from '@component/invoice/InvoiceForDownload';
+import ReceiptForDownload from '@component/receipt/ReceiptForDownload';
 import PaymentMethod from './PaymentMethod';
 import ShippingTracking from './ShippingTracking';
 
@@ -338,6 +339,11 @@ const Order = ({ params }) => {
         router.push('/');
       }*/
 
+      
+    }, []);
+  
+    useEffect(() => 
+    {
       if(data !== undefined)
       {
         //alert("data = " + JSON.stringify(data));
@@ -347,8 +353,8 @@ const Order = ({ params }) => {
 
         paymentContentManager();
       }
-    }, []);
-  
+
+    });
       
     /*const [data, setOrder] = useState();
     const [loading, setLoading] = useState(true);
@@ -386,24 +392,28 @@ const Order = ({ params }) => {
   {
     data = JSON.parse(dataJson);
   }*/
-  
-  let dbCon = getDatabase(app);
-  let dbRef = ref(dbCon,'UAT/2/PromptPay/Payment/2');
+  useEffect(() => 
+  {
+    let dbCon = getDatabase(app);
+    let dbRef = ref(dbCon,'UAT/2/PromptPay/Payment/2');
 
-    onChildAdded(dbRef,(snapshot) => {
-      const orderNumber = snapshot.val();
-      
-      if(orderNumber === data.orderNumber)
-      {
-        //alert(orderNumber);
-        setPaymentStatusId(2);//paid
-        paymentContentManager();
-        //this.setState({paymentStatusId:2,paymentStatus:"Paid"})
-            /*this.render();*/
-      }
-          //var obj = JSON.parse(data)
-          //alert(data);
-    });
+      onChildAdded(dbRef,(snapshot) => {
+        const orderNumber = snapshot.val();
+        
+        if(orderNumber === data.orderNumber)
+        {
+          //alert(orderNumber);
+          setPaymentStatusId(2);//paid
+          paymentContentManager();
+          //this.setState({paymentStatusId:2,paymentStatus:"Paid"})
+              /*this.render();*/
+        }
+            //var obj = JSON.parse(data)
+            //alert(data);
+      });
+
+  });
+  
 
     
   
@@ -420,7 +430,7 @@ const Order = ({ params }) => {
         <div className="max-w-screen-2xl mx-auto py-10 px-3 sm:px-6">
           <div className="bg-cyan-100 rounded-md mb-5 px-4 py-3">
             <label>
-              ขอบคุณที่ใช้บริการ{' '}
+              ขอบคุณที่ใช้บริการ{' '} {data.paymentStatusId}
               {/* <span className="font-bold text-cyan-600">{data.name},</span>{' '} */}
               <span className="font-bold text-cyan-600">{data.customerName},</span>{' '}
               เราได้รับคำสั่งซื้อของคุณแล้ว !

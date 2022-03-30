@@ -35,17 +35,17 @@ const ContactUs = () => {
     );
   };
 
-  var companyLogo = '';
-  var companyName = '';
-  var locationName = '';
-  var locationAddress1 = '';
-  var locationAddress2 = '';
-  var locationCity = '';
-  var locationStateOrProvince = '';
-  var locationCountry = '';
-  var locationPostalCode = '';
-  var locationEmail = '';
-  var locationTel = '';
+  var companyLogoData = '';
+  var companyNameData = '';
+  var locationNameData = '';
+  var locationAddress1Data = '';
+  var locationAddress2Data = '';
+  var locationCityData = '';
+  var locationStateOrProvinceData = '';
+  var locationCountryData = '';
+  var locationPostalCodeData = '';
+  var locationEmailData = '';
+  var locationTelData = '';
 
   const [companyId, setCompanyId] = useState(0);
   const [locationId, setLocationId] = useState(0);
@@ -59,58 +59,58 @@ const ContactUs = () => {
   {
     if(sessionStorage.getItem('companyLogo'))
     {
-      companyLogo = sessionStorage.getItem('companyLogo'); 
-      
+      companyLogoData = sessionStorage.getItem('companyLogo'); 
+      //alert(companyLogo)
     }
     if(sessionStorage.getItem('companyName'))
     {
       
-      companyName = sessionStorage.getItem('companyName'); 
+      companyNameData = sessionStorage.getItem('companyName'); 
       //alert(companyName);
     }
     if(sessionStorage.getItem('locationName'))
     {
-      locationName = sessionStorage.getItem('locationName'); 
+      locationNameData = sessionStorage.getItem('locationName'); 
       
     }
     if(sessionStorage.getItem('locationAddress1'))
     {
-      locationAddress1 = sessionStorage.getItem('locationAddress1'); 
+      locationAddress1Data = sessionStorage.getItem('locationAddress1'); 
       
     }
     if(sessionStorage.getItem('locationAddress2'))
     {
-      locationAddress2 = sessionStorage.getItem('locationAddress2'); 
+      locationAddress2Data = sessionStorage.getItem('locationAddress2'); 
       
     }
     if(sessionStorage.getItem('locationCity'))
     {
-      locationCity = sessionStorage.getItem('locationCity'); 
+      locationCityData = sessionStorage.getItem('locationCity'); 
       
     }
     if(sessionStorage.getItem('locationStateOrProvince'))
     {
-      locationStateOrProvince = sessionStorage.getItem('locationStateOrProvince'); 
+      locationStateOrProvinceData = sessionStorage.getItem('locationStateOrProvince'); 
       
     }
     if(sessionStorage.getItem('locationCountry'))
     {
-      locationCountry = sessionStorage.getItem('locationCountry'); 
+      locationCountryData = sessionStorage.getItem('locationCountry'); 
       
     }
     if(sessionStorage.getItem('locationPostalCode'))
     {
-      locationPostalCode = sessionStorage.getItem('locationPostalCode'); 
+      locationPostalCodeData = sessionStorage.getItem('locationPostalCode'); 
       
     }
     if(sessionStorage.getItem('locationEmail'))
     {
-      locationEmail = sessionStorage.getItem('locationEmail'); 
+      locationEmailData = sessionStorage.getItem('locationEmail'); 
       
     }
     if(sessionStorage.getItem('locationTel'))
     {
-      locationTel = sessionStorage.getItem('locationTel'); 
+      locationTelData = sessionStorage.getItem('locationTel'); 
       
     }
         if(sessionStorage.getItem('liffId'))
@@ -148,6 +148,25 @@ const ContactUs = () => {
   });
   
 
+  const [companyLogo,setCompanyLogo] = useState(companyLogoData);
+  const [companyName,setCompanyName] = useState(companyNameData);
+  const [locationName,setLocationName] = useState(locationNameData);
+  const [locationEmail,setLocationEmail] = useState(locationEmailData);
+  const [locationTel,setLocationTel] = useState(locationTelData);
+  const [locationAddress1,setLocationAddress1] = useState(locationAddress1Data);
+  const [locationAddress2,setLocationAddress2] = useState(locationAddress2Data);
+  const [locationCity,setLocationCity] = useState(locationCityData);
+  const [locationStateOrProvince,setLocationStateOrProvince] = useState(locationStateOrProvinceData);
+  const [locationCountry,setLocationCountry] = useState(locationCountryData);
+  const [locationPostalCode,setLocationPostalCode] = useState(locationPostalCodeData);
+
+
+  useEffect(() => 
+  {
+
+
+  });
+
       const locationContactData = [
         {
           id: 1,
@@ -175,9 +194,11 @@ const ContactUs = () => {
         },
       ];
 
+    
+
   return (
     <Layout title="Contact Us" description="This is contact us page"
-    companyName={companyName} locationName={locationName} companyLogo={companyLogo}  
+    companyName={companyName} locationName={locationName} companyLogo={companyLogoData}  
       locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
       locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
       locationEmail={locationEmail} locationTel={locationTel}>

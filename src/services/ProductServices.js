@@ -7,6 +7,9 @@ const ProductServices = {
   applyPromotionCode(body) {
     return requests.post('/products/ApplyPromotionCode',body);
   },
+  cancelPromotionCode(body) {
+    return requests.post('/products/CancelPromotionCode',body);
+  },
 
   getDiscountedProducts() {
     return requests.get('/products/discount');

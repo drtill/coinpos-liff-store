@@ -19,6 +19,7 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
   const handleUpdateItem = async(item,_qty, _updateType) =>{
     updateItemQuantity(item.id,_qty);
 
+    alert("items count = " + items.length);
     if(_qty === 0)
     {
       if(liffId.length > 0)
@@ -69,96 +70,105 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
 
     //alert("AddItem")
     if(sessionStorage.getItem('discountRate'))
-    {
-      
-      const discountDetails = [];
-      
-      if(sessionStorage.getItem('discountDetails'))
       {
-        var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
         
-        //alert("discountDetailsJson = " + discountDetailsJson);
-        discountDetails = JSON.parse(discountDetailsJson);
+        var discountDetails = [];
         
-      }
-      
-      var isForAllProduct = true;
-      if(sessionStorage.getItem('isForAllProduct'))
-      {
-        isForAllProduct = sessionStorage.getItem('isForAllProduct'); 
-      }
-
-      
-      if(isForAllProduct === true)
-      {
-        //alert("Is For All = " + isForAllProduct);
-        var discountRate = sessionStorage.getItem('discountRate'); 
-          var discountDetail = {
-            id: Number(p._id),
-            discount:Number(p.price * discountRate),
-            discountRate:Number(discountRate)
-          }
-          discountDetails.push(discountDetail);
-      }
-      else
-      {
-        //alert("Is For All = " + isForAllProduct);
-
-        var isDiscount = false;
-        //alert("Check Session");
-        if(sessionStorage.getItem('promotionProductIdList'))
+        if(sessionStorage.getItem('discountDetails'))
         {
-          //alert("Found");
-          var promotionmProductIdListJson = sessionStorage.getItem('promotionProductIdList');
-          //alert("promotionmProductIdList = " + promotionmProductIdListJson);
-          var promotionmProductIdList = JSON.parse(promotionmProductIdListJson);
-          //alert("Parsed = " + promotionmProductIdList);
+          var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
           
-          for(var i = 0;i<promotionmProductIdList.length;i++)
-          {
-            //alert("Get Product Id at index = " + i);
-            var promotionProductId = promotionmProductIdList[i];
-            //alert("p.tag = " + JSON.stringify(p) + " promotionProductId = " + promotionProductId);
-
-            if(Number(promotionProductId) === Number(p.tag))
-            {
-              //alert("Discount")
-              isDiscount = true;
-            }
-
-          }
+          //alert("discountDetailsJson = " + discountDetailsJson);
+          discountDetails = JSON.parse(discountDetailsJson) === null ? [] : JSON.parse(discountDetailsJson);
+          
+        }
+        
+        var isForAllProduct = true;
+        if(sessionStorage.getItem('isForAllProduct'))
+        {
+          isForAllProduct = sessionStorage.getItem('isForAllProduct'); 
         }
 
-        if(isDiscount === true)
+        
+        if(isForAllProduct === true)
         {
-          
+          //alert("Is For All = " + isForAllProduct);
           var discountRate = sessionStorage.getItem('discountRate'); 
-          var discountDetail = {
-            id: Number(p._id),
-            discount:Number(p.price * discountRate),
-            discountRate:Number(discountRate)
-          }
-          discountDetails.push(discountDetail);
+            var discountDetail = {
+              id: Number(p._id),
+              discount:Number(p.price * discountRate),
+              discountRate:Number(discountRate)
+            }
+            discountDetails.push(discountDetail);
         }
         else
         {
-          
-          var discountRate = sessionStorage.getItem('discountRate'); 
-          var discountDetail = {
-            id: Number(p._id),
-            discount:Number(0),
-            discountRate:Number(0)
+          //alert("Is For All = " + isForAllProduct);
+
+          var isDiscount = false;
+          //alert("Check Session");
+          if(sessionStorage.getItem('promotionProductIdList'))
+          {
+            //alert("Found");
+            var promotionmProductIdListJson = sessionStorage.getItem('promotionProductIdList');
+            //alert("promotionmProductIdList = " + promotionmProductIdListJson);
+            var promotionmProductIdList = JSON.parse(promotionmProductIdListJson);
+            //alert("Parsed = " + promotionmProductIdList);
+            if(promotionmProductIdList !== null)
+            {
+              for(var i = 0;i<promotionmProductIdList.length;i++)
+              {
+                //alert("Get Product Id at index = " + i);
+                var promotionProductId = promotionmProductIdList[i];
+                //alert("p.tag = " + JSON.stringify(p) + " promotionProductId = " + promotionProductId);
+
+                if(Number(promotionProductId) === Number(p.tag))
+                {
+                  //alert("Discount")
+                  isDiscount = true;
+                }
+
+              }
+            }
+            else
+            {
+              isDiscount = true;
+            }
+            
           }
-          discountDetails.push(discountDetail);
+
+          if(isDiscount === true)
+          {
+            
+            var discountRate = sessionStorage.getItem('discountRate'); 
+            var discountDetail = {
+              id: Number(p._id),
+              discount:Number(p.price * discountRate),
+              discountRate:Number(discountRate)
+            }
+            //alert('discountDetails = ' + JSON.stringify(discountDetails))
+            discountDetails.push(discountDetail);
+          }
+          else
+          {
+            
+            var discountRate = sessionStorage.getItem('discountRate'); 
+            var discountDetail = {
+              id: Number(p._id),
+              discount:Number(0),
+              discountRate:Number(0)
+            }
+            discountDetails.push(discountDetail);
+          }
         }
+
+        
+        
+        
+        sessionStorage.setItem('discountDetails', JSON.stringify(discountDetails));
+
       }
-
-      
-      
-      
-      sessionStorage.setItem('discountDetails', JSON.stringify(discountDetails));
-
-    }
+    
     
   };
 
@@ -247,6 +257,12 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
 
     var pvId = req._id;
 
+    var promotionCode = ''
+    if(sessionStorage.getItem('promotionCode'))
+    {
+      promotionCode = sessionStorage.getItem('promotionCode');
+    }
+    alert(promotionCode);
     //alert("liffId = " + liffId + " lineUserId = " + lineUserId + " OrderId = " + orderId)
     const products = await ProductServices.addToCoinPOSCart({
       orderId,
@@ -256,7 +272,8 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
       linePOSId,
       groupId,
       liffId,
-      pictureUrl
+      pictureUrl,
+      promotionCode
     });
     //alert(products);
 };

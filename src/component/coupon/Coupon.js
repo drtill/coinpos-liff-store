@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import dayjs from 'dayjs';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -9,10 +9,35 @@ import CouponServices from '@services/CouponServices';
 import ProductServices from '@services/ProductServices';
 import OfferTimer from '@component/coupon/OfferTimer';
 
-const Coupon = ({ couponInHome, companyId, promotions, catalogName, ApplyPromotionCode }) => {
+const Coupon = ({ couponInHome, companyId, promotions, catalogName, ApplyPromotionCode, CancelPromotionCode }) => {
   const [copiedCode, setCopiedCode] = useState('');
   const [copied, setCopied] = useState(false);
 
+  useEffect(() => 
+  {
+    //alert("selectedPromotion = " + selectedPromotion);
+    //if(selectedPromotion !== undefined)
+    //{
+
+      //setCopiedCode(selectedPromotion);
+    //  setCopied(true);
+    //}
+    if(sessionStorage.getItem('promotionCode'))
+    {
+      var promotionCode = sessionStorage.getItem('promotionCode'); 
+          
+          //alert("discountDetailsJson = " + discountDetailsJson);
+          setCopiedCode(promotionCode);
+          setCopied(true);
+          
+    }
+    else
+    {
+      setCopiedCode("");
+      setCopied(false);
+    }
+  });
+  
   //alert("promotions = " + JSON.stringify(promotions));
   //const { data, error } = useAsync(() => ProductServices.getAllCoinPOSCoupons({companyId}))//useAsync(ProductServices.getAllCoinPOSCoupons({companyId}));
   //const { data, error } = useAsync(CouponServices.getAllCoupons)
@@ -21,8 +46,34 @@ const Coupon = ({ couponInHome, companyId, promotions, catalogName, ApplyPromoti
     //setCopiedCode(code);
     //setCopied(true);
 
-    //alert("minimumAmount = " + minimumAmount)
+    var promotionCode = '';
+    if(sessionStorage.getItem('promotionCode'))
+    {
+      promotionCode = sessionStorage.getItem('promotionCode'); 
+          
+          //alert("discountDetailsJson = " + discountDetailsJson);
+          //setCopiedCode(promotionCode);
+          //setCopied(true);
+          
+    }
+    if(promotionCode === code)
+    {
+      //alert("ยกเลิก")
+      setCopiedCode("");
+      setCopied(false);
+
+      CancelPromotionCode(code);
+    }
+    else
+    {
+      //alert("minimumAmount = " + minimumAmount)
     //alert("productIdList = " + productIdList)
+    
+
+      setCopiedCode(code);
+      setCopied(true);
+      ApplyPromotionCode(code,discountPercentage,isForAllProduct, minimumAmount, productIdList);
+    }
     //if(catalogName !== undefined)
     //{
     //  setCopiedCode(code);
@@ -30,9 +81,7 @@ const Coupon = ({ couponInHome, companyId, promotions, catalogName, ApplyPromoti
     //}
     //else
     //{
-      setCopiedCode(code);
-      setCopied(true);
-      ApplyPromotionCode(code,discountPercentage,isForAllProduct, minimumAmount, productIdList);
+      
     //}
     
   };
@@ -135,7 +184,7 @@ const Coupon = ({ couponInHome, companyId, promotions, catalogName, ApplyPromoti
                         <button className="block w-full">
                           {copied && coupon.couponCode === copiedCode ? (
                             <span className="text-cyan-600 text-sm leading-7 font-semibold">
-                              Copied!
+                              ยกเลิกคูปอง!
                             </span>
                           ) : (
                             <span className="uppercase font-serif font-semibold text-sm leading-7 text-cyan-600">
@@ -264,7 +313,7 @@ const Coupon = ({ couponInHome, companyId, promotions, catalogName, ApplyPromoti
                         <button className="block w-full">
                           {copied && coupon.couponCode === copiedCode ? (
                             <span className="text-cyan-600 text-base leading-7 font-semibold">
-                              Copied!
+                              คูปอง กำลังถูกใช้!
                             </span>
                           ) : (
                             <span className="uppercase font-serif font-semibold text-base leading-7 text-cyan-600">

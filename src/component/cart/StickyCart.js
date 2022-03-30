@@ -24,6 +24,16 @@ const StickyCart = ({currencySign, discountDetails}) => {
         var totalDiscountVal = disDetails.reduce((discountTotal, item) => (discountTotal += item.discount),0);
         setTotalDiscount(totalDiscountVal);
       }
+      else
+    {
+      setTotalDiscount(0);
+      
+    }
+    }
+    else
+    {
+      setTotalDiscount(0);
+      
     }
 
   })

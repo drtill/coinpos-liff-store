@@ -74,14 +74,29 @@ const CartItem = ({ item, UpdateTotal }) => {
             }
 
           }
+          
           setDiscountDetails(disDetails);
           setDiscount(discountData);
-          setDiscountRate(discountDataRate);
-          
+          setDiscountRate(discountDataRate);  
           
         }
+        else
+        {
+          setDiscountDetails([]);
+          setDiscount(0);
+          setDiscountRate(0);
+        }
+        //alert("Loop Set = " + JSON.stringify(disDetails))
+        
       }
-        //alert("Loop Set = " + JSON.stringify(discountDetails));
+      else
+      {
+        //alert("NotFound")
+        setDiscountDetails([]);
+        setDiscount(0);
+        setDiscountRate(0);
+      }
+        //alert("Loop Set = " + JSON.stringify(discountDataDetails));
       
         
 

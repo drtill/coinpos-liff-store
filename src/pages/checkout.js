@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react'
 import dynamic from 'next/dynamic';
 import { CardElement } from '@stripe/react-stripe-js';
@@ -144,6 +144,11 @@ const Checkout = () => {
   var dataPath = '';
   var customerId = 0;
 
+  useEffect(() => 
+  {
+
+    
+  });
   if(sessionStorage.getItem('customerId'))
   {
     customerId = sessionStorage.getItem('customerId'); 
@@ -302,7 +307,7 @@ const Checkout = () => {
   }
   if(sessionStorage.getItem('districtId'))
   {
-    districtId = Number(sessionStorage.getItem('districtId')); 
+    districtIdData = Number(sessionStorage.getItem('districtId')); 
       
   }
   if(sessionStorage.getItem('postalcode'))
@@ -345,7 +350,7 @@ const Checkout = () => {
   }
   
   const [IsApproveCustomerInfo, setApproveCustomerInfo] = useState(false);
-  const [IsEditCustomerInfo, setEditCustomerInfo] = useState(true);
+  const [IsEditCustomerInfo, setEditCustomerInfo] = useState(false);
   const [IsDisableCustomerInfo, setDisableCustomerInfo] = useState(customerAddressIdData !== 0);
   const [customerAddressId, setCustomerAddressId] = useState(customerAddressIdData);
   const [firstName,setCustomerFirstName] = useState(customerFirstName);

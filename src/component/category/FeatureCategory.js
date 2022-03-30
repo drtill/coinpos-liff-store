@@ -20,6 +20,24 @@ const FeatureCategory = ({categories,FilterCategory, FilterProduct}) => {
         </p>
       ) : (
         <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-6">
+          <li className="group" key={0}>
+              <div
+                  
+                className="flex w-full h-full border border-gray-100 shadow-sm bg-white p-4 transition duration-200 ease-linear transform group-hover:shadow-lg"
+              >
+                <div className="flex items-center">
+                  <div className="pl-4">
+                    <h3 onClick={() =>
+                  
+                  FilterCategory(0)
+                } className="text-sm text-gray-600 cursor-pointer font-serif font-medium leading-tight line-clamp-1 group-hover:text-cyan-500">
+                      สินค้าทั้งหมด
+                    </h3>
+                    
+                  </div>
+                </div>
+              </div>
+            </li>
           {categories?.map((category, i) => (
             <li className="group" key={i + 1}>
               <div
@@ -49,6 +67,7 @@ const FeatureCategory = ({categories,FilterCategory, FilterProduct}) => {
                       {category.parent}
                     </h3>
                     <ul className="pt-1 mt-1">
+                      
                       {category.children.slice(0, 3).map((children) => (
                         <li key={children._id} className="pt-1">
                           <h3
