@@ -34,7 +34,7 @@ import QRPaymentPayment from '@component/form/QRPaymentPayment';
 import {Form} from 'react-bootstrap';
 import ProductServices from '@services/ProductServices';
 
-import EditableCustomerInput from '@component/form/editableCustomerInput';
+import EditableCustomerInput from '@component/form/EditableCustomerInput';
 /* import {
   Combobox,
   ComboboxInput,

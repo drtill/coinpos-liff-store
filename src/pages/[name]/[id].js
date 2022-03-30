@@ -22,6 +22,8 @@ import ProductCard from '@component/product/ProductCard';
 import MainCarousel from '@component/carousel/MainCarousel';
 import FeatureCategory from '@component/category/FeatureCategory';
 
+import useCheckoutSubmit from '@hooks/useCheckoutSubmit';
+
 import Loading from '@component/preloader/Loading';
 //const liffId = process.env.NEXT_PUBLIC_LIFF_ID
 const isLiffLogin = true;//process.env.NEXT_PUBLIC_ISLOGIN
@@ -39,6 +41,14 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
   companyFacebook,companyLine
   }) => {
    
+    const {
+      couponInfo,
+      couponRef,
+      handleCouponCode,
+      discountAmount,
+      
+    } = useCheckoutSubmit();
+    
     const { dispatch } = useContext(UserContext);
     
     
