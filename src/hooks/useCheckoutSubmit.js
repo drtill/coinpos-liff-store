@@ -484,6 +484,16 @@ const useCheckoutSubmit = () => {
     }
   };
 
+  const clearCouponData = () =>
+  {
+    setMinimumAmount(0);
+    setDiscountProductType('');
+    setDiscountPercentage(0);
+    dispatch({ type: 'SAVE_COUPON', payload: promotion[0] });
+    Cookies.remove('couponInfo');
+    setCouponInfo('');
+  }
+
   const handleOrderId = (value) => 
   {
     setOrderId(value);
@@ -541,7 +551,8 @@ const useCheckoutSubmit = () => {
     pictureUrl,
     handleShippingId,
     handleShippingName,
-    setCouponData
+    setCouponData,
+    clearCouponData
     
     
   };

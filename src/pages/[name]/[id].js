@@ -45,6 +45,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
       couponInfo,
       couponRef,
       setCouponData,
+      clearCouponData,
       discountAmount,
       
     } = useCheckoutSubmit();
@@ -160,7 +161,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         }
         catch(e)
         {
-          alert("error = " + e.message);
+          //alert("error = " + e.message);
         }
       }
       
@@ -289,7 +290,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
       }
       catch (err) 
       {
-        alert(err.message);
+        //alert(err.message);
       }
       
 
@@ -482,6 +483,8 @@ const CancelPromotionCode = async(promotionCode) =>
           localStorage.removeItem('isForAllProduct');
 
           setDiscountDetail(undefined)
+
+          clearCouponData();
 }
 
 

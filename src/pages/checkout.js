@@ -8,7 +8,11 @@ import {
   IoArrowForward,
   IoBagHandle,
   IoWalletSharp,
-  IoSaveOutline
+  IoSaveOutline,
+  IoCheckboxOutline,
+  IoCloseCircleOutline,
+  IoCreateOutline
+
 } from 'react-icons/io5';
 import { ImCreditCard,ImClearFormatting,ImFileEmpty } from 'react-icons/im';
 
@@ -995,7 +999,7 @@ const SaveCustomerInfo = async (companyId) =>
                                 ยกเลิก{' '}
                                 <span className="text-xl ml-2">
                                   {' '}
-                                  <IoSaveOutline />
+                                  <IoCloseCircleOutline />
                                 </span>
                               </button>
                             </div>
@@ -1027,7 +1031,7 @@ const SaveCustomerInfo = async (companyId) =>
                                 อนุมัติข้อมูลลูกค้า{' '}
                                 <span className="text-xl ml-2">
                                   {' '}
-                                  <IoSaveOutline />
+                                  <IoCheckboxOutline />
                                 </span>
                               </button>
                             </div>
@@ -1041,7 +1045,7 @@ const SaveCustomerInfo = async (companyId) =>
                                 แก้ไขข้อมูลลูกค้า{' '}
                                 <span className="text-xl ml-2">
                                   {' '}
-                                  <IoSaveOutline />
+                                  <IoCreateOutline />
                                 </span>
                               </button>
                             </div>

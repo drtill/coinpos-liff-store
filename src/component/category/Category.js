@@ -11,7 +11,7 @@ import { SidebarContext } from '@context/SidebarContext';
 import CategoryServices from '@services/CategoryServices';
 import CategoryCard from '@component/category/CategoryCard';
 
-const Category = ({FilterProduct}) => {
+const Category = ({companyLogo,FilterProduct}) => {
   const { categoryDrawerOpen, closeCategoryDrawer } =
     useContext(SidebarContext);
   //  const { data, loading, error } = useAsync(() =>
@@ -51,10 +51,16 @@ const Category = ({FilterProduct}) => {
           <h2 className="font-semibold font-serif text-lg m-0 text-heading flex align-center">
             <Link href="/">
               <a className="mr-10">
-                <Image
+                {/* <Image
                   width={100}
                   height={38}
                   src="/logo/logo-light.svg"
+                  alt="logo"
+                /> */}
+                <Image
+                  width={38}
+                  height={38}
+                  src={companyLogo === undefined ? 'http://coinpos-uat.azurewebsites.net/img/logo2.png' : companyLogo}
                   alt="logo"
                 />
               </a>
@@ -94,6 +100,7 @@ const Category = ({FilterProduct}) => {
                 //category._id
                 <CategoryCard
                 key={category._id}
+                parentId={category._id}
                 title={category.parent}
                 icon={category.icon}
                 nested={category.children}

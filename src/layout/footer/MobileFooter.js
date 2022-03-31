@@ -10,7 +10,7 @@ import LoginModal from '@component/modal/LoginModal';
 import { SidebarContext } from '@context/SidebarContext';
 import CategoryDrawer from '@component/drawer/CategoryDrawer';
 
-const MobileFooter = () => {
+const MobileFooter = ({companyLogo, dataPath, RefreshProductList, FilterProduct}) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { toggleCartDrawer, toggleCategoryDrawer } = useContext(SidebarContext);
   const { totalItems } = useCart();
@@ -22,7 +22,7 @@ const MobileFooter = () => {
     <>
       <LoginModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <div className="flex flex-col h-full justify-between align-middle bg-white rounded cursor-pointer overflow-y-scroll flex-grow scrollbar-hide w-full">
-        <CategoryDrawer className="w-6 h-6 drop-shadow-xl" />
+        <CategoryDrawer companyLogo={companyLogo} FilterProduct={FilterProduct} className="w-6 h-6 drop-shadow-xl" />
       </div>
       <footer className="lg:hidden fixed z-30 bottom-0 bg-cyan-500 flex items-center justify-between w-full h-16 px-3 sm:px-10">
         <button
@@ -34,7 +34,7 @@ const MobileFooter = () => {
             <FiAlignLeft className="w-6 h-6 drop-shadow-xl" />
           </span>
         </button>
-        <Link href="/">
+        <Link href={"/" + dataPath}>
           <a className="text-xl text-white" rel="noreferrer" aria-label="Home">
             {' '}
             <FiHome className="w-6 h-6 drop-shadow-xl" />
