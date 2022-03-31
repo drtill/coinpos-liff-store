@@ -67,7 +67,7 @@ const useCheckoutSubmit = () => {
 
     if (Cookies.get('couponInfo')) {
       const coupon = JSON.parse(Cookies.get('couponInfo'));
-      alert("Check out = " + JSON.stringify(coupon))
+      //alert("Check out = " + JSON.stringify(coupon))
       setCouponInfo(coupon);
       setDiscountPercentage(coupon.discountPercentage);
       setMinimumAmount(coupon.minimumAmount);
@@ -75,7 +75,7 @@ const useCheckoutSubmit = () => {
     else if(sessionStorage.getItem('couponInfo'))
     {
       const coupon = JSON.parse(sessionStorage.getItem('couponInfo'));
-      alert("Session Check out = " + JSON.stringify(coupon))
+      //alert("Session Check out = " + JSON.stringify(coupon))
       setCouponInfo(coupon);
       setDiscountPercentage(coupon.discountPercentage);
       setMinimumAmount(coupon.minimumAmount);
@@ -134,7 +134,7 @@ const useCheckoutSubmit = () => {
           
         if(expiredDate === false)
         {
-          alert('Login');
+          //alert('Login');
           dispatch({ type: 'USER_LOGIN', payload: userLocal });
 
 
@@ -448,8 +448,8 @@ const useCheckoutSubmit = () => {
 
   const setCouponData = (value, promotion) =>
   {
-    alert("Coupon value = " + value);
-    alert("Promotion value = " + JSON.stringify(promotion));
+    //alert("Coupon value = " + value);
+    //alert("Promotion value = " + JSON.stringify(promotion));
     //alert("Coupon Ref = " + couponRef.current.value);
 
     if (!value) {
@@ -472,7 +472,7 @@ const useCheckoutSubmit = () => {
       );
       return;
     }else {
-      alert("set");
+      //alert("set");
       setMinimumAmount(promotion[0]?.minimumAmount);
       setDiscountProductType(promotion[0].productType);
       setDiscountPercentage(promotion[0].discountPercentage);
@@ -480,7 +480,7 @@ const useCheckoutSubmit = () => {
       Cookies.set('couponInfo', JSON.stringify(promotion[0]));
       const coupon = JSON.stringify(promotion[0]);
       setCouponInfo(coupon);
-      alert("Set coupon = " + coupon);
+      //alert("Set coupon = " + coupon);
     }
   };
 

@@ -184,7 +184,7 @@ const Coupon = ({ couponInHome, companyId, promotions, catalogName, ApplyPromoti
                         <button className="block w-full">
                           {copied && coupon.couponCode === copiedCode ? (
                             <span className="text-cyan-600 text-sm leading-7 font-semibold">
-                              ยกเลิกคูปอง!
+                              ยกเลิก ส่วนลด!
                             </span>
                           ) : (
                             <span className="uppercase font-serif font-semibold text-sm leading-7 text-cyan-600">

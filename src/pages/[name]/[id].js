@@ -487,14 +487,7 @@ const CancelPromotionCode = async(promotionCode) =>
 
     const ApplyPromotionCode = async(promotionCode,discountPercentage, isForAllProduct, minimumAmount, productIdList) =>
     {
-      alert("Checl Cookie = " + Cookies.get('couponInfo'))
-      if (Cookies.get('couponInfo')) {
-        const coupon = JSON.parse(Cookies.get('couponInfo'));
-        alert("Apply = " + JSON.stringify(coupon))
-        //setCouponInfo(coupon);
-        //setDiscountPercentage(coupon.discountPercentage);
-        //setMinimumAmount(coupon.minimumAmount);
-      }
+      
       //alert(sessionStorage.getItem('discountDetails'));
       //if(getPromotionCode !== null)
       //{
@@ -585,14 +578,17 @@ const CancelPromotionCode = async(promotionCode) =>
           setDiscountDetail(JSON.stringify(discountDetails))
 
           var couponData = [];
+          //alert(JSON.stringify(promotion))
           var couponDetail = {
+            couponCode:promotionCode,
             endTime:promotion.endTime,
             minimumAmount:promotion.minimumAmount,
-            discountRate:promotion.discountRate,
+            discountPercentage:promotion.discountRate,
 
           };
           couponData.push(couponDetail);
           
+          //alert(JSON.stringify(couponData));
           sessionStorage.setItem('couponInfo', JSON.stringify(couponData));
           //Cookies.set('couponInfo', JSON.stringify(couponData));
           setCouponData(promotionCode, couponData);

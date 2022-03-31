@@ -168,11 +168,15 @@ const Cart = () => {
             checkoutClass
           ) : (
             <span>
+
               {!userInfo ? (
+
                 <div onClick={handleOpenLogin}>{checkoutClass}</div>
               ) : (
+
                 <Link href="/checkout" onClick={() => handleCheckout}>
                   <a>{checkoutClass}</a>
+                  
                 </Link>
               )}
             </span>

@@ -1,9 +1,11 @@
 import { FiLock, FiMail } from 'react-icons/fi';
-
+import {useState } from 'react';
 //internal  import
 import Error from '@component/form/Error';
 import useLoginSubmit from '@hooks/useLoginSubmit';
 import InputArea from '@component/form/InputArea';
+
+import Loading from '@component/preloader/Loading';
 
 const Login = ({ setShowResetPassword, setModalOpen }) => {
   const { handleSubmit, submitHandler, register, errors, loading } =
@@ -11,7 +13,10 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
 
     const submitLogin = async (event) => 
     {
+      
       event.preventDefault();
+
+      
       var data = {};
 
       var password = event.target.password.value;
@@ -52,6 +57,8 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
 
       //alert("Login Handle")
       submitHandler(data)
+
+      //setLoginLoading(false);
       }
     }
 
@@ -63,58 +70,67 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
           เข้าสู่ระบบด้วย Email และรหัสผ่าน
         </p>
       </div>
-      <form
-        //onSubmit={handleSubmit(submitHandler)}
-        onSubmit={submitLogin}
-        className="flex flex-col justify-center"
-      >
-        <div className="grid grid-cols-1 gap-5">
-          <div className="form-group">
-            <InputArea
-              register={register}
-              defaultValue="justin@gmail.com"
-              label="Email"
-              name="registerEmail"
-              type="email"
-              placeholder="Email"
-              Icon={FiMail}
-            />
-            <Error errorName={errors.registerEmail} />
-          </div>
-          <div className="form-group">
-            <InputArea
-              register={register}
-              defaultValue="12345678"
-              label="Password"
-              name="password"
-              type="password"
-              placeholder="Password"
-              Icon={FiLock}
-            />
+        {
+          loading ? (
+            <Loading loading={loading} />
+          )
+          :
+          (
+            <form
+              //onSubmit={handleSubmit(submitHandler)}
+              onSubmit={submitLogin}
+              className="flex flex-col justify-center"
+            >
+              <div className="grid grid-cols-1 gap-5">
+                <div className="form-group">
+                  <InputArea
+                    register={register}
+                    defaultValue="justin@gmail.com"
+                    label="Email"
+                    name="registerEmail"
+                    type="email"
+                    placeholder="Email"
+                    Icon={FiMail}
+                  />
+                  <Error errorName={errors.registerEmail} />
+                </div>
+                <div className="form-group">
+                  <InputArea
+                    register={register}
+                    defaultValue="12345678"
+                    label="Password"
+                    name="password"
+                    type="password"
+                    placeholder="Password"
+                    Icon={FiLock}
+                  />
 
-            <Error errorName={errors.password} />
-          </div>
+                  <Error errorName={errors.password} />
+                </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex ms-auto">
-              <button
-                type="button"
-                onClick={() => setShowResetPassword(true)}
-                className="text-end text-sm text-heading ps-3 underline hover:no-underline focus:outline-none"
-              >
-                ลืมรหัสผ่าน?
-              </button>
-            </div>
-          </div>
-          <button
-            disabled={loading}
-            type="submit"
-            className="w-full text-center py-3 rounded bg-cyan-500 text-white hover:bg-cyan-600 transition-all focus:outline-none my-1"
-          >
-            เข้าสู่ระบบ
-          </button>
-        </div>
-      </form>
+                <div className="flex items-center justify-between">
+                  <div className="flex ms-auto">
+                    <button
+                      type="button"
+                      onClick={() => setShowResetPassword(true)}
+                      className="text-end text-sm text-heading ps-3 underline hover:no-underline focus:outline-none"
+                    >
+                      ลืมรหัสผ่าน?
+                    </button>
+                  </div>
+                </div>
+                <button
+                  disabled={loading}
+                  type="submit"
+                  className="w-full text-center py-3 rounded bg-cyan-500 text-white hover:bg-cyan-600 transition-all focus:outline-none my-1"
+                >
+                  เข้าสู่ระบบ
+                </button>
+              </div>
+            </form>
+          )
+        }
+      
     </>
   );
 };
