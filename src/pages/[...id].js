@@ -20,6 +20,8 @@ import ProductCard from '@component/product/ProductCard';
 import MainCarousel from '@component/carousel/MainCarousel';
 import FeatureCategory from '@component/category/FeatureCategory';
 
+import useCheckoutSubmit from '@hooks/useCheckoutSubmit';
+
 import Loading from '@component/preloader/Loading';
 //const liffId = process.env.NEXT_PUBLIC_LIFF_ID
 const isLiffLogin = true;//process.env.NEXT_PUBLIC_ISLOGIN
@@ -37,6 +39,15 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
   companyFacebook,companyLine
   }) => {
    
+    const {
+      couponInfo,
+      couponRef,
+      setCouponData,
+      clearCouponData,
+      discountAmount,
+      
+    } = useCheckoutSubmit();
+
     const router = useRouter();
 
     const [liffId, setLiffId] = useState(liffData);
@@ -218,7 +229,7 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
       try
       {
         //alert("Get Order");
-        const salesOrder = await ProductServices.getCoinPOSOrder({
+        const salesOrder = await ProductServices.fetchGetCoinPOSOrder({
             liffId,
             lineUserId,
             linePOSId,
@@ -298,7 +309,7 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
       promotionId,customerTypeId,page,itemPerPage,query,category,product) =>
     {
       //alert('locationId = ' + locationId);
-      const products = await ProductServices.getCoinPOSProductService({
+      const products = await ProductServices.fetchGetCoinPOSProductService({
         liffId,
         lineUserId,
         linePOSId,
@@ -521,6 +532,8 @@ const CancelPromotionCode = async(promotionCode) =>
           localStorage.removeItem('isForAllProduct');
 
           setDiscountDetail(undefined)
+
+          clearCouponData();
 
           setPromotionLoading(false);
 }

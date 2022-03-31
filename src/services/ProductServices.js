@@ -73,6 +73,39 @@ const ProductServices = {
   getCoinPOSOrder(body){
     return requests.post('/products/GetCoinPOSCart',body);
   },
+  fetchGetCoinPOSOrder(body){
+    try
+    {
+      var productList = null;
+      await fetch(serviceUrl + 'GetLiffOrder',
+      { 
+        method:'POST',
+        //credentials:"include",
+        headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+        body:`{"LiffId": "${body.liffId}","LineUserId":"${body.lineUserId}", "LinePOSId":"${body.linePOSId}", "GroupId":"${body.groupId}","OrderId":${body.orderId},"CompanyId":${body.companyId}
+          ,"LocationId":${body.locationId},"CompanyName":"${body.companyName}","LocationName":"${body.locationName}"}`
+          
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+        //var obj = JSON.parse(data);
+        var obj = JSON.parse(data);
+          
+        console.log("Obj = " + obj);
+        console.log(data); // this will be a string
+        var pvJson = obj.ProductVariantListJson
+          productList = JSON.parse(pvJson)
+      });
+      
+        return productList;
+    }
+    catch (err) 
+    {
+      return err.message;
+      
+    }
+  },
   updateCoinPOSCartDetail(body)
   {
     return requests.post('/products/UpdateCoinPOSCartDetail',body);
