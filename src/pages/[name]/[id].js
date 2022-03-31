@@ -44,7 +44,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
     const {
       couponInfo,
       couponRef,
-      handleCouponCode,
+      setCouponData,
       discountAmount,
       
     } = useCheckoutSubmit();
@@ -310,7 +310,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
       promotionId,customerTypeId,page,itemPerPage,query,category,product) =>
     {
       //alert('locationId = ' + locationId);
-      const products = await ProductServices.getCoinPOSProductService({
+      const products = await ProductServices.fetchGetCoinPOSProductService({
         liffId,
         lineUserId,
         linePOSId,
@@ -487,6 +487,14 @@ const CancelPromotionCode = async(promotionCode) =>
 
     const ApplyPromotionCode = async(promotionCode,discountPercentage, isForAllProduct, minimumAmount, productIdList) =>
     {
+      alert("Checl Cookie = " + Cookies.get('couponInfo'))
+      if (Cookies.get('couponInfo')) {
+        const coupon = JSON.parse(Cookies.get('couponInfo'));
+        alert("Apply = " + JSON.stringify(coupon))
+        //setCouponInfo(coupon);
+        //setDiscountPercentage(coupon.discountPercentage);
+        //setMinimumAmount(coupon.minimumAmount);
+      }
       //alert(sessionStorage.getItem('discountDetails'));
       //if(getPromotionCode !== null)
       //{
@@ -576,6 +584,18 @@ const CancelPromotionCode = async(promotionCode) =>
 
           setDiscountDetail(JSON.stringify(discountDetails))
 
+          var couponData = [];
+          var couponDetail = {
+            endTime:promotion.endTime,
+            minimumAmount:promotion.minimumAmount,
+            discountRate:promotion.discountRate,
+
+          };
+          couponData.push(couponDetail);
+          
+          sessionStorage.setItem('couponInfo', JSON.stringify(couponData));
+          //Cookies.set('couponInfo', JSON.stringify(couponData));
+          setCouponData(promotionCode, couponData);
           
 
     }
@@ -614,7 +634,7 @@ const CancelPromotionCode = async(promotionCode) =>
       category = category === undefined ? 'null' : category;
       product = product === undefined ? 'null' : product;
       //alert("query = " + query);
-      const products = await ProductServices.getCoinPOSProductService({
+      const products = await ProductServices.fetchGetCoinPOSProductService({
         liffId,
         lineUserId,
         linePOSId,

@@ -64,8 +64,18 @@ const useCheckoutSubmit = () => {
   const { data } = useAsync(CouponServices.getAllCoupons);
 
   useEffect(() => {
+
     if (Cookies.get('couponInfo')) {
       const coupon = JSON.parse(Cookies.get('couponInfo'));
+      alert("Check out = " + JSON.stringify(coupon))
+      setCouponInfo(coupon);
+      setDiscountPercentage(coupon.discountPercentage);
+      setMinimumAmount(coupon.minimumAmount);
+    }
+    else if(sessionStorage.getItem('couponInfo'))
+    {
+      const coupon = JSON.parse(sessionStorage.getItem('couponInfo'));
+      alert("Session Check out = " + JSON.stringify(coupon))
       setCouponInfo(coupon);
       setDiscountPercentage(coupon.discountPercentage);
       setMinimumAmount(coupon.minimumAmount);
@@ -436,6 +446,44 @@ const useCheckoutSubmit = () => {
     }
   };
 
+  const setCouponData = (value, promotion) =>
+  {
+    alert("Coupon value = " + value);
+    alert("Promotion value = " + JSON.stringify(promotion));
+    //alert("Coupon Ref = " + couponRef.current.value);
+
+    if (!value) {
+      notifyError('Please Input a Coupon Code!');
+      return;
+    }
+    if (promotion.length < 1) {
+      notifyError('Please Input a Valid Coupon!');
+      return;
+    }
+
+    if (dayjs().isAfter(dayjs(promotion[0]?.endTime))) {
+      notifyError('This coupon is not valid!');
+      return;
+    }
+    
+    if (total < promotion[0]?.minimumAmount) {
+      notifyError(
+        `Minimum ${promotion[0].minimumAmount} USD required for Apply this coupon!`
+      );
+      return;
+    }else {
+      alert("set");
+      setMinimumAmount(promotion[0]?.minimumAmount);
+      setDiscountProductType(promotion[0].productType);
+      setDiscountPercentage(promotion[0].discountPercentage);
+      dispatch({ type: 'SAVE_COUPON', payload: promotion[0] });
+      Cookies.set('couponInfo', JSON.stringify(promotion[0]));
+      const coupon = JSON.stringify(promotion[0]);
+      setCouponInfo(coupon);
+      alert("Set coupon = " + coupon);
+    }
+  };
+
   const handleOrderId = (value) => 
   {
     setOrderId(value);
@@ -493,6 +541,7 @@ const useCheckoutSubmit = () => {
     pictureUrl,
     handleShippingId,
     handleShippingName,
+    setCouponData
     
     
   };
