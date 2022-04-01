@@ -52,7 +52,7 @@ const useCheckoutSubmit = () => {
   const stripe = useStripe();
   const elements = useElements();
   const couponRef = useRef('');
-  const { isEmpty, emptyCart, items, cartTotal } = useCart();
+  const { isEmpty, emptyCart, items, cartTotal, setItems } = useCart();
 
   const {
     register,
@@ -552,7 +552,8 @@ const useCheckoutSubmit = () => {
     handleShippingId,
     handleShippingName,
     setCouponData,
-    clearCouponData
+    clearCouponData,
+    setItems
     
     
   };

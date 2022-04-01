@@ -61,6 +61,47 @@ const ProductServices = {
   getDefaultDataCompany(body){
     return requests.post('/products/GetDefaultDataCompany',body);
   },
+  async fetchGetDefaultDataCompany(body){
+    try
+    {
+      var productList = null;
+      const products = await fetch(serviceUrl + 'GetDefaultDataCompany', 
+        { 
+          method:'POST',
+          //credentials:"include",
+          headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+          body:`{"LiffId": "${body.liffId}","LineUserId":"${body.lineUserId}", "LinePOSId":"${body.linePOSId}", "GroupId":"${body.groupId}","OrderId":${body.orderId},"CompanyId":${body.companyId},
+          "CatalogName":"${body.catalogName}","CompanyCode":"${body.companyCode}","PromotionId":${body.promotionId},"LocationId":${body.locationId},"CompanyName":"${body.companyName}","LocationName":"${body.locationName}","Page":${body.page},"RowPerPage":${body.itemPerPage},"Query":"${body.query}","Category":"${body.category}","Product":"${body.product}"}`
+          
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+          console.log("GetData = " + data)
+          try
+          {
+            var obj = JSON.parse(data);
+            var pvJson = obj.ProductVariantListJson
+            productList = JSON.parse(pvJson)
+          }
+          catch(ex)
+          {
+            return "Error: " + data;
+            
+          }
+          
+          
+          //closeNav(null);
+        });
+      
+
+        return productList;
+    }
+    catch(err) {
+      return "Error: " + err.message;
+      
+    }
+  },
   addToCoinPOSCart(body){
     return requests.post('/products/AddToCoinPOSCart',body);
   },
@@ -73,7 +114,7 @@ const ProductServices = {
   getCoinPOSOrder(body){
     return requests.post('/products/GetCoinPOSCart',body);
   },
-  fetchGetCoinPOSOrder(body){
+  async fetchGetCoinPOSOrder(body){
     try
     {
       var productList = null;
@@ -189,6 +230,37 @@ const ProductServices = {
   saveCustomerInfo(body) {
     
     return requests.post('/products/SaveCustomerInfo', body);
+    
+  },
+  async fetchSaveCustomerInfo(body) {
+    
+    try
+    {
+      var productList = null;
+      await fetch(serviceUrl + 'SocialCustomerSaveService',//fetch('http://localhost:5002/simple-cors3', 
+        { 
+          method:'POST',
+          //credentials:"include",
+          headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+          body:`{"FirstName": "${body.firstName}","MiddleName": "${body.middleName}", "LastName": "${body.lastName}", "Gender":${body.gender},"Phone":"${body.phone}","Mobile":"${body.mobile}","Email":"${body.email}","Address1":"${body.address1}","District":"${body.district}","City":"${body.city}","StateOrProvince":"${body.stateOrProvince}","Postalcode":"${body.postalcode}","Country":"${body.country}","CountryId":"${body.countryId}","CustomerId":"${body.customerId}","CompanyId":"${body.companyId}","CatalogName":"${body.catalogName}","PictureUrl":"${body.imageUrl}"}`
+          
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+          
+          var obj = JSON.parse(data);
+          //var pvJson = obj.ProductVariantListJson
+          productList = obj
+          
+        });
+      
+        return productList;
+    }
+    catch (err) 
+    {
+      return "Error: " + err.message
+    }
     
   },
 

@@ -90,7 +90,17 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
     const [locationTelData, setLocationTel] = useState(locationTel);
     const [discountDataDetails,setDiscountDetail] = useState('');
 
+    const [catalogPromotionId,setCatalogPromotionId] = useState(0);
     const [promotionCode,setPromotionCode] = useState('');
+    const [catalogPromotionName,setCatalogPromotionName] = useState('');
+    const [catalogDiscountPercentage,setCatalogDiscountPercentage] = useState(0);
+    const [catalogPromotionIsAllProduct,setCatalogPromotionIsAllProduct] = useState(false);
+    const [catalogMinimumAmount,setCatalogMinimumAmount] = useState(0);
+    const [catalogProductType,setCatalogProductType] = useState('');
+
+    const [isCatalogPromotion,setIsCatalogPromotion] = useState(false);
+    
+    
 
 
     const { setItems,clearCartMetadata,emptyCart, addItem, items } = useCart();
@@ -325,6 +335,17 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         catalogName,
         promotionId,customerTypeId,page,itemPerPage,query,category,product
       });
+
+      //alert(JSON.stringify(products));
+      //alert('products.catalogPromotionId = ' + products.catalogPromotionId)
+      setCatalogPromotionId(Number(products.catalogPromotionId));
+      setPromotionCode(products.catalogPromotionCode);
+      setCatalogPromotionName(products.catalogPromotionName);
+      setCatalogDiscountPercentage(products.catalogDiscountPercentage)
+      setCatalogPromotionIsAllProduct(products.catalogIsAllProduct);
+      setCatalogMinimumAmount(products.catalogMinimumAmount);
+      setCatalogProductType(products.catalogProductType)
+
 
       currentPage = products.currentPage;
       countPage = products.countPage;
@@ -649,7 +670,7 @@ const CancelPromotionCode = async(promotionCode) =>
         promotionId,customerTypeId,page,itemPerPage,query:query,category,product
       });
 
-      //alert(JSON.stringify(products));
+      
       currentPage = products.currentPage;
       var productVariants = [];//products.productVariantPresenters;
       if(products.productVariantPresenters !== null)
@@ -784,9 +805,22 @@ const CancelPromotionCode = async(promotionCode) =>
           <StickyCart discountDetails={discountDataDetails} currencySign={currencySign}/>
           <div className="bg-white">
             <div className="mx-auto py-5 max-w-screen-2xl px-3 sm:px-10">
-              <div className="flex w-full">
+              {catalogPromotionId === 0 
+              ?
+                <OfferCard promotions={promotions} selectedPromotion={promotionCode} companyId={catalogCompanyId} catalogName={catalogName} ApplyPromotionCode={ApplyPromotionCode} CancelPromotionCode={CancelPromotionCode}/>
+              :
+                <div className="bg-orange-100 px-10 py-6 rounded-lg mt-6 lg:block">
+                  <Banner promotionName={catalogPromotionName} discountPercentage={catalogDiscountPercentage} promotionIsAllProduct={catalogPromotionIsAllProduct} 
+                      minimumAmount={catalogMinimumAmount} currencySign={currencySign} productType={catalogProductType}/>
+                </div>
+                  /* <div className="bg-orange-100 px-10 py-6 rounded-lg mt-6 hidden lg:block">
+                      <Banner promotionName={catalogPromotionName} discountPercentage={catalogDiscountPercentage} promotionIsAllProduct={catalogPromotionIsAllProduct} 
+                      minimumAmount={catalogMinimumAmount} currencySign={currencySign} productType={catalogProductType}/>
+                    </div> */}
+              {/* <div className="flex w-full"> */}
                 {/* {dataPath} */}
-              <OfferCard promotions={promotions} selectedPromotion={promotionCode} companyId={catalogCompanyId} catalogName={catalogName} ApplyPromotionCode={ApplyPromotionCode} CancelPromotionCode={CancelPromotionCode}/>
+                
+                
                 {/* <div className="grid gap-4 mb-8 md:grid-cols-2 xl:grid-cols-2">
                   
                   <OfferCard promotions={promotions} companyId={catalogCompanyId} ApplyPromotionCode={ApplyPromotionCode}/>
@@ -797,7 +831,7 @@ const CancelPromotionCode = async(promotionCode) =>
                 {/* <div className="w-full lg:flex">
                   <OfferCard promotions={promotions} companyId={catalogCompanyId} ApplyPromotionCode={ApplyPromotionCode}/>
                 </div> */}
-              </div>
+              {/* </div> */}
               {/* <div className="bg-orange-100 px-10 py-6 rounded-lg mt-6 hidden lg:block">
                 <Banner />
               </div> */}
@@ -988,7 +1022,7 @@ export const getServerSideProps = async ({req, res,params }) => {
 
 
     
-  const products = await ProductServices.getDefaultDataCompany({
+  const products = await ProductServices.fetchGetDefaultDataCompany({
   //const products = await ProductServices.getCoinPOSProductService({
     liffId,
     lineUserId,

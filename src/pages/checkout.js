@@ -75,8 +75,10 @@ const Checkout = () => {
     linePOSId,
     liffId,
     pictureUrl,
+    setItems,
     handleShippingId,
     handleShippingName,
+    setCouponData
   } = useCheckoutSubmit();
 
   
@@ -369,6 +371,9 @@ const Checkout = () => {
   const [cities, setCities] = useState(citiesList);
   const [districts, setDistricts] = useState(districtsList);
   const [postalcode, setPostalCode] = useState(postalCodeData);
+  const [districtText, setDistrictText] = useState('');
+  const [cityText, setCityText] = useState('');
+  const [provinceText, setProvinceText] = useState('');
   const [changePostalcode, setChangePostalCode] = useState(false);
   const [shippingServices, setShippings] = useState(shippingsList);
 
@@ -382,6 +387,7 @@ const Checkout = () => {
   const [bankShow, setBankShow] = useState(false);
   const [qrUrl, setQRUrl] = useState('');
 
+  const [isInputAddress, setIsInputAddress] = useState(false);
   /* if(sessionStorage.getItem('countrys'))
   {
     var countrysJson = sessionStorage.getItem('countrys'); 
@@ -515,9 +521,132 @@ const Checkout = () => {
     submitHandler(data);
   };
 
+  //const ApplyPromotionCode = async(promotionCode,discountPercentage, isForAllProduct, minimumAmount, productIdList) =>
+  const ApplyPromotionCode = async(e) => {
+    e.preventDefault();  
+      
+
+      if (!couponRef.current.value) {
+        notifyError('Please Input a Coupon Code!');
+        return;
+      }
+      var orderDetails = []
+
+      for(var i = 0; i<items.length;i++)
+      {
+        var itemData = items[i];
+        var orderDetail = {
+          VariantId:itemData.id,
+          Quantity:itemData.quantity,
+          ProductVariantLabel:itemData.title,
+          UnitPrice:itemData.price,
+          ProductId:itemData.slug
+        };
+         
+        orderDetails.push(orderDetail);
+      }
+
+      var orderId = catalogOrderId;
+      var companyId = catalogCompanyId;
+      var locationId = catalogLocationId;
+      var qrPromotion = promotionCode;
+      var pictureUrl = '';
+
+      
+      const promotion = await ProductServices.applyPromotionCode({
+        companyId,
+        locationId,
+        orderId:0,
+        qrPromotion,
+        lineUserId:'',
+        linePOSId:'',
+        liffId:'',
+        pictureUrl:'',
+        catalogName:catalogName,
+        orderDetails:JSON.stringify(orderDetails)
+      });
+      var salesOrderDetails = promotion.orderDetails;
+
+          const productDs = [];
+          const discountDetails = [];
+          
+          for(var i = 0;i<salesOrderDetails.length;i++)
+          {
+            var detail = {
+              id: Number(salesOrderDetails[i].productVariantId),
+              slug:salesOrderDetails[i].productId,
+              name: salesOrderDetails[i].upc,
+              title:salesOrderDetails[i].productVariantName,
+              sku: salesOrderDetails[i].sku,
+              quantity:salesOrderDetails[i].quantity,
+              price: salesOrderDetails[i].productVariantPrice,
+              image:salesOrderDetails[i].imageUrl,
+            }
+            var discountDetail = {
+              id: Number(salesOrderDetails[i].productVariantId),
+              discount:Number(salesOrderDetails[i].discount),
+              discountRate:Number(salesOrderDetails[i].discountRate)
+            }
+            productDs.push(detail);
+            discountDetails.push(discountDetail);
+          }
+
+          //alert(JSON.stringify(productDs))
+          //alert(JSON.stringify(discountDetails))
+          //alert(JSON.stringify(productIdList))
+          setItems(productDs);
+          sessionStorage.setItem('discountDetails', JSON.stringify(discountDetails));
+          sessionStorage.setItem('discountRate', (discountPercentage/100));
+          sessionStorage.setItem('promotionCode', promotionCode);
+          sessionStorage.setItem('promotionMinimumAmount', minimumAmount);
+          sessionStorage.setItem('promotionProductIdList', JSON.stringify(productIdList));
+          sessionStorage.setItem('isForAllProduct', isForAllProduct);
+
+          //setPromotionCode(promotionCode);
+
+          localStorage.setItem('discountDetails',JSON.stringify(discountDetails));
+          localStorage.setItem('discountRate', (discountPercentage/100));
+          localStorage.setItem('promotionCode', promotionCode);
+          localStorage.setItem('promotionMinimumAmount', minimumAmount);
+          localStorage.setItem('promotionProductIdList', JSON.stringify(productIdList));
+          localStorage.setItem('isForAllProduct', isForAllProduct);
+
+          setDiscountDetail(JSON.stringify(discountDetails))
+
+          var couponData = [];
+          //alert(JSON.stringify(promotion))
+          var couponDetail = {
+            couponCode:promotionCode,
+            endTime:promotion.endTime,
+            minimumAmount:promotion.minimumAmount,
+            discountPercentage:promotion.discountRate,
+
+          };
+          couponData.push(couponDetail);
+          
+          //alert(JSON.stringify(couponData));
+          sessionStorage.setItem('couponInfo', JSON.stringify(couponData));
+          //Cookies.set('couponInfo', JSON.stringify(couponData));
+          setCouponData(promotionCode, couponData);
+          
+
+    }
+
   const handlePostalCodeChange = (event) => {  
     //alert("aaaa" + event.target.value);
     setPostalCode(event.target.value)
+  }
+  const handleDistrictTextChange = (event) => {  
+    //alert("aaaa" + event.target.value);
+    setDistrictText(event.target.value)
+  }
+  const handleCityTextChange = (event) => {  
+    //alert("aaaa" + event.target.value);
+    setCityText(event.target.value)
+  }
+  const handleProvinceTextChange = (event) => {  
+    //alert("aaaa" + event.target.value);
+    setProvinceText(event.target.value)
   }
   const handleAddress1Change = (event) => {  
     //alert("aaaa" + event.target.value);
@@ -573,11 +702,19 @@ const handleCountryChange = async(event) => {
     console.log(event.target.value);
     var countryId = parseInt(event.target.value)
     setCountryId(countryId);
+    if(countryId === 10)//thai
+    {
+      setIsInputAddress(false);
+    }
+    else
+    {
+      setIsInputAddress(true);
+    }
     //alert('country Id = ' + countryId);
     var provincesData = await ProductServices.getStateProvince();
     //var provinces = await GetStateProvince()
     //PopulateProvince(provinces)
-    
+    setPostalCode('');
 }
 const handleProvinceChange = async(event) => {
     console.log(event.target.value);
@@ -587,6 +724,8 @@ const handleProvinceChange = async(event) => {
     //alert(JSON.stringify(citysData));
     setProvinceId(stateId);
     setCities(citysData);
+    setDistricts([]);
+    setPostalCode('');
     //var citys = await GetCity(stateId)
     //PopulateCity(citys)
     
@@ -599,6 +738,7 @@ const handleCityChange = async(event) => {
     setCityId(cityId);
     //alert(JSON.stringify(districtsData));
     setDistricts(districtsData);
+    setPostalCode('');
     //PopulateDistrict(districts)
     
 }
@@ -664,26 +804,41 @@ const SaveCustomerInfo = async (companyId) =>
     var countryString = countryItem === null ? "" : countryItem.countryLocalName;
 
     //alert("cityId = " + cityId);
-    var cityItem = cities.find(x => x.Id === cityId);
+
+    var cityString = '';
+    var provinceString = '';
+    var districtString = '';
+    if(isInputAddress === true)
+    {
+      cityString = cityText;
+      provinceString = provinceText;
+      districtString = districtText;
+    }
+    else
+    {
+      var cityItem = cities.find(x => x.Id === cityId);
+      cityString = cityItem === null ? "" : cityItem.Name_th;
+
+      var provinceItem = provinces.find(x => x.Id === provinceId);
+      provinceString = provinceItem === null ? "" : provinceItem.Name_th;
+
+      var districtItem = districts.find(x => x.Id === districtId);
+      districtString = districtItem === null ? "" : districtItem.Name_th;
+    }
     //alert(JSON.stringify(cityItem));
     
-    var cityString = cityItem === null ? "" : cityItem.Name_th;
     
     //alert("provinceId = " + provinceId);
-    var provinceItem = provinces.find(x => x.Id === provinceId);
     //alert(JSON.stringify(provinceItem));
-    var provinceString = provinceItem === null ? "" : provinceItem.Name_th;
-
+    
     //alert("districtId = " + districtId);
-    var districtItem = districts.find(x => x.Id === districtId);
     //alert(JSON.stringify(districtItem));
-    var districtString = districtItem === null ? "" : districtItem.Name_th;
-
+    
     var postalCodeString = postalcode;
     //alert(companyId)
-    //alert(firstName);
+    alert(firstName);
     //return;
-    var customerData = await ProductServices.saveCustomerInfo(
+    var customerData = await ProductServices.fetchSaveCustomerInfo(
       {
         firstName:firstName,
         middleName:'',
@@ -849,7 +1004,7 @@ const SaveCustomerInfo = async (companyId) =>
                         label="บ้านเลขที่ ซอย ถนน"
                         name="address"
                         type="text"
-                        placeholder="123 Boulevard Rd, Beverley Hills"
+                        placeholder="บ้านเลขที่ ซอย ถนน"
                         isDisable={IsDisableCustomerInfo}
                         dataValue={address1}
                         canAutoChange={true}
@@ -887,14 +1042,39 @@ const SaveCustomerInfo = async (companyId) =>
                           type="text"
                           placeholder="United States"
                         /> */}
-                        <ProvinceFormSelect register={register}
-                          label="จังหวัด"
-                          name="province"
-                          type="text"
-                          isDisable={IsDisableCustomerInfo}
-                          handleItemChange={handleProvinceChange}
-                          dataList={provinces} selectedId={provinceId}
-                          />
+                        {
+                          isInputAddress === true 
+                          ?
+                            /*<InputArea
+                            register={register}
+                            label="จังหวัด"
+                            name="province"
+                            type="text"
+                            placeholder="Please insert state/province."
+                          />*/
+                            <EditableCustomerInput register={register}
+                                id="province"
+                                label="จังหวัด"
+                                name="province"
+                                type="input"
+                                placeholder="Please insert state/province."
+                                isDisable={IsDisableCustomerInfo}
+                                dataValue={provinceText}
+                                changeData={changePostalcode}
+                                canAutoChange={true}
+                                handleDataChange={handleProvinceTextChange}
+                                />
+                          :
+                            <ProvinceFormSelect register={register}
+                            label="จังหวัด"
+                            name="province"
+                            type="text"
+                            isDisable={IsDisableCustomerInfo}
+                            handleItemChange={handleProvinceChange}
+                            dataList={provinces} selectedId={provinceId}
+                            />
+                        }
+                        
                         <Error errorName={errors.province} />
                       </div>
 
@@ -906,7 +1086,30 @@ const SaveCustomerInfo = async (companyId) =>
                           type="text"
                           placeholder="2345"
                         /> */}
-                        <CityFormSelect register={register}
+                        {
+                          isInputAddress === true 
+                          ?
+                            /* <InputArea
+                            register={register}
+                            label="เขต/อำเภอ"
+                            name="province2"
+                            type="text"
+                            placeholder="Please insert city."
+                          /> */
+                            <EditableCustomerInput register={register}
+                              id="city"
+                              label="เขต/อำเภอ"
+                              name="province2"
+                              type="input"
+                              placeholder="Please insert city."
+                              isDisable={IsDisableCustomerInfo}
+                              dataValue={cityText}
+                              changeData={changePostalcode}
+                              canAutoChange={true}
+                              handleDataChange={handleCityTextChange}
+                              />
+                          :
+                          <CityFormSelect register={register}
                           label="เขต/อำเภอ"
                           name="province2"
                           type="text"
@@ -914,6 +1117,8 @@ const SaveCustomerInfo = async (companyId) =>
                           handleItemChange={handleCityChange}
                           dataList={cities} selectedId={cityId}
                           />
+                        }
+                        
                         <Error errorName={errors.city} />
                       </div>
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -924,14 +1129,38 @@ const SaveCustomerInfo = async (companyId) =>
                           type="text"
                           placeholder="2345"
                         /> */}
-                        <DistrictFormSelect register={register}
+                        {isInputAddress === true 
+                        ?
+                          /* <InputArea
+                          register={register}
                           label="แขวง/ตำบล"
                           name="district"
                           type="text"
+                          placeholder="Please insert district."
+                        /> */
+                          <EditableCustomerInput register={register}
+                          id="district"
+                          label="แขวง/ตำบล"
+                          name="district"
+                          type="input"
+                          placeholder="Please insert district."
                           isDisable={IsDisableCustomerInfo}
-                          handleItemChange={handleDistrictChange}
-                          dataList={districts} selectedId={districtId}
+                          dataValue={districtText}
+                          changeData={changePostalcode}
+                          canAutoChange={true}
+                          handleDataChange={handleDistrictTextChange}
                           />
+                        :
+                          <DistrictFormSelect register={register}
+                            label="แขวง/ตำบล"
+                            name="district"
+                            type="text"
+                            isDisable={IsDisableCustomerInfo}
+                            handleItemChange={handleDistrictChange}
+                            dataList={districts} selectedId={districtId}
+                            />
+                        }
+                        
                         <Error errorName={errors.district} />
                       </div>
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -948,7 +1177,7 @@ const SaveCustomerInfo = async (companyId) =>
                         label="รหัสไปรษณีย์"
                         name="zipCode"
                         type="input"
-                        placeholder="12345"
+                        placeholder="รหัสไปรษณีย์"
                         isDisable={IsDisableCustomerInfo}
                         dataValue={postalcode}
                         changeData={changePostalcode}
@@ -1166,8 +1395,14 @@ const SaveCustomerInfo = async (companyId) =>
                           placeholder="Input your coupon code"
                           className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-cyan-500 placeholder-gray-500 placeholder-opacity-75"
                         />
-                        <button
+                        {/* <button
                           onClick={handleCouponCode}
+                          className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-cyan-500 h-12 text-sm lg:text-base w-full sm:w-auto"
+                        >
+                          ใช้รหัสคูปอง
+                        </button> ApplyPromotionCode*/}
+                        <button
+                          onClick={ApplyPromotionCode}
                           className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-cyan-500 h-12 text-sm lg:text-base w-full sm:w-auto"
                         >
                           ใช้รหัสคูปอง
