@@ -46,6 +46,7 @@ const useLoginSubmit = (setModalOpen) => {
 
       });
 
+      //alert("UserLogin = " + JSON.stringify(userLogin));
       setLoading(false);
       setModalOpen(false);
       if(userLogin !== undefined && userLogin !== null)
@@ -65,6 +66,11 @@ const useLoginSubmit = (setModalOpen) => {
 
 
         sessionStorage.setItem('address1', userLogin.address1);
+        sessionStorage.setItem('country', userLogin.country);
+        sessionStorage.setItem('province', userLogin.province);
+        sessionStorage.setItem('city', userLogin.city);
+        sessionStorage.setItem('district', userLogin.district);
+
         sessionStorage.setItem('countryId', userLogin.countryId);
         sessionStorage.setItem('provinceId', userLogin.provinceId);
         sessionStorage.setItem('cityId', userLogin.cityId);

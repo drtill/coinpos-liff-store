@@ -430,7 +430,7 @@ const Order = ({ params }) => {
         <div className="max-w-screen-2xl mx-auto py-10 px-3 sm:px-6">
           <div className="bg-cyan-100 rounded-md mb-5 px-4 py-3">
             <label>
-              ขอบคุณที่ใช้บริการ{' '} {data.paymentStatusId}
+              ขอบคุณที่ใช้บริการ{' '} 
               {/* <span className="font-bold text-cyan-600">{data.name},</span>{' '} */}
               <span className="font-bold text-cyan-600">{data.customerName},</span>{' '}
               เราได้รับคำสั่งซื้อของคุณแล้ว !

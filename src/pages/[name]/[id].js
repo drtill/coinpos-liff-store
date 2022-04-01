@@ -155,12 +155,15 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
 
             sessionStorage.setItem('countrys', JSON.stringify(userLocal.countrys));
             sessionStorage.setItem('provinces', JSON.stringify(userLocal.provinces));
+            
+            alert(userLocal.cities);
             sessionStorage.setItem('cities', JSON.stringify(userLocal.cities));
             sessionStorage.setItem('districts', JSON.stringify(userLocal.districts));
           }
           else
           {
             //alert('Logout');
+            
             dispatch({ type: 'USER_LOGOUT' });
             Cookies.remove('userInfo');
             Cookies.remove('couponInfo');

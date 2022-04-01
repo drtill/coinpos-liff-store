@@ -125,6 +125,10 @@ const Checkout = () => {
   var districtIdData = 0;
   var shippingId = 0;
 
+  var provinceTextData = '';
+  var cityTextData = '';
+  var districtTextData = '';
+
   var countrysData = [];
 
   var salesOrderId = 0;
@@ -149,12 +153,38 @@ const Checkout = () => {
   var catalogName = '';
   var dataPath = '';
   var customerId = 0;
+  var isInputAddressData = false;
 
   useEffect(() => 
   {
-
     
-  });
+    if(Number(countryIdData) !== 10)//thai
+    {
+      isInputAddressData = true;
+      setIsInputAddress(isInputAddressData);
+      setIsInputAddress(isInputAddressData);
+      if(sessionStorage.getItem('city'))
+      {
+        cityTextData = sessionStorage.getItem('city'); 
+        setCityText(cityTextData);
+          
+      }
+      if(sessionStorage.getItem('district'))
+      {
+        districtTextData = sessionStorage.getItem('district'); 
+        setDistrictText(districtTextData);
+      }
+      if(sessionStorage.getItem('province'))
+      {
+        provinceTextData = sessionStorage.getItem('province'); 
+        setProvinceText(provinceTextData);
+      }
+      
+      
+    }
+    
+    
+  },[]);
   if(sessionStorage.getItem('customerId'))
   {
     customerId = sessionStorage.getItem('customerId'); 
@@ -302,9 +332,12 @@ const Checkout = () => {
   {
     
     countryIdData = Number(sessionStorage.getItem('countryId')); 
+    
+    
     //alert("Select Id = " + countryId);
       
   }
+  
   
   if(sessionStorage.getItem('cityId'))
   {
@@ -354,6 +387,7 @@ const Checkout = () => {
     var shippingsJson = sessionStorage.getItem('shippings'); 
     shippingsList = JSON.parse(shippingsJson);
   }
+
   
   const [IsApproveCustomerInfo, setApproveCustomerInfo] = useState(false);
   const [IsEditCustomerInfo, setEditCustomerInfo] = useState(false);
@@ -371,9 +405,9 @@ const Checkout = () => {
   const [cities, setCities] = useState(citiesList);
   const [districts, setDistricts] = useState(districtsList);
   const [postalcode, setPostalCode] = useState(postalCodeData);
-  const [districtText, setDistrictText] = useState('');
-  const [cityText, setCityText] = useState('');
-  const [provinceText, setProvinceText] = useState('');
+  const [districtText, setDistrictText] = useState(districtTextData);
+  const [cityText, setCityText] = useState(cityTextData);
+  const [provinceText, setProvinceText] = useState(provinceTextData);
   const [changePostalcode, setChangePostalCode] = useState(false);
   const [shippingServices, setShippings] = useState(shippingsList);
 
@@ -387,7 +421,9 @@ const Checkout = () => {
   const [bankShow, setBankShow] = useState(false);
   const [qrUrl, setQRUrl] = useState('');
 
-  const [isInputAddress, setIsInputAddress] = useState(false);
+  const [isInputAddress, setIsInputAddress] = useState(isInputAddressData);
+
+  const [contactError, setContactError] = useState({});
   /* if(sessionStorage.getItem('countrys'))
   {
     var countrysJson = sessionStorage.getItem('countrys'); 
@@ -456,21 +492,27 @@ const Checkout = () => {
   //alert(JSON.stringify(countryItem));
     var countryString = countryItem === null ? "" : countryItem.countryLocalName;
 
-    //alert("cityId = " + cityId);
-    var cityItem = cities.find(x => x.Id === cityId);
-    //alert(JSON.stringify(cityItem));
     
-    var cityString = cityItem === null ? "" : cityItem.Name_th;
-    
-    //alert("provinceId = " + provinceId);
-    var provinceItem = provinces.find(x => x.Id === provinceId);
-    //alert(JSON.stringify(provinceItem));
-    var provinceString = provinceItem === null ? "" : provinceItem.Name_th;
+    var cityString = '';
+    var provinceString = '';
+    var districtString = '';
+    if(isInputAddress === true)
+    {
+      cityString = cityText;
+      provinceString = provinceText;
+      districtString = districtText;
+    }
+    else
+    {
+      var cityItem = cities.find(x => x.Id === cityId);
+      cityString = cityItem === null ? "" : cityItem.Name_th;
 
-    //alert("districtId = " + districtId);
-    var districtItem = districts.find(x => x.Id === districtId);
-    //alert(JSON.stringify(districtItem));
-    var districtString = districtItem === null ? "" : districtItem.Name_th;
+      var provinceItem = provinces.find(x => x.Id === provinceId);
+      provinceString = provinceItem === null ? "" : provinceItem.Name_th;
+
+      var districtItem = districts.find(x => x.Id === districtId);
+      districtString = districtItem === null ? "" : districtItem.Name_th;
+    }
 
     var postalCodeString = postalcode;
 
@@ -517,6 +559,11 @@ const Checkout = () => {
     }
 
 
+    if(!checkValid(firstName,lastName,email,phoneNumber, address1, countryId, provinceString, districtString, cityString))
+    {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน")
+      return;
+    }
 
     submitHandler(data);
   };
@@ -779,6 +826,7 @@ const PopulatePostalCode = (id) =>
 const AcceptCustomerInfo = async () =>
 {
   //alert("AcceptCustomerInfo");
+  
   setEditCustomerInfo(false);
   setDisableCustomerInfo(true);
   setApproveCustomerInfo(true);
@@ -836,8 +884,15 @@ const SaveCustomerInfo = async (companyId) =>
     
     var postalCodeString = postalcode;
     //alert(companyId)
-    alert(firstName);
+    //alert(firstName);
     //return;
+
+    if(!checkValid(firstName,lastName,email,phoneNumber, address1, countryId, provinceString, districtString, cityString))
+    {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน")
+      return;
+    }
+
     var customerData = await ProductServices.fetchSaveCustomerInfo(
       {
         firstName:firstName,
@@ -864,6 +919,53 @@ const SaveCustomerInfo = async (companyId) =>
       setCustomerAddressId(customerAddressId);
       setEditCustomerInfo(false);
       setDisableCustomerInfo(true);
+}
+
+const checkValid = (firstName, lastName, email, phoneNumber, address1, countryId, provinceString, districtString,cityString) =>
+{
+  var isComplete = true;
+  if(firstName.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(lastName.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(email.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(phoneNumber.length <= 0)
+  {
+    //alert("Contact Error")
+    var error = {};
+    error['message'] = 'เบอร์ติดต่อว่างไม่ได้';
+    setContactError(error);
+    isComplete = false;
+  }
+  if(address1.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(countryId === 0)
+  {
+    isComplete = false;
+  }
+  if(provinceString.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(districtString.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(cityString.length <= 0)
+  {
+    isComplete = false;
+  }
+
+  return isComplete;
 }
 
 
@@ -980,7 +1082,7 @@ const SaveCustomerInfo = async (companyId) =>
                         handleDataChange={handleContactChange}
                         />
 
-                        <Error errorName={errors.contact} />
+                        <Error errorName={contactError} />
                       </div>
                     </div>
                   </div>
