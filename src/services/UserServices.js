@@ -83,6 +83,34 @@ const UserServices = {
   coinposCheckExpired(body) {
     return requests.post(`/user/coinpos-check-expired`, body);
   },
+  async fetchCoinposCheckExpired(body) {
+    try
+    {
+      var productList = null;
+      await fetch(serviceUrl + 'CheckCoinposUserExpired', 
+      { 
+        method:'POST',
+        //credentials:"include",
+        headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+        body:`{"CompanyId":${body.companyId},"Email":"${body.email}"}`
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+        //var obj = JSON.parse(data);
+        //console.log("Obj = " + obj);
+        console.log("expired = " + data); // this will be a string
+        productList = data;
+      });
+      
+      return productList;
+      
+    }
+    catch (err) {
+      return "Error: " + err.message;
+      
+    }
+  },
 
   signUpWithProvider(body) {
     return requests.post('/user/signup', body);

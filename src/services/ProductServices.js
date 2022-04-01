@@ -167,13 +167,93 @@ const ProductServices = {
   {
     return requests.post('/products/GetStateProvince',body);
   },
+  async fetchGetStateProvince(body)
+  {
+    try
+    {
+      var provinceData = null;
+      await fetch(serviceUrl + 'GetProvince',
+      { 
+        method:'POST',
+        //credentials:"include",
+        headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+        body:``  
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+        //var obj = JSON.parse(data);
+        provinceData = (data);
+      });
+      
+        return provinceData;
+    }
+    catch (err) 
+    {
+      return "Error: " + err.message;
+      
+    }
+  },
   getDistrict(body)
   {
     return requests.post('/products/GetDistrict',body);
   },
+  async fetchGetDistrict(body)
+  {
+    try
+  {
+    var distrinctData = ''
+    await fetch(serviceUrl + 'GetDistrict',
+    { 
+      method:'POST',
+      //credentials:"include",
+      headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+      body:`{"CityId": "${body.cityId}"}` 
+      }).then(function(response) {
+        return response.text();
+      }).then(function(data) {
+
+      var obj = JSON.parse(data);
+      distrinctData = (obj.districtResponses);
+    });
+    
+      return distrinctData;
+  }
+  catch (err) 
+  {
+    return "Error: " + err.message;
+    
+  }
+  },
   getCity(body)
   {
     return requests.post('/products/GetCity',body);
+  },
+  async fetchGetCity(body)
+  {
+    try
+    {
+      var cityData = ''
+      await fetch(serviceUrl + 'GetCity',
+      { 
+        method:'POST',
+        //credentials:"include",
+        headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+        body: `{"StateId":"${body.stateId}"}`
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+        var obj = JSON.parse(data);
+        cityData = (obj.cityResponses);
+      });
+      
+        return cityData;
+    }
+    catch (err) 
+    {
+      return "Error: " + err.message;
+    }
   },
   getQRPayment(body)
   {

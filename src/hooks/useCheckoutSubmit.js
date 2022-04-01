@@ -126,7 +126,7 @@ const useCheckoutSubmit = () => {
       var userLocal = JSON.parse(userLocalJson)
       try
       {
-        const expiredDate = await UserServices.coinposCheckExpired(
+        const expiredDate = await UserServices.fetchCoinposCheckExpired(
           {
             email:userLocal.email,
             companyId:companyId

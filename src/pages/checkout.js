@@ -711,7 +711,7 @@ const handleCountryChange = async(event) => {
       setIsInputAddress(true);
     }
     //alert('country Id = ' + countryId);
-    var provincesData = await ProductServices.getStateProvince();
+    var provincesData = await ProductServices.fetchGetStateProvince();
     //var provinces = await GetStateProvince()
     //PopulateProvince(provinces)
     setPostalCode('');
@@ -720,7 +720,7 @@ const handleProvinceChange = async(event) => {
     console.log(event.target.value);
     var stateId = parseInt(event.target.value)
     //alert('state Id = ' + stateId);
-    var citysData = await ProductServices.getCity({stateId});
+    var citysData = await ProductServices.fetchGetCity({stateId});
     //alert(JSON.stringify(citysData));
     setProvinceId(stateId);
     setCities(citysData);
@@ -734,7 +734,7 @@ const handleCityChange = async(event) => {
     console.log(event.target.value);
     var cityId = parseInt(event.target.value)        
     //alert('city Id = ' + cityId);
-    var districtsData = await ProductServices.getDistrict({cityId});
+    var districtsData = await ProductServices.fetchGetDistrict({cityId});
     setCityId(cityId);
     //alert(JSON.stringify(districtsData));
     setDistricts(districtsData);
