@@ -251,8 +251,9 @@ const Order = ({ params }) => {
           setPaymentContent(paymentContentData);
         }
 
+    
 
-  const { data, loading } = useAsync(() => ProductServices.getPayOrderById(
+  const { data, loading } = useAsync(() => ProductServices.fetchGetPayOrderById(
     {
       orderId,
       companyId,
@@ -290,7 +291,7 @@ const Order = ({ params }) => {
       try
       {
         //alert('Login 3');
-        const expiredDate = await UserServices.coinposCheckExpired(
+        const expiredDate = await UserServices.fetchCoinposCheckExpired(
           {
             email:userLocal.email,
             companyId:companyId

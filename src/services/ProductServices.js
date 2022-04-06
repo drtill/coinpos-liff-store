@@ -1,7 +1,7 @@
 import requests from './httpServices';
 
-//const serviceUrl = 'https://coinpos-uat.azurewebsites.net/lineliff/';
-const serviceUrl = 'http://localhost:41781/lineliff/';
+const serviceUrl = 'https://coinpos-uat.azurewebsites.net/lineliff/';
+//const serviceUrl = 'http://localhost:41781/lineliff/';
 const ProductServices = {
   getShowingProducts() {
     return requests.get('/products/show');
@@ -9,10 +9,78 @@ const ProductServices = {
   applyPromotionCode(body) {
     return requests.post('/products/ApplyPromotionCode',body);
   },
+  async fetchApplyPromotionCode(body) {
+    try
+    {
+      var productList = null;
+      await fetch(serviceUrl + 'ApplyPromotionCode',//fetch('http://localhost:5002/simple-cors3', 
+      { 
+        method:'POST',
+        //credentials:"include",
+        headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+        body:`{"CompanyId":${body.companyId},"LocationId":${body.locationId},
+        "OrderId":${body.orderId},
+        "PromotionCode":"${body.qrPromotion}",
+        "UserId":1,
+        "LineUserId": "${body.lineUserId}",
+        "LinePOSId":"${body.linePOSId}","LiffId":"${body.liffId}","PictureUrl":"${body.pictureUrl}",
+        "CatalogName":"${body.catalogName}","OrderDetails":${body.orderDetails}}`
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+        //var obj = JSON.parse(data);
+        //console.log("Obj = " + obj);
+        //console.log(data); // this will be a string
+        productList = data;
+      });
+      
+        return productList;
+    }
+    catch (err) 
+    {
+      return "Error: " + err.message;
+      
+    }
+  },
   cancelPromotionCode(body) {
     return requests.post('/products/CancelPromotionCode',body);
   },
 
+  async fetchCancelPromotionCode(body) {
+    try
+    {
+      var productList = null;
+      await fetch(serviceUrl + 'ApplyPromotionCode',//fetch('http://localhost:5002/simple-cors3', 
+      { 
+        method:'POST',
+        //credentials:"include",
+        headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+        body:`{"CompanyId":${body.companyId},"LocationId":${body.locationId},
+        "OrderId":${body.orderId},
+        "PromotionCode":"${body.qrPromotion}",
+        "UserId":1,
+        "LineUserId": "${body.lineUserId}",
+        "LinePOSId":"${body.linePOSId}","LiffId":"${body.liffId}","PictureUrl":"${body.pictureUrl}",
+        "CatalogName":"${body.catalogName}","OrderDetails":${body.orderDetails}}`
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+        //var obj = JSON.parse(data);
+        //console.log("Obj = " + obj);
+        //console.log(data); // this will be a string
+        productList = data;
+      });
+      
+        return productList;
+    }
+    catch (err) 
+    {
+      return "Error: " + err.message
+      
+    }
+  },
   getDiscountedProducts() {
     return requests.get('/products/discount');
   },
@@ -37,7 +105,39 @@ const ProductServices = {
           //credentials:"include",
           headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
           body:`{"LiffId": "${body.liffId}","LineUserId":"${body.lineUserId}", "LinePOSId":"${body.linePOSId}", "GroupId":"${body.groupId}","OrderId":${body.orderId},"CompanyId":${body.companyId},
-          "CatalogName":"${body.catalogName}","CompanyCode":"${body.companyCode}","PromotionId":${body.promotionId},"LocationId":${body.locationId},"CompanyName":"${body.companyName}","LocationName":"${body.locationName}","Page":${body.page},"RowPerPage":${body.itemPerPage},"Query":"${body.query}","Category":"${body.category}","Product":"${body.product}"}`
+          "CatalogName":"${body.catalogName}","CompanyCode":"${body.companyCode}","PromotionId":${body.promotionId},"CustomerTypeId":${body.customerTypeId},"LocationId":${body.locationId},"CompanyName":"${body.companyName}","LocationName":"${body.locationName}","Page":${body.page},"RowPerPage":${body.itemPerPage},"Query":"${body.query}","Category":"${body.category}","Product":"${body.product}"}`
+          
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+          console.log("GetData = " + data)
+          var obj = JSON.parse(data);
+          var pvJson = obj.ProductVariantListJson
+          productList = JSON.parse(pvJson)
+          
+          
+        });
+      
+
+        return productList;
+    }
+    catch(err) {
+        return "Error: " + err.message
+    }
+  },
+  async fetchRefreshCoinPOSProductService(body){
+    try
+    {
+      //alert("Fetch")
+      var productList = null;
+      const products = await fetch(serviceUrl + 'RefreshLiffProductList',//fetch('http://localhost:5002/simple-cors3', 
+        { 
+          method:'POST',
+          //credentials:"include",
+          headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+          body:`{"LiffId": "${body.liffId}","LineUserId":"${body.lineUserId}", "LinePOSId":"${body.linePOSId}", "GroupId":"${body.groupId}","OrderId":${body.orderId},"CompanyId":${body.companyId},
+          "CatalogName":"${body.catalogName}","CompanyCode":"${body.companyCode}","PromotionId":${body.promotionId},"CustomerTypeId":${body.customerTypeId},"LocationId":${body.locationId},"CompanyName":"${body.companyName}","LocationName":"${body.locationName}","Page":${body.page},"RowPerPage":${body.itemPerPage},"Query":"${body.query}","Category":"${body.category}","Product":"${body.product}"}`
           
         }).then(function(response) {
           return response.text();
@@ -107,6 +207,35 @@ const ProductServices = {
   },
   closeCoinPOSCart(body){
     return requests.post('/products/CloseBill',body);
+  },
+  async fetchCloseCoinPOSCart(body){
+    try
+    {
+      var productList = null;
+      await fetch(serviceUrl + 'CloseBill', 
+      { 
+        method:'POST',
+        //credentials:"include",
+        headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+        body:`{"OrderId": ${body.orderId},"ShippingId":${body.shippingId},"ShippingName":"${body.shippingName}","ShippingFee":${body.shippingFee},"CompanyId":"${body.companyId}","LineUserId":"${body.linePOSId}","LiffId":"${body.liffId}","PictureUrl":"${body.pictureUrl}",
+        "FirstName":"${body.firstName}","LastName":"${body.lastName}","Mobile":"${body.mobile}","Email":"${body.email}",
+        "Address1":"${body.address1}","District":"${body.district}","Country":"${body.country}","City":"${body.city}","StateOrProvince":"${body.stateOrProvince}","PostalCode":"${body.postalCode}",
+        "OrderDetails":${body.orderDetails},"CatalogName":"${body.catalogName}"}`
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+
+        
+        productList = data;
+      });
+      
+        return productList;
+    }
+    catch (err) 
+    {
+      return "Error: " + err.message;
+      
+    }
   },
   getAllCoinPOSCoupons(body) {
     return requests.post('/products/GetCoinPOSCoupon', body);
@@ -305,6 +434,33 @@ const ProductServices = {
   },
   getPayOrderById(body) {
     return requests.post('/products/GetPayOrderById', body);
+    
+  },
+  async fetchGetPayOrderById(body) {
+    try {
+      
+      alert("Get Pay Order = " + JSON.stringify(body));
+      var productList
+      await fetch(serviceUrl + 'GetPayCart',
+      { 
+        method:'POST',
+        //credentials:"include",
+        headers: {'Content-Type': 'application/json','x-security-lock':'0241CCFF2D40AF7AF8A4FC02272C47A30D15DBDFB36E3266D1296212574F328E'},
+        body:`{"OrderId": ${body.orderId},"CompanyId":"${body.companyId}","LocationId":"${body.locationId}","UserId":"${body.lineUserId}","GroupId":"${body.groupId}","LinePOSId":"${body.linePOSId}","LiffId":"${body.liffId}","PictureUrl":"${body.pictureUrl}","CatalogName":"${body.catalogName}"}`
+        }).then(function(response) {
+          return response.text();
+        }).then(function(data) {
+  
+        //var obj = JSON.parse(data);
+        console.log("Obj = " + data);
+        //console.log(data); // this will be a string
+        productList = data;
+      });
+      
+        return productList;
+    } catch (err) {
+      return "Error: " + err.message
+    }
     
   },
   saveCustomerInfo(body) {

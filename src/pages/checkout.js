@@ -86,22 +86,13 @@ const Checkout = () => {
   var disDetailsData = [];
 
   var totalDiscountData = 0;
-  if(sessionStorage.getItem('discountDetails'))
-    {
-      var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
-      
-      //alert(discountDetailsJson);
-      disDetailsData = JSON.parse(discountDetailsJson);
-      
-      if(disDetailsData !== null)
-      {
-        totalDiscountData = disDetailsData.reduce((discountTotal, item) => (discountTotal += item.discount),0);
-        //setTotalDiscount(totalDiscountVal);
-      }
-    }
+  
 
   const [discountDetails, setDiscountDetail] = useState(disDetailsData);
   const [totalDiscount, setTotalDiscount] = useState(totalDiscountData);
+
+  const [customerInfoLoading, setCustomerInfoLoading] = useState(false);
+  const [confirmOrderLoading, setConfirmOrderLoading] = useState(false);
   
   var customerFirstName = '';
   var customerLastName = ''
@@ -138,7 +129,7 @@ const Checkout = () => {
   var lineCompanyId = 0;
 
 
-  var companyLogo = '';
+  var companyLogoData = '';
   var companyName = '';
   var locationName = '';
   var locationAddress1 = '';
@@ -155,71 +146,26 @@ const Checkout = () => {
   var customerId = 0;
   var isInputAddressData = false;
 
+  
+
   useEffect(() => 
   {
-    
-    if(Number(countryIdData) !== 10)//thai
+    if(sessionStorage.getItem('discountDetails'))
     {
-      isInputAddressData = true;
-      setIsInputAddress(isInputAddressData);
-      setIsInputAddress(isInputAddressData);
-      if(sessionStorage.getItem('city'))
-      {
-        cityTextData = sessionStorage.getItem('city'); 
-        setCityText(cityTextData);
-          
-      }
-      if(sessionStorage.getItem('district'))
-      {
-        districtTextData = sessionStorage.getItem('district'); 
-        setDistrictText(districtTextData);
-      }
-      if(sessionStorage.getItem('province'))
-      {
-        provinceTextData = sessionStorage.getItem('province'); 
-        setProvinceText(provinceTextData);
-      }
+      var discountDetailsJson = sessionStorage.getItem('discountDetails'); 
       
+      //alert(discountDetailsJson);
+      disDetailsData = JSON.parse(discountDetailsJson);
       
+      if(disDetailsData !== null)
+      {
+        totalDiscountData = disDetailsData.reduce((discountTotal, item) => (discountTotal += item.discount),0);
+        //setTotalDiscount(totalDiscountVal);
+      }
     }
-    
-    
-  },[]);
-  if(sessionStorage.getItem('customerId'))
-  {
-    customerId = sessionStorage.getItem('customerId'); 
-    
-          
-  }
-  if(sessionStorage.getItem('dataPath'))
-  {
-    dataPath = sessionStorage.getItem('dataPath'); 
-    
-          
-  }
-  if(sessionStorage.getItem('catalogName'))
-  {
-    catalogName = sessionStorage.getItem('catalogName'); 
-    
-          
-  }
-  if(sessionStorage.getItem('customerAddressId'))
-  {
-    
-    customerAddressIdData = Number(sessionStorage.getItem('customerAddressId')); 
-    //alert("customerAddressIdData = " + customerAddressIdData)
-  }
-  if(sessionStorage.getItem('companyLogo'))
-  {
-    companyLogo = sessionStorage.getItem('companyLogo'); 
-    
-  }
-  if(sessionStorage.getItem('companyName'))
-  {
-    companyName = sessionStorage.getItem('companyName'); 
-    //alert(companyName)
-    
-  }
+
+  })
+  
   if(sessionStorage.getItem('locationName'))
   {
     locationName = sessionStorage.getItem('locationName'); 
@@ -360,38 +306,22 @@ const Checkout = () => {
       
   }
 
-  if(sessionStorage.getItem('countrys'))
-  {
-    var countrysJson = sessionStorage.getItem('countrys'); 
-    //alert(countrysJson);
-    countryList = JSON.parse(countrysJson);
-    
-  }
-  if(sessionStorage.getItem('provinces'))
-  {
-    var provincesJson = sessionStorage.getItem('provinces'); 
-    provincesList = JSON.parse(provincesJson);
-  }
-  if(sessionStorage.getItem('cities'))
-  {
-    var citiesJson = sessionStorage.getItem('cities'); 
-    citiesList = JSON.parse(citiesJson);
-  }
-  if(sessionStorage.getItem('districts'))
-  {
-    var districtsJson = sessionStorage.getItem('districts'); 
-    districtsList = JSON.parse(districtsJson);
-  }
+  
   if(sessionStorage.getItem('shippings'))
   {
     var shippingsJson = sessionStorage.getItem('shippings'); 
     shippingsList = JSON.parse(shippingsJson);
   }
 
-  
+  if(sessionStorage.getItem('companyLogo'))
+  {
+    companyLogoData = sessionStorage.getItem('companyLogo'); 
+    
+  }
+  const [companyLogo, setCompanyLogo] = useState(companyLogoData);
   const [IsApproveCustomerInfo, setApproveCustomerInfo] = useState(false);
   const [IsEditCustomerInfo, setEditCustomerInfo] = useState(false);
-  const [IsDisableCustomerInfo, setDisableCustomerInfo] = useState(customerAddressIdData !== 0);
+  const [IsDisableCustomerInfo, setDisableCustomerInfo] = useState(true);
   const [customerAddressId, setCustomerAddressId] = useState(customerAddressIdData);
   const [firstName,setCustomerFirstName] = useState(customerFirstName);
   const [lastName,setCustomerLastName] = useState(customerLastName);
@@ -447,6 +377,151 @@ const Checkout = () => {
     districts = JSON.parse(districtsJson);
   } */
 
+  useEffect(() => 
+  {
+    
+    if(Number(countryIdData) !== 10 && Number(countryIdData) !== 0)//thai
+    {
+      
+      isInputAddressData = true;
+      setIsInputAddress(isInputAddressData);
+      if(sessionStorage.getItem('city'))
+      {
+        cityTextData = sessionStorage.getItem('city'); 
+        setCityText(cityTextData);
+          
+      }
+      if(sessionStorage.getItem('district'))
+      {
+        districtTextData = sessionStorage.getItem('district'); 
+        setDistrictText(districtTextData);
+      }
+      if(sessionStorage.getItem('province'))
+      {
+        provinceTextData = sessionStorage.getItem('province'); 
+        setProvinceText(provinceTextData);
+      }
+      
+      //alert('not thai')
+    }
+    else
+    {
+      //alert('thai')
+    }
+
+    if(sessionStorage.getItem('customerId'))
+  {
+    customerId = sessionStorage.getItem('customerId'); 
+    
+          
+  }
+  if(sessionStorage.getItem('dataPath'))
+  {
+    dataPath = sessionStorage.getItem('dataPath'); 
+    
+          
+  }
+  if(sessionStorage.getItem('catalogName'))
+  {
+    catalogName = sessionStorage.getItem('catalogName'); 
+    
+          
+  }
+  if(sessionStorage.getItem('customerAddressId'))
+  {
+    
+    customerAddressIdData = Number(sessionStorage.getItem('customerAddressId')); 
+    //alert("customerAddressIdData = " + customerAddressIdData)
+    setCustomerAddressId(customerAddressIdData);
+    if(customerAddressId !== undefined && customerAddressId !== null && customerAddressId !== 0)
+    {
+      setDisableCustomerInfo(true);
+    }
+    else
+    {
+      setCustomerAddressId(false);
+    }
+  }
+
+  if(sessionStorage.getItem('countrysJSON'))
+  {
+    var countrysJson = sessionStorage.getItem('countrysJSON'); 
+    //alert(countrysJson);
+    countryList = JSON.parse(countrysJson);
+    if(countryList === null)
+    {
+      setCountry([])
+    }
+    else
+    {
+      setCountry(countryList);
+    }
+    
+  }
+  if(sessionStorage.getItem('provinces'))
+  {
+    var provincesJson = sessionStorage.getItem('provinces'); 
+    provincesList = JSON.parse(provincesJson);
+    //alert('provincesList = ' + provincesList)
+    if(provincesList === null)
+    {
+      setProvinces([]);
+    }
+    else
+    {
+      setProvinces(provincesList);
+    }
+  }
+
+  
+  if(sessionStorage.getItem('cities'))
+  {
+    //alert('cities');
+    var citiesJson = sessionStorage.getItem('cities'); 
+    //alert('citiesJson = ' + citiesJson);
+    citiesList = JSON.parse(citiesJson);
+    if(citiesList === null)
+    {
+      setCities([]);
+    }
+    else
+    {
+      setCities(citiesList);
+    }
+  }
+  if(sessionStorage.getItem('districts'))
+  {
+    var districtsJson = sessionStorage.getItem('districts'); 
+    districtsList = JSON.parse(districtsJson);
+    if(districtsList === null)
+    {
+      setDistricts([]);
+    }
+    else
+    {
+      setDistricts(districtsList);
+    }
+  }
+
+
+
+
+  if(sessionStorage.getItem('companyLogo'))
+  {
+    companyLogoData = sessionStorage.getItem('companyLogo'); 
+    setCompanyLogo(companyLogoData);
+    
+  }
+  if(sessionStorage.getItem('companyName'))
+  {
+    companyName = sessionStorage.getItem('companyName'); 
+    //alert(companyName)
+    
+  }
+    
+    
+  },[]);
+
   const UpdateTotal = (id,qty,discountRate) =>
   {
     //alert("UpdateTotal");
@@ -478,6 +553,7 @@ const Checkout = () => {
   const submitContact = async (event) => {
     event.preventDefault();
     
+    setConfirmOrderLoading(true);
     //alert(`submitContact`);
     //alert(`So your name is ${firstName}?`);
     var data = {};
@@ -562,10 +638,14 @@ const Checkout = () => {
     if(!checkValid(firstName,lastName,email,phoneNumber, address1, countryId, provinceString, districtString, cityString))
     {
       alert("กรุณากรอกข้อมูลให้ครบถ้วน")
-      return;
+      
+    }
+    else
+    {
+      submitHandler(data);
     }
 
-    submitHandler(data);
+    setConfirmOrderLoading(false);
   };
 
   //const ApplyPromotionCode = async(promotionCode,discountPercentage, isForAllProduct, minimumAmount, productIdList) =>
@@ -758,7 +838,7 @@ const handleCountryChange = async(event) => {
       setIsInputAddress(true);
     }
     //alert('country Id = ' + countryId);
-    var provincesData = await ProductServices.fetchGetStateProvince();
+    //var provincesData = await ProductServices.fetchGetStateProvince();
     //var provinces = await GetStateProvince()
     //PopulateProvince(provinces)
     setPostalCode('');
@@ -847,6 +927,7 @@ const CancelCustomerInfo = async () =>
 const SaveCustomerInfo = async (companyId) =>
 {
   //alert(countryId);
+  setCustomerInfoLoading(true);
   var countryItem = countrys.find(x => x.countryId === countryId);
   //alert(JSON.stringify(countryItem));
     var countryString = countryItem === null ? "" : countryItem.countryLocalName;
@@ -890,35 +971,40 @@ const SaveCustomerInfo = async (companyId) =>
     if(!checkValid(firstName,lastName,email,phoneNumber, address1, countryId, provinceString, districtString, cityString))
     {
       alert("กรุณากรอกข้อมูลให้ครบถ้วน")
-      return;
+      //return;
+    }
+    else
+    {
+      var customerData = await ProductServices.fetchSaveCustomerInfo(
+        {
+          firstName:firstName,
+          middleName:'',
+          lastName:lastName,
+          gender:0,
+          phone:phoneNumber,
+          mobile:phoneNumber,
+          email:email,
+          address1:address1,
+          district:districtString,
+          city:cityString,
+          stateOrProvince:provinceString,
+          country:countryString,
+          countryId:countryId,
+          postalcode:postalCodeString,
+          companyId:companyId,
+          catalogName:catalogName,
+          customerId:customerId
+  
+        });
+        //alert(JSON.stringify(customerData));
+        var customerAddressId = customerData.customerAddressId;
+        setCustomerAddressId(customerAddressId);
+        setEditCustomerInfo(false);
+        setDisableCustomerInfo(true);
     }
 
-    var customerData = await ProductServices.fetchSaveCustomerInfo(
-      {
-        firstName:firstName,
-        middleName:'',
-        lastName:lastName,
-        gender:0,
-        phone:phoneNumber,
-        mobile:phoneNumber,
-        email:email,
-        address1:address1,
-        district:districtString,
-        city:cityString,
-        stateOrProvince:provinceString,
-        country:countryString,
-        countryId:countryId,
-        postalcode:postalCodeString,
-        companyId:companyId,
-        catalogName:catalogName,
-        customerId:customerId
-
-      });
-      //alert(JSON.stringify(customerData));
-      var customerAddressId = customerData.customerAddressId;
-      setCustomerAddressId(customerAddressId);
-      setEditCustomerInfo(false);
-      setDisableCustomerInfo(true);
+    setCustomerInfoLoading(false);
+    
 }
 
 const checkValid = (firstName, lastName, email, phoneNumber, address1, countryId, provinceString, districtString,cityString) =>
@@ -988,351 +1074,326 @@ const checkValid = (firstName, lastName, email, phoneNumber, address1, countryId
               
               <div className="mt-5 md:mt-0 md:col-span-2">
                 {/* <form onSubmit={handleSubmit(submitHandler)}> */}
-                <form onSubmit={submitContact}>
-                  <div className="form-group">
-                    <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
-                      01. ข้อมูลส่วนบุคคล
-                    </h2>
-                    <div className="grid grid-cols-6 gap-6">
-                      <div className="col-span-6 sm:col-span-3">
-                        {/* <InputArea
-                          register={register}
-                          label="First Name"
-                          name="firstName"
-                          type="text"
-                          placeholder="John"
-                          dataValue={firstName}
-                        /> */}
-                        
-                        <EditableCustomerInput register={register}
-                        label="ชื่อต้น" 
-                        name="firstName"
-                        type="text"
-                        placeholder="John"
-                        isDisable={IsDisableCustomerInfo}
-                          dataValue={firstName}
-                          canAutoChange={true}
-                        handleDataChange={handleFirstNameChange}
-                        />
-                        <Error errorName={errors.firstName} />
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-3">
-                        {/* <InputArea
-                          register={register}
-                          label="Last name"
-                          name="lastName"
-                          type="text"
-                          placeholder="Doe"
-                          dataValue={lastName}
-                        /> */}
-                        <EditableCustomerInput register={register}
-                        label="นามสกุล" 
-                        name="lastName"
-                        type="text"
-                        placeholder="Doe"
-                        isDisable={IsDisableCustomerInfo}
-                          dataValue={lastName}
-                          canAutoChange={true}
-                        handleDataChange={handleLastNameChange}
-                        />
-                        <Error errorName={errors.lastName} />
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-3">
-                        {/* <InputArea
-                          register={register}
-                          label="Email address"
-                          name="email"
-                          type="email"
-                          placeholder="youremail@gmail.com"
-                          dataValue={email}
-                        /> */}
-                        <EditableCustomerInput register={register}
-                        label="Email address"
-                        name="email"
-                        type="email"
-                        placeholder="youremail@gmail.com"
-                        isDisable={IsDisableCustomerInfo}
-                        dataValue={email}
-
-                        canAutoChange={true}
-                        handleDataChange={handleEmailChange}
-                        />
-                        <Error errorName={errors.email} />
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-3">
-                        {/* <InputArea
-                          register={register}
-                          label="Phone number"
-                          name="contact"
-                          type="tel"
-                          placeholder="+062-6532956"
-                          dataValue={phoneNumber}
-                        /> */}
-                        <EditableCustomerInput register={register}
-                        label="เบอร์ติดต่อ"
-                        name="contact"
-                        type="tel"
-                        placeholder="+062-6532956"
-                        isDisable={IsDisableCustomerInfo}
-                        dataValue={phoneNumber}
-                        canAutoChange={true}
-                        handleDataChange={handleContactChange}
-                        />
-
-                        <Error errorName={contactError} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-group mt-12">
-                    <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
-                      02. ที่อยู่ขนส่ง
-                    </h2>
-
-                    <div className="grid grid-cols-6 gap-6 mb-8">
-                      <div className="col-span-6">
-                        {/* <InputArea
-                          register={register}
-                          label="Street address"
-                          name="address"
-                          type="text"
-                          placeholder="123 Boulevard Rd, Beverley Hills"
-                          dataValue={address1}
-                        /> */}
-                        <EditableCustomerInput register={register}
-                        label="บ้านเลขที่ ซอย ถนน"
-                        name="address"
-                        type="text"
-                        placeholder="บ้านเลขที่ ซอย ถนน"
-                        isDisable={IsDisableCustomerInfo}
-                        dataValue={address1}
-                        canAutoChange={true}
-                        handleDataChange={handleAddress1Change}
-                        />
-                        <Error errorName={errors.address} />
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-6 lg:col-span-2">
-                        {/* <InputArea
-                          register={register}
-                          label="City"
-                          name="city"
-                          type="text"
-                          placeholder="Los Angeles"
-                        /> */}
-                        
-                        <CountryFormSelect register={register}
-                          label="ประเทศ"
-                          name="province1"
-                          type="text"
-                          isDisable={IsDisableCustomerInfo}
-                          handleItemChange={handleCountryChange}
-                          dataList={countrys} selectedId={countryId}
-                          />
-                        
-                        <Error errorName={errors.country} />
-                      </div>
-
-                      <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        {/* <InputArea
-                          register={register}
-                          label="Country"
-                          name="country"
-                          type="text"
-                          placeholder="United States"
-                        /> */}
-                        {
-                          isInputAddress === true 
-                          ?
-                            /*<InputArea
-                            register={register}
-                            label="จังหวัด"
-                            name="province"
-                            type="text"
-                            placeholder="Please insert state/province."
-                          />*/
+                {confirmOrderLoading === true ? 
+                  <Loading loading={confirmOrderLoading} />
+              
+                :
+                  <form onSubmit={submitContact}>
+                    {customerInfoLoading === true ? 
+                    
+                      <Loading loading={customerInfoLoading} />
+                    :
+                    <>
+                      <div className="form-group">
+                        <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
+                          01. ข้อมูลส่วนบุคคล
+                        </h2>
+                        <div className="grid grid-cols-6 gap-6">
+                          <div className="col-span-6 sm:col-span-3">
+                            {/* <InputArea
+                              register={register}
+                              label="First Name"
+                              name="firstName"
+                              type="text"
+                              placeholder="John"
+                              dataValue={firstName}
+                            /> */}
+                            
                             <EditableCustomerInput register={register}
-                                id="province"
+                            label="ชื่อต้น" 
+                            name="firstName"
+                            type="text"
+                            placeholder="John"
+                            isDisable={IsDisableCustomerInfo}
+                              dataValue={firstName}
+                              canAutoChange={true}
+                            handleDataChange={handleFirstNameChange}
+                            />
+                            <Error errorName={errors.firstName} />
+                          </div>
+
+                          <div className="col-span-6 sm:col-span-3">
+                            {/* <InputArea
+                              register={register}
+                              label="Last name"
+                              name="lastName"
+                              type="text"
+                              placeholder="Doe"
+                              dataValue={lastName}
+                            /> */}
+                            <EditableCustomerInput register={register}
+                            label="นามสกุล" 
+                            name="lastName"
+                            type="text"
+                            placeholder="Doe"
+                            isDisable={IsDisableCustomerInfo}
+                              dataValue={lastName}
+                              canAutoChange={true}
+                            handleDataChange={handleLastNameChange}
+                            />
+                            <Error errorName={errors.lastName} />
+                          </div>
+
+                          <div className="col-span-6 sm:col-span-3">
+                            {/* <InputArea
+                              register={register}
+                              label="Email address"
+                              name="email"
+                              type="email"
+                              placeholder="youremail@gmail.com"
+                              dataValue={email}
+                            /> */}
+                            <EditableCustomerInput register={register}
+                            label="Email address"
+                            name="email"
+                            type="email"
+                            placeholder="youremail@gmail.com"
+                            isDisable={IsDisableCustomerInfo}
+                            dataValue={email}
+
+                            canAutoChange={true}
+                            handleDataChange={handleEmailChange}
+                            />
+                            <Error errorName={errors.email} />
+                          </div>
+
+                          <div className="col-span-6 sm:col-span-3">
+                            {/* <InputArea
+                              register={register}
+                              label="Phone number"
+                              name="contact"
+                              type="tel"
+                              placeholder="+062-6532956"
+                              dataValue={phoneNumber}
+                            /> */}
+                            <EditableCustomerInput register={register}
+                            label="เบอร์ติดต่อ"
+                            name="contact"
+                            type="tel"
+                            placeholder="+062-6532956"
+                            isDisable={IsDisableCustomerInfo}
+                            dataValue={phoneNumber}
+                            canAutoChange={true}
+                            handleDataChange={handleContactChange}
+                            />
+
+                            <Error errorName={contactError} />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="form-group mt-12">
+                        <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
+                          02. ที่อยู่ขนส่ง
+                        </h2>
+
+                        <div className="grid grid-cols-6 gap-6 mb-8">
+                          <div className="col-span-6">
+                            {/* <InputArea
+                              register={register}
+                              label="Street address"
+                              name="address"
+                              type="text"
+                              placeholder="123 Boulevard Rd, Beverley Hills"
+                              dataValue={address1}
+                            /> */}
+                            <EditableCustomerInput register={register}
+                            label="บ้านเลขที่ ซอย ถนน"
+                            name="address"
+                            type="text"
+                            placeholder="บ้านเลขที่ ซอย ถนน"
+                            isDisable={IsDisableCustomerInfo}
+                            dataValue={address1}
+                            canAutoChange={true}
+                            handleDataChange={handleAddress1Change}
+                            />
+                            <Error errorName={errors.address} />
+                          </div>
+
+                          <div className="col-span-6 sm:col-span-6 lg:col-span-2">
+                            {/* <InputArea
+                              register={register}
+                              label="City"
+                              name="city"
+                              type="text"
+                              placeholder="Los Angeles"
+                            /> */}
+                            
+                            <CountryFormSelect register={register}
+                              label="ประเทศ"
+                              name="province1"
+                              type="text"
+                              isDisable={IsDisableCustomerInfo}
+                              handleItemChange={handleCountryChange}
+                              dataList={countrys} selectedId={countryId}
+                              />
+                            
+                            <Error errorName={errors.country} />
+                          </div>
+
+                          <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                            {/* <InputArea
+                              register={register}
+                              label="Country"
+                              name="country"
+                              type="text"
+                              placeholder="United States"
+                            /> */}
+                            {
+                              isInputAddress === true 
+                              ?
+                                /*<InputArea
+                                register={register}
                                 label="จังหวัด"
                                 name="province"
-                                type="input"
+                                type="text"
                                 placeholder="Please insert state/province."
+                              />*/
+                                <EditableCustomerInput register={register}
+                                    id="province"
+                                    label="จังหวัด"
+                                    name="province"
+                                    type="input"
+                                    placeholder="Please insert state/province."
+                                    isDisable={IsDisableCustomerInfo}
+                                    dataValue={provinceText}
+                                    changeData={changePostalcode}
+                                    canAutoChange={true}
+                                    handleDataChange={handleProvinceTextChange}
+                                    />
+                              :
+                                <ProvinceFormSelect register={register}
+                                label="จังหวัด"
+                                name="province"
+                                type="text"
                                 isDisable={IsDisableCustomerInfo}
-                                dataValue={provinceText}
-                                changeData={changePostalcode}
-                                canAutoChange={true}
-                                handleDataChange={handleProvinceTextChange}
+                                handleItemChange={handleProvinceChange}
+                                dataList={provinces} selectedId={provinceId}
                                 />
-                          :
-                            <ProvinceFormSelect register={register}
-                            label="จังหวัด"
-                            name="province"
-                            type="text"
-                            isDisable={IsDisableCustomerInfo}
-                            handleItemChange={handleProvinceChange}
-                            dataList={provinces} selectedId={provinceId}
-                            />
-                        }
-                        
-                        <Error errorName={errors.province} />
-                      </div>
+                            }
+                            
+                            <Error errorName={errors.province} />
+                          </div>
 
-                      <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        {/* <InputArea
-                          register={register}
-                          label="ZIP / Postal"
-                          name="zipCode"
-                          type="text"
-                          placeholder="2345"
-                        /> */}
-                        {
-                          isInputAddress === true 
-                          ?
-                            /* <InputArea
-                            register={register}
-                            label="เขต/อำเภอ"
-                            name="province2"
-                            type="text"
-                            placeholder="Please insert city."
-                          /> */
-                            <EditableCustomerInput register={register}
-                              id="city"
+                          <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                            {/* <InputArea
+                              register={register}
+                              label="ZIP / Postal"
+                              name="zipCode"
+                              type="text"
+                              placeholder="2345"
+                            /> */}
+                            {
+                              isInputAddress === true 
+                              ?
+                                /* <InputArea
+                                register={register}
+                                label="เขต/อำเภอ"
+                                name="province2"
+                                type="text"
+                                placeholder="Please insert city."
+                              /> */
+                                <EditableCustomerInput register={register}
+                                  id="city"
+                                  label="เขต/อำเภอ"
+                                  name="province2"
+                                  type="input"
+                                  placeholder="Please insert city."
+                                  isDisable={IsDisableCustomerInfo}
+                                  dataValue={cityText}
+                                  changeData={changePostalcode}
+                                  canAutoChange={true}
+                                  handleDataChange={handleCityTextChange}
+                                  />
+                              :
+                              <CityFormSelect register={register}
                               label="เขต/อำเภอ"
                               name="province2"
-                              type="input"
-                              placeholder="Please insert city."
+                              type="text"
                               isDisable={IsDisableCustomerInfo}
-                              dataValue={cityText}
+                              handleItemChange={handleCityChange}
+                              dataList={cities} selectedId={cityId}
+                              />
+                            }
+                            
+                            <Error errorName={errors.city} />
+                          </div>
+                          <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                            {/* <InputArea
+                              register={register}
+                              label="ZIP / Postal"
+                              name="zipCode"
+                              type="text"
+                              placeholder="2345"
+                            /> */}
+                            {isInputAddress === true 
+                            ?
+                              /* <InputArea
+                              register={register}
+                              label="แขวง/ตำบล"
+                              name="district"
+                              type="text"
+                              placeholder="Please insert district."
+                            /> */
+                              <EditableCustomerInput register={register}
+                              id="district"
+                              label="แขวง/ตำบล"
+                              name="district"
+                              type="input"
+                              placeholder="Please insert district."
+                              isDisable={IsDisableCustomerInfo}
+                              dataValue={districtText}
                               changeData={changePostalcode}
                               canAutoChange={true}
-                              handleDataChange={handleCityTextChange}
+                              handleDataChange={handleDistrictTextChange}
                               />
-                          :
-                          <CityFormSelect register={register}
-                          label="เขต/อำเภอ"
-                          name="province2"
-                          type="text"
-                          isDisable={IsDisableCustomerInfo}
-                          handleItemChange={handleCityChange}
-                          dataList={cities} selectedId={cityId}
-                          />
-                        }
-                        
-                        <Error errorName={errors.city} />
-                      </div>
-                      <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        {/* <InputArea
-                          register={register}
-                          label="ZIP / Postal"
-                          name="zipCode"
-                          type="text"
-                          placeholder="2345"
-                        /> */}
-                        {isInputAddress === true 
-                        ?
-                          /* <InputArea
-                          register={register}
-                          label="แขวง/ตำบล"
-                          name="district"
-                          type="text"
-                          placeholder="Please insert district."
-                        /> */
-                          <EditableCustomerInput register={register}
-                          id="district"
-                          label="แขวง/ตำบล"
-                          name="district"
-                          type="input"
-                          placeholder="Please insert district."
-                          isDisable={IsDisableCustomerInfo}
-                          dataValue={districtText}
-                          changeData={changePostalcode}
-                          canAutoChange={true}
-                          handleDataChange={handleDistrictTextChange}
-                          />
-                        :
-                          <DistrictFormSelect register={register}
-                            label="แขวง/ตำบล"
-                            name="district"
-                            type="text"
+                            :
+                              <DistrictFormSelect register={register}
+                                label="แขวง/ตำบล"
+                                name="district"
+                                type="text"
+                                isDisable={IsDisableCustomerInfo}
+                                handleItemChange={handleDistrictChange}
+                                dataList={districts} selectedId={districtId}
+                                />
+                            }
+                            
+                            <Error errorName={errors.district} />
+                          </div>
+                          <div className="col-span-6 sm:col-span-3 lg:col-span-2">
+                            {/* <InputArea
+                              register={register}
+                              label="ZIP / Postal"
+                              name="zipCode"
+                              type="text"
+                              placeholder="2345"
+                              dataValue={postalcode}
+                            /> */}
+                            <EditableCustomerInput register={register}
+                            id="postalCode"
+                            label="รหัสไปรษณีย์"
+                            name="zipCode"
+                            type="input"
+                            placeholder="รหัสไปรษณีย์"
                             isDisable={IsDisableCustomerInfo}
-                            handleItemChange={handleDistrictChange}
-                            dataList={districts} selectedId={districtId}
+                            dataValue={postalcode}
+                            changeData={changePostalcode}
+                            canAutoChange={true}
+                            handleDataChange={handlePostalCodeChange}
                             />
-                        }
-                        
-                        <Error errorName={errors.district} />
-                      </div>
-                      <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        {/* <InputArea
-                          register={register}
-                          label="ZIP / Postal"
-                          name="zipCode"
-                          type="text"
-                          placeholder="2345"
-                          dataValue={postalcode}
-                        /> */}
-                        <EditableCustomerInput register={register}
-                        id="postalCode"
-                        label="รหัสไปรษณีย์"
-                        name="zipCode"
-                        type="input"
-                        placeholder="รหัสไปรษณีย์"
-                        isDisable={IsDisableCustomerInfo}
-                        dataValue={postalcode}
-                        changeData={changePostalcode}
-                        canAutoChange={true}
-                        handleDataChange={handlePostalCodeChange}
-                        />
-                        
-                        <Error errorName={errors.zipCode} />
-                      </div>
-                    </div>
-
-                    {/* <Label label="Shipping Cost" /> */}
-                    
-                  </div>
-                  {
-                    customerAddressId === 0 ?
-                      <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
-                        <div className="col-span-6 sm:col-span-3">
-
+                            
+                            <Error errorName={errors.zipCode} />
+                          </div>
                         </div>
-                        <div className="col-span-6 sm:col-span-3">
-                          <button
-                            type="button"
-                            disabled={isEmpty || !stripe || isCheckoutSubmit}
-                            onClick={() => SaveCustomerInfo(lineCompanyId)}
-                            className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
-                          >
-                            บันทึกข้อมูลลูกค้า{' '}
-                            <span className="text-xl ml-2">
-                              {' '}
-                              <IoSaveOutline />
-                            </span>
-                          </button>
-                        </div>
+
+                        {/* <Label label="Shipping Cost" /> */}
+                        
                       </div>
-                    :
-                      
-                        IsEditCustomerInfo === true ?
+                      {
+                        customerAddressId === 0 ?
                           <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
-                          
                             <div className="col-span-6 sm:col-span-3">
-                              <button
-                                type="button"
-                                disabled={isEmpty || !stripe || isCheckoutSubmit}
-                                onClick={() => CancelCustomerInfo()}
-                                className="bg-indigo-50 border border-indigo-100 rounded py-3 text-center text-sm font-medium text-gray-700 hover:text-gray-800 hover:border-gray-300 transition-all flex justify-center font-serif w-full"
-                              >
-                                ยกเลิก{' '}
-                                <span className="text-xl ml-2">
-                                  {' '}
-                                  <IoCloseCircleOutline />
-                                </span>
-                              </button>
+
                             </div>
                             <div className="col-span-6 sm:col-span-3">
                               <button
@@ -1350,109 +1411,149 @@ const checkValid = (firstName, lastName, email, phoneNumber, address1, countryId
                             </div>
                           </div>
                         :
-                          <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
-                            
-                            <div className="col-span-6 sm:col-span-3">
-                              <button
-                                type="button"
-                                disabled={isEmpty || !stripe || isCheckoutSubmit}
-                                onClick={() => AcceptCustomerInfo()}
-                                className="bg-orange-500 hover:bg-orange-600 border border-orange-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
-                              >
-                                อนุมัติข้อมูลลูกค้า{' '}
-                                <span className="text-xl ml-2">
-                                  {' '}
-                                  <IoCheckboxOutline />
-                                </span>
-                              </button>
-                            </div>
-                            <div className="col-span-6 sm:col-span-3">
-                              <button
-                                type="button"
-                                disabled={isEmpty || !stripe || isCheckoutSubmit}
-                                onClick={() => EditCustomerInfo()}
-                                className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
-                              >
-                                แก้ไขข้อมูลลูกค้า{' '}
-                                <span className="text-xl ml-2">
-                                  {' '}
-                                  <IoCreateOutline />
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                      
-                      
-                  }
-                  
+                          
+                            IsEditCustomerInfo === true ?
+                              <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
+                              
+                                <div className="col-span-6 sm:col-span-3">
+                                  <button
+                                    type="button"
+                                    disabled={isEmpty || !stripe || isCheckoutSubmit}
+                                    onClick={() => CancelCustomerInfo()}
+                                    className="bg-indigo-50 border border-indigo-100 rounded py-3 text-center text-sm font-medium text-gray-700 hover:text-gray-800 hover:border-gray-300 transition-all flex justify-center font-serif w-full"
+                                  >
+                                    ยกเลิก{' '}
+                                    <span className="text-xl ml-2">
+                                      {' '}
+                                      <IoCloseCircleOutline />
+                                    </span>
+                                  </button>
+                                </div>
+                                <div className="col-span-6 sm:col-span-3">
+                                  <button
+                                    type="button"
+                                    disabled={isEmpty || !stripe || isCheckoutSubmit}
+                                    onClick={() => SaveCustomerInfo(lineCompanyId)}
+                                    className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                  >
+                                    บันทึกข้อมูลลูกค้า{' '}
+                                    <span className="text-xl ml-2">
+                                      {' '}
+                                      <IoSaveOutline />
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+                            :
+                              <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
+                                
+                                <div className="col-span-6 sm:col-span-3">
+                                  <button
+                                    type="button"
+                                    disabled={isEmpty || !stripe || isCheckoutSubmit}
+                                    onClick={() => AcceptCustomerInfo()}
+                                    className="bg-orange-500 hover:bg-orange-600 border border-orange-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                  >
+                                    อนุมัติข้อมูลลูกค้า{' '}
+                                    <span className="text-xl ml-2">
+                                      {' '}
+                                      <IoCheckboxOutline />
+                                    </span>
+                                  </button>
+                                </div>
+                                <div className="col-span-6 sm:col-span-3">
+                                  <button
+                                    type="button"
+                                    disabled={isEmpty || !stripe || isCheckoutSubmit}
+                                    onClick={() => EditCustomerInfo()}
+                                    className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                  >
+                                    แก้ไขข้อมูลลูกค้า{' '}
+                                    <span className="text-xl ml-2">
+                                      {' '}
+                                      <IoCreateOutline />
+                                    </span>
+                                  </button>
+                                </div>
+                              </div>
+                          
+                          
+                      }
+                    </>
+                    
+                    }
+                    
 
-                  {
-                  customerAddressId === 0 ? 
-                    <>
-                      <br/>
-                      <h2 className="font-semibold font-serif text-base text-center text-gray-700 pb-3">
-                        Please save customer info before confirm order. 
-                      </h2>
-                    </> 
-                  : 
-                    IsApproveCustomerInfo === false ?
+                    {
+                    customerAddressId === 0 ? 
                       <>
                         <br/>
                         <h2 className="font-semibold font-serif text-base text-center text-gray-700 pb-3">
-                          Please approve customer info before confirm order. 
+                          Please save customer info before confirm order. 
                         </h2>
-                      </>
-                    :
-                    <>
-                      <div className="form-group mt-12">
-                            <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
-                              03. รูปแบบขนส่ง
-                            </h2>
-                            <div className="grid grid-cols-6 gap-6">
-                              <div className="col-span-6 sm:col-span-3">
-                              <ShippingFormSelect register={register}
-                                label="Shipping"
-                                name="shippingOption"
-                                type="text"
-                                handleItemChange={handleShippingChange} 
-                                dataList={shippingServices} selectedId={shippingId}/>
+                      </> 
+                    : 
+                      IsApproveCustomerInfo === false ?
+                        <>
+                          <br/>
+                          <h2 className="font-semibold font-serif text-base text-center text-gray-700 pb-3">
+                            Please approve customer info before confirm order. 
+                          </h2>
+                        </>
+                      :
+                      <>
+                        <div className="form-group mt-12">
+                              <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
+                                03. รูปแบบขนส่ง
+                              </h2>
+                              <div className="grid grid-cols-6 gap-6">
+                                <div className="col-span-6 sm:col-span-3">
+                                <ShippingFormSelect register={register}
+                                  label="Shipping"
+                                  name="shippingOption"
+                                  type="text"
+                                  handleItemChange={handleShippingChange} 
+                                  dataList={shippingServices} selectedId={shippingId}/>
+                                </div>
+                                
+                                
                               </div>
                               
-                              
                             </div>
-                            
-                          </div>
-      
-                          <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
-                            <div className="col-span-6 sm:col-span-3">
-                              <Link href={dataPath}>
-                                <a className="bg-indigo-50 border border-indigo-100 rounded py-3 text-center text-sm font-medium text-gray-700 hover:text-gray-800 hover:border-gray-300 transition-all flex justify-center font-serif w-full">
-                                  <span className="text-xl mr-2">
-                                    <IoReturnUpBackOutline />
+        
+                            <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
+                              <div className="col-span-6 sm:col-span-3">
+                                <Link href={dataPath}>
+                                  <a className="bg-indigo-50 border border-indigo-100 rounded py-3 text-center text-sm font-medium text-gray-700 hover:text-gray-800 hover:border-gray-300 transition-all flex justify-center font-serif w-full">
+                                    <span className="text-xl mr-2">
+                                      <IoReturnUpBackOutline />
+                                    </span>
+                                    ช็อบต่อ
+                                  </a>
+                                </Link>
+                              </div>
+                              <div className="col-span-6 sm:col-span-3">
+                                <button
+                                  type="submit"
+                                  disabled={isEmpty || !stripe || isCheckoutSubmit}
+                                  className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                >
+                                  อนุมัติ คำสั่งขาย{' '}
+                                  <span className="text-xl ml-2">
+                                    {' '}
+                                    <IoArrowForward />
                                   </span>
-                                  ช็อบต่อ
-                                </a>
-                              </Link>
+                                </button>
+                              </div>
                             </div>
-                            <div className="col-span-6 sm:col-span-3">
-                              <button
-                                type="submit"
-                                disabled={isEmpty || !stripe || isCheckoutSubmit}
-                                className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
-                              >
-                                อนุมัติ คำสั่งขาย{' '}
-                                <span className="text-xl ml-2">
-                                  {' '}
-                                  <IoArrowForward />
-                                </span>
-                              </button>
-                            </div>
-                          </div>
-                    </>
-                  }
-                  
-                  
-                </form>
+                      </>
+                    }
+                    
+                    
+                  </form>
+                
+                }
+                
               </div>
             </div>
 

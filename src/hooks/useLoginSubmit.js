@@ -31,24 +31,24 @@ const useLoginSubmit = (setModalOpen) => {
     companyId,
     companyName,
     locationEmail,
+    liffId,
+    lineUserId,
+    linePOSId,
     paramPath
   }) => {
     //alert("Loading");
     setLoading(true);
-    if (registerEmail && password) {
-      //alert("Email " + registerEmail + " password " + password + " paramPath = " + paramPath );
-      //return;
-      var userLogin = await UserServices.fetchCoinposUserLogin({
-        registerEmail,
-        password,
+    if(liffId && lineUserId && linePOSId)
+    {
+      alert("Liff Login");
+      var userLogin = await UserServices.fetchCoinposLineLogin({
         companyId,
+        liffId,
+        lineUserId,
+        linePOSId,
         paramPath
 
       });
-
-      //alert("UserLogin = " + JSON.stringify(userLogin));
-      setLoading(false);
-      setModalOpen(false);
       if(userLogin !== undefined && userLogin !== null)
       {
             //return;
@@ -93,51 +93,71 @@ const useLoginSubmit = (setModalOpen) => {
       {
         notifyError('Login fail please check your email or password and try again');
       }
+    }
+    else if (registerEmail && password) {
+      //alert("Email " + registerEmail + " password " + password + " paramPath = " + paramPath );
+      //return;
+      var userLogin = await UserServices.fetchCoinposUserLogin({
+        registerEmail,
+        password,
+        companyId,
+        paramPath
+
+      });
+      //if()
+
+      //alert("UserLogin = " + JSON.stringify(userLogin));
+      setLoading(false);
+      setModalOpen(false);
+      if(userLogin !== undefined && userLogin !== null)
+      {
+        //alert("UserLogin = " + userLogin);
+            //return;
+            //router.push(redirect || '/checkout');
+        router.push(redirect || '/' + userLogin.paramPath);
+            //router.push(redirect);
+
+            //alert('customerId = ' + userLogin.customerId)
+        sessionStorage.setItem('customerId', userLogin.customerId);
+        sessionStorage.setItem('customerFirstName', userLogin.firstName);
+        sessionStorage.setItem('customerLastName', userLogin.lastName);
+        sessionStorage.setItem('customerEmail', userLogin.email);
+        sessionStorage.setItem('customerPhoneNumber', userLogin.phone);
+
+        sessionStorage.setItem('customerAddressId', userLogin.customerAddressId);
+
+
+        sessionStorage.setItem('address1', userLogin.address1);
+        sessionStorage.setItem('country', userLogin.country);
+        sessionStorage.setItem('province', userLogin.province);
+        sessionStorage.setItem('city', userLogin.city);
+        sessionStorage.setItem('district', userLogin.district);
+
+        sessionStorage.setItem('countryId', userLogin.countryId);
+        sessionStorage.setItem('provinceId', userLogin.provinceId);
+        sessionStorage.setItem('cityId', userLogin.cityId);
+        sessionStorage.setItem('districtId', userLogin.districtId);
+        sessionStorage.setItem('postalcode', userLogin.postalcode);
+
+        sessionStorage.setItem('countrys', JSON.stringify(userLogin.countrys));
+        sessionStorage.setItem('provinces', JSON.stringify(userLogin.provinces));
+        sessionStorage.setItem('cities', JSON.stringify(userLogin.cities));
+        sessionStorage.setItem('districts', JSON.stringify(userLogin.districts));
+
+
+        notifySuccess('Login Success!');
+        dispatch({ type: 'USER_LOGIN', payload: userLogin });
+        Cookies.set('userInfo', JSON.stringify(userLogin));
+
+        localStorage.setItem('userInfo', JSON.stringify(userLogin));
+      }
+      else
+      {
+        notifyError('Login fail please check your email or password and try again');
+      }
       
 
-        /*.then((res) => {
-          setLoading(false);
-          setModalOpen(false);
-          alert('res = ' + JSON.stringify(res));
-          alert('res.paramPath = ' + res.paramPath);
-          //return;
-          //router.push(redirect || '/checkout');
-          router.push(redirect || '/' + res.paramPath);
-          //router.push(redirect);
-
-          sessionStorage.setItem('customerId', res.customerId);
-          sessionStorage.setItem('customerFirstName', res.firstName);
-          sessionStorage.setItem('customerLastName', res.lastName);
-          sessionStorage.setItem('customerEmail', res.email);
-          sessionStorage.setItem('customerPhoneNumber', res.phone);
-
-          sessionStorage.setItem('customerAddressId', res.customerAddressId);
-
-
-          sessionStorage.setItem('address1', res.address1);
-          sessionStorage.setItem('countryId', res.countryId);
-          sessionStorage.setItem('provinceId', res.provinceId);
-          sessionStorage.setItem('cityId', res.cityId);
-          sessionStorage.setItem('districtId', res.districtId);
-          sessionStorage.setItem('postalcode', res.postalcode);
-
-          sessionStorage.setItem('countrys', JSON.stringify(res.countrys));
-          sessionStorage.setItem('provinces', JSON.stringify(res.provinces));
-          sessionStorage.setItem('cities', JSON.stringify(res.cities));
-          sessionStorage.setItem('districts', JSON.stringify(res.districts));
-
-
-          notifySuccess('Login Success!');
-          dispatch({ type: 'USER_LOGIN', payload: res });
-          Cookies.set('userInfo', JSON.stringify(res));
-
-          localStorage.setItem('userInfo', JSON.stringify(res));
-        })
-        .catch((err) => {
-          alert(JSON.stringify(err));
-          notifyError(err ? err.response.data.message : err.message);
-          setLoading(false);
-        });*/
+        
     }
     if (name && email && password) {
       //alert("Name = " + name + " email = " + email + " password = " + password + " companyId = " + companyId);

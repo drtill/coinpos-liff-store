@@ -3,6 +3,17 @@ import Cookies from 'js-cookie';
 import { useForm } from 'react-hook-form';
 import React, { useContext, useEffect, useState } from 'react';
 
+import {
+  IoReturnUpBackOutline,
+  IoArrowForward,
+  IoBagHandle,
+  IoWalletSharp,
+  IoSaveOutline,
+  IoCheckboxOutline,
+  IoCloseCircleOutline,
+  IoCreateOutline
+
+} from 'react-icons/io5';
 //internal import
 import Label from '@component/form/Label';
 import Error from '@component/form/Error';
@@ -19,6 +30,7 @@ import ProductServices from '@services/ProductServices';
 import { UserContext } from '@context/UserContext';
 import Uploader from '@component/image-uploader/Uploader';
 import { notifySuccess, notifyError } from '@utils/toast';
+import { set } from 'firebase/database';
 
 const UpdateProfile = () => {
   const [imageUrl, setImageUrl] = useState('');
@@ -37,6 +49,10 @@ const UpdateProfile = () => {
   } = useForm();
 
   var lineCompanyId = 0;
+
+  var provinceTextData = '';
+  var cityTextData = '';
+  var districtTextData = '';
 
   var customerAddressIdData = 0
   var countryIdData = 0;
@@ -61,21 +77,15 @@ const UpdateProfile = () => {
 
   var customerId = 0;
 
+  var companyLogoData = '';
+  var companyName = '';
+
+  var dataPath = '';
+  var isInputAddressData = true;
   
-  if(sessionStorage.getItem('customerId'))
-  {
-    customerId = sessionStorage.getItem('customerId'); 
-    
-          
-  }
+  
 
-  if(sessionStorage.getItem('catalogName'))
-  {
-    catalogName = sessionStorage.getItem('catalogName'); 
-    
-          
-  }
-
+  
   if(sessionStorage.getItem('customerFirstName'))
   {
     
@@ -99,12 +109,6 @@ const UpdateProfile = () => {
     //alert(customerPhoneNumber); 
       
   }
-  if(sessionStorage.getItem('address1'))
-  {
-    customerAddress1 = sessionStorage.getItem('address1'); 
-    //alert("Address1 = " + customerAddress1);
-      
-  }
   
   if(sessionStorage.getItem('provinceId'))
   {
@@ -115,9 +119,12 @@ const UpdateProfile = () => {
   {
     
     countryIdData = Number(sessionStorage.getItem('countryId')); 
-    //alert("Select Id = " + countryId);
+    
+    
+    //alert("Select Id = " + countryIdData);
       
   }
+  
   
   if(sessionStorage.getItem('cityId'))
   {
@@ -126,45 +133,56 @@ const UpdateProfile = () => {
   }
   if(sessionStorage.getItem('districtId'))
   {
-    districtId = Number(sessionStorage.getItem('districtId')); 
+    districtIdData = Number(sessionStorage.getItem('districtId')); 
       
   }
+  
+  
+  
   if(sessionStorage.getItem('postalcode'))
   {
     postalCodeData = sessionStorage.getItem('postalcode'); 
       
   }
-  if(sessionStorage.getItem('countrys'))
+  
+  
+  
+  
+  /*if(sessionStorage.getItem('provinceId'))
   {
-    var countrysJson = sessionStorage.getItem('countrys'); 
-    //alert(countrysJson);
-    countryList = JSON.parse(countrysJson);
+    provinceIdData = 1;//Number(sessionStorage.getItem('provinceId')); 
     
-  }
-  if(sessionStorage.getItem('provinces'))
+    //alert("province Data Id = " + provinceIdData);
+  }*/
+  
+  /* if(sessionStorage.getItem('cityId'))
   {
-    var provincesJson = sessionStorage.getItem('provinces'); 
-    provincesList = JSON.parse(provincesJson);
+    cityIdData = Number(sessionStorage.getItem('cityId')); 
+      
   }
-  if(sessionStorage.getItem('cities'))
+  if(sessionStorage.getItem('districtId'))
   {
-    var citiesJson = sessionStorage.getItem('cities'); 
-    citiesList = JSON.parse(citiesJson);
-  }
-  if(sessionStorage.getItem('districts'))
-  {
-    var districtsJson = sessionStorage.getItem('districts'); 
-    districtsList = JSON.parse(districtsJson);
-  }
+    districtIdData = Number(sessionStorage.getItem('districtId')); 
+      
+  } */
+  
+  
+  
 
   if(sessionStorage.getItem('companyId'))
   {
     lineCompanyId = sessionStorage.getItem('companyId');
-    //alert(lineCompanyId); 
+    //alert('lineCompanyId = ' + lineCompanyId); 
     //companyId = lineCompanyId;
     //handleCompanyId(lineCompanyId);
   }
 
+  const [companyLogo, setCompanyLogo] = useState(companyLogoData);
+
+  const [IsApproveCustomerInfo, setApproveCustomerInfo] = useState(false);
+  const [IsEditCustomerInfo, setEditCustomerInfo] = useState(false);
+  const [IsDisableCustomerInfo, setDisableCustomerInfo] = useState(true);
+  const [customerAddressId, setCustomerAddressId] = useState(customerAddressIdData);
   const [firstName,setCustomerFirstName] = useState(customerFirstName);
   const [lastName,setCustomerLastName] = useState(customerLastName);
   const [email,setCustomerEmail] = useState(customerEmail);
@@ -175,7 +193,7 @@ const UpdateProfile = () => {
   const [provinces, setProvinces] = useState(provincesList);
   const [countrys,setCountry] = useState(countryList);
   const [cities, setCities] = useState(citiesList);
-  const [districts, setDistricts] = useState(districtsList);
+  const [districts, setDistricts] = useState([]);
   const [postalcode, setPostalCode] = useState(postalCodeData);
   const [changePostalcode, setChangePostalCode] = useState(false);
 
@@ -184,6 +202,374 @@ const UpdateProfile = () => {
   const [cityId, setCityId] = useState(cityIdData);
   const [provinceId,setProvinceId] = useState(provinceIdData);
   const [districtId,setDistrictId] = useState(districtIdData);
+
+  const [districtText, setDistrictText] = useState(districtTextData);
+  const [cityText, setCityText] = useState(cityTextData);
+  const [provinceText, setProvinceText] = useState(provinceTextData);
+  
+  const [isInputAddress, setIsInputAddress] = useState(isInputAddressData);
+
+  const [customerInfoLoading, setCustomerInfoLoading] = useState(false);
+
+  /* useEffect(() => 
+  {
+    //alert('start');
+    if(sessionStorage.getItem('countryId'))
+    {
+      
+      countryIdData = Number(sessionStorage.getItem('countryId')); 
+      setCountryId(countryIdData);
+      //alert('countryIdData = ' + countryIdData);
+      //alert("Select Id = " + countryId);
+        
+    }
+    
+    if(sessionStorage.getItem('provinceId'))
+    {
+      provinceIdData = 1;//Number(sessionStorage.getItem('provinceId')); 
+      setProvinceId(provinceIdData);
+      alert("province Data Id = " + provinceIdData);
+    }
+    
+    //alert('countryIdData = ' + countryIdData);
+    if(Number(countryIdData) !== 10 && Number(countryIdData) !== 0)//thai
+    {
+      //alert('not thai');
+      isInputAddressData = true;
+      setIsInputAddress(isInputAddressData);
+      if(sessionStorage.getItem('city'))
+      {
+        cityTextData = sessionStorage.getItem('city'); 
+        setCityText(cityTextData);
+          
+      }
+      if(sessionStorage.getItem('district'))
+      {
+        districtTextData = sessionStorage.getItem('district'); 
+        setDistrictText(districtTextData);
+      }
+      if(sessionStorage.getItem('province'))
+      {
+        provinceTextData = sessionStorage.getItem('province'); 
+        setProvinceText(provinceTextData);
+      }
+      
+      
+    }
+    else
+    {
+      //alert('thai')
+      isInputAddressData = false;
+      setIsInputAddress(isInputAddressData);
+
+      
+
+
+      if(sessionStorage.getItem('provinces'))
+      {
+        var provincesJson = sessionStorage.getItem('provinces'); 
+        provincesList = JSON.parse(provincesJson);
+        //alert('provincesList = ' + provincesList)
+        if(provincesList === null)
+        {
+          setProvinces([]);
+        }
+        else
+        {
+          setProvinces(provincesList);
+          
+        }
+        
+        
+      }
+    }
+
+    
+    
+    if(sessionStorage.getItem('customerId'))
+  {
+    customerId = sessionStorage.getItem('customerId'); 
+    
+          
+  }
+  if(sessionStorage.getItem('dataPath'))
+  {
+    dataPath = sessionStorage.getItem('dataPath'); 
+    
+          
+  }
+  if(sessionStorage.getItem('catalogName'))
+  {
+    catalogName = sessionStorage.getItem('catalogName'); 
+    
+          
+  }
+  if(sessionStorage.getItem('customerAddressId'))
+  {
+    
+    customerAddressIdData = Number(sessionStorage.getItem('customerAddressId')); 
+    setCustomerAddressId(customerAddressIdData);
+    //alert('customerAddressIdData = ' + customerAddressIdData)
+    if(customerAddressIdData !== undefined && customerAddressIdData !== null && customerAddressIdData !== 0)
+    {
+      //alert('Disable')
+      setDisableCustomerInfo(true);
+    }
+    else
+    {
+      //alert('Enable')
+      setCustomerAddressId(false);
+    }
+  }
+
+  if(sessionStorage.getItem('customerAddressId'))
+  {
+    
+    customerAddressIdData = Number(sessionStorage.getItem('customerAddressId')); 
+    //alert("customerAddressIdData = " + customerAddressIdData)
+  }
+
+
+  if(sessionStorage.getItem('countrysJSON'))
+  {
+    var countrysJson = sessionStorage.getItem('countrysJSON'); 
+    //alert(countrysJson);
+    countryList = JSON.parse(countrysJson);
+    if(countryList === null)
+    {
+      setCountry([])
+    }
+    else
+    {
+      setCountry(countryList);
+    }
+    
+  }
+  
+  if(sessionStorage.getItem('cities'))
+  {
+    //alert('cities');
+    var citiesJson = sessionStorage.getItem('cities'); 
+    //alert('citiesJson = ' + citiesJson);
+    citiesList = JSON.parse(citiesJson);
+    if(citiesList === null)
+    {
+      setCities([]);
+    }
+    else
+    {
+      setCities(citiesList);
+    }
+  }
+  if(sessionStorage.getItem('districts'))
+  {
+    var districtsJson = sessionStorage.getItem('districts'); 
+    districtsList = JSON.parse(districtsJson);
+    if(districtsList === null)
+    {
+      setDistricts([]);
+    }
+    else
+    {
+      setDistricts(districtsList);
+    }
+  }
+
+
+  if(sessionStorage.getItem('companyLogo'))
+  {
+    companyLogoData = sessionStorage.getItem('companyLogo'); 
+    setCompanyLogo(companyLogoData);
+    
+  }
+  if(sessionStorage.getItem('companyName'))
+  {
+    companyName = sessionStorage.getItem('companyName'); 
+    //alert(companyName)
+    
+  }
+  if(sessionStorage.getItem('address1'))
+  {
+    customerAddress1 = sessionStorage.getItem('address1'); 
+    //alert("Address1 = " + customerAddress1);
+    setCustomerAddress(customerAddress1);
+      
+  }
+  
+
+  
+
+  
+  
+  //alert('isInputAddress = ' + isInputAddress)
+  //setIsInputAddress(isInputAddress);
+    
+  },[]); */
+
+  useEffect(() => 
+  {
+    //alert('countryIdData = ' + countryIdData);
+    if(Number(countryIdData) !== 10 && Number(countryIdData) !== 0)//thai
+    {
+      
+      isInputAddressData = true;
+      setIsInputAddress(isInputAddressData);
+      if(sessionStorage.getItem('city'))
+      {
+        cityTextData = sessionStorage.getItem('city'); 
+        setCityText(cityTextData);
+          
+      }
+      if(sessionStorage.getItem('district'))
+      {
+        districtTextData = sessionStorage.getItem('district'); 
+        setDistrictText(districtTextData);
+      }
+      if(sessionStorage.getItem('province'))
+      {
+        provinceTextData = sessionStorage.getItem('province'); 
+        setProvinceText(provinceTextData);
+      }
+      
+      //alert('not thai')
+    }
+    else
+    {
+      //alert('thai')
+      isInputAddressData = false;
+      setIsInputAddress(isInputAddressData);
+    }
+
+    if(sessionStorage.getItem('customerId'))
+  {
+    customerId = sessionStorage.getItem('customerId'); 
+    //alert('customerId = ' + customerId);
+          
+  }
+  if(sessionStorage.getItem('dataPath'))
+  {
+    dataPath = sessionStorage.getItem('dataPath'); 
+    
+          
+  }
+  if(sessionStorage.getItem('catalogName'))
+  {
+    catalogName = sessionStorage.getItem('catalogName'); 
+    
+          
+  }
+  if(sessionStorage.getItem('customerAddressId'))
+  {
+    
+    customerAddressIdData = Number(sessionStorage.getItem('customerAddressId')); 
+    //alert("customerAddressIdData = " + customerAddressIdData)
+    setCustomerAddressId(customerAddressIdData);
+    if(customerAddressId !== undefined && customerAddressId !== null && customerAddressId !== 0)
+    {
+      setDisableCustomerInfo(true);
+    }
+    else
+    {
+      setCustomerAddressId(false);
+    }
+  }
+
+  if(sessionStorage.getItem('countrysJSON'))
+  {
+    var countrysJson = sessionStorage.getItem('countrysJSON'); 
+    //alert(countrysJson);
+    countryList = JSON.parse(countrysJson);
+    if(countryList === null)
+    {
+      setCountry([])
+    }
+    else
+    {
+      setCountry(countryList);
+    }
+    
+  }
+  if(sessionStorage.getItem('provinces'))
+  {
+    var provincesJson = sessionStorage.getItem('provinces'); 
+    provincesList = JSON.parse(provincesJson);
+    //alert('provincesList = ' + provincesList)
+    if(provincesList === null)
+    {
+      setProvinces([]);
+    }
+    else
+    {
+      setProvinces(provincesList);
+    }
+  }
+
+  setProvinceId(1);
+  
+  if(sessionStorage.getItem('cities'))
+  {
+    //alert('cities');
+    var citiesJson = sessionStorage.getItem('cities'); 
+    //alert('citiesJson = ' + citiesJson);
+    citiesList = JSON.parse(citiesJson);
+    if(citiesList === null)
+    {
+      setCities([]);
+    }
+    else
+    {
+      setCities(citiesList);
+    }
+  }
+  if(sessionStorage.getItem('districts'))
+  {
+    var districtsJson = sessionStorage.getItem('districts'); 
+    districtsList = JSON.parse(districtsJson);
+    if(districtsList === null)
+    {
+      setDistricts([]);
+    }
+    else
+    {
+      setDistricts(districtsList);
+    }
+  }
+
+
+
+
+  if(sessionStorage.getItem('companyLogo'))
+  {
+    companyLogoData = sessionStorage.getItem('companyLogo'); 
+    setCompanyLogo(companyLogoData);
+    
+  }
+  if(sessionStorage.getItem('companyName'))
+  {
+    companyName = sessionStorage.getItem('companyName'); 
+    //alert(companyName)
+    
+  }
+  if(sessionStorage.getItem('address1'))
+  {
+    customerAddress1 = sessionStorage.getItem('address1'); 
+    //alert("Address1 = " + customerAddress1);
+    setCustomerAddress(customerAddress1);
+  }
+    
+  if (Cookies.get('userInfo')) {
+    //alert("Get UserInfo");
+    const user = JSON.parse(Cookies.get('userInfo'));
+    setValue('name', user.name);
+    setValue('email', user.email);
+    setValue('address', user.address);
+    setValue('phone', user.phone);
+    setImageUrl(user.image);
+  }
+    
+  },[]);
+  
+
 
   const handleEmailChange = (event) => {  
     setCustomerEmail(event.target.value)
@@ -198,27 +584,72 @@ const UpdateProfile = () => {
     setCustomerLastName(event.target.value)
   }
 
+  const handleDistrictTextChange = (event) => {  
+    //alert("aaaa" + event.target.value);
+    setDistrictText(event.target.value)
+  }
+  const handleCityTextChange = (event) => {  
+    //alert("aaaa" + event.target.value);
+    setCityText(event.target.value)
+  }
+  const handleProvinceTextChange = (event) => {  
+    //alert("aaaa" + event.target.value);
+    setProvinceText(event.target.value)
+  }
+
+  const EditCustomerInfo = async () =>
+{
+  setEditCustomerInfo(true);
+  setDisableCustomerInfo(false);
+  setApproveCustomerInfo(false);
+}
   const handleCountryChange = async(event) => {
     console.log(event.target.value);
     var countryId = parseInt(event.target.value)
     setCountryId(countryId);
-    var provincesData = await ProductServices.getStateProvince();
+    var provincesDataJson = await ProductServices.fetchGetStateProvince();
+    //alert(provincesDataJson)
+
+    var provincesData = JSON.parse(provincesDataJson)
+    //alert('provincesData = ' + provincesData)
+    //alert('provincesData Response = ' + provincesData.provinceResponses);
+    //setProvinces(JSON.parse(provincesData.provinceResponse))
+    
+
+    setProvinces(provincesData.provinceResponses)
+    //setProvinceId(1);
+    setCities([]);
+    setDistricts([]);
+    
+    if(countryId === 10)//thai
+    {
+      setIsInputAddress(false);
+    }
+    else
+    {
+      setIsInputAddress(true);
+    }
+    setPostalCode('');
+    
     
 }
 const handleProvinceChange = async(event) => {
     console.log(event.target.value);
     var stateId = parseInt(event.target.value)
-    var citysData = await ProductServices.getCity({stateId});
+    var citysData = await ProductServices.fetchGetCity({stateId});
     setProvinceId(stateId);
     setCities(citysData);
+    setDistricts([]);
+    setPostalCode('');
     
 }
 const handleCityChange = async(event) => {
     console.log(event.target.value);
     var cityId = parseInt(event.target.value)        
-    var districtsData = await ProductServices.getDistrict({cityId});
+    var districtsData = await ProductServices.fetchGetDistrict({cityId});
     setCityId(cityId);
     setDistricts(districtsData);
+    setPostalCode('');
     
     
 }
@@ -289,56 +720,84 @@ const handleAddress1Change = (event) => {
 
   const SaveCustomerInfo = async (companyId) =>
 {
+  if(sessionStorage.getItem('customerId'))
+  {
+    customerId = sessionStorage.getItem('customerId'); 
+    //alert('customerId = ' + customerId);
+          
+  }
+  if (!imageUrl) {
+    notifyError('Image is required!');
+    return;
+  }
+  setLoading(true);
+
+  SaveCustomerInfo(lineCompanyId);
+
+  setCustomerInfoLoading(true);
   //alert(countryId);
   var countryItem = countrys.find(x => x.countryId === countryId);
-  //alert(JSON.stringify(countryItem));
+  //alert('Country = ' + JSON.stringify(countryItem));
     var countryString = countryItem === null ? "" : countryItem.countryLocalName;
 
-    //alert("cityId = " + cityId);
-    var cityItem = cities.find(x => x.Id === cityId);
-    //alert(JSON.stringify(cityItem));
-    
-    var cityString = cityItem === null ? "" : cityItem.Name_th;
-    
-    //alert("provinceId = " + provinceId);
-    var provinceItem = provinces.find(x => x.Id === provinceId);
-    //alert(JSON.stringify(provinceItem));
-    var provinceString = provinceItem === null ? "" : provinceItem.Name_th;
+    var cityString = '';
+    var provinceString = '';
+    var districtString = '';
+    if(isInputAddress === true)
+    {
+      cityString = cityText;
+      provinceString = provinceText;
+      districtString = districtText;
+    }
+    else
+    {
+      var cityItem = cities.find(x => x.Id === cityId);
+      cityString = cityItem === null ? "" : cityItem.Name_th;
 
-    //alert("districtId = " + districtId);
-    var districtItem = districts.find(x => x.Id === districtId);
-    //alert(JSON.stringify(districtItem));
-    var districtString = districtItem === null ? "" : districtItem.Name_th;
+      var provinceItem = provinces.find(x => x.Id === provinceId);
+      provinceString = provinceItem === null ? "" : provinceItem.Name_th;
+
+      var districtItem = districts.find(x => x.Id === districtId);
+      districtString = districtItem === null ? "" : districtItem.Name_th;
+    }
 
     var postalCodeString = postalcode;
-    alert(companyId)
-    alert(firstName);
+    //alert(companyId)
+    //alert(firstName);
     //return;
-    var customerData = await ProductServices.saveCustomerInfo(
-      {
-        firstName:firstName,
-        middleName:'',
-        lastName:lastName,
-        gender:0,
-        phone:phoneNumber,
-        mobile:phoneNumber,
-        email:email,
-        address1:address1,
-        district:districtString,
-        city:cityString,
-        stateOrProvince:provinceString,
-        country:countryString,
-        countryId:countryId,
-        customerId:customerId,
-        postalcode:postalCodeString,
-        companyId:companyId,
-        catalogName:catalogName,
-        imageUrl:imageUrl
+    if(!checkValid(firstName,lastName,email,phoneNumber, address1, countryId, provinceString, districtString, cityString))
+    {
+      alert("กรุณากรอกข้อมูลให้ครบถ้วน")
+      //return;
+    }
+    else
+    {
+      
+      var customerData = await ProductServices.fetchSaveCustomerInfo(
+        {
+          firstName:firstName,
+          middleName:'',
+          lastName:lastName,
+          gender:0,
+          phone:phoneNumber,
+          mobile:phoneNumber,
+          email:email,
+          address1:address1,
+          district:districtString,
+          city:cityString,
+          stateOrProvince:provinceString,
+          country:countryString,
+          countryId:countryId,
+          customerId:customerId,
+          postalcode:postalCodeString,
+          companyId:companyId,
+          catalogName:catalogName,
+          imageUrl:imageUrl
+  
+        });
 
-      });
-      alert(JSON.stringify(customerData));
-
-      notifySuccess('Update Profile Success!');
+        notifySuccess('Update Profile Success!');
+        alert(JSON.stringify(customerData));
       sessionStorage.setItem('customerId', customerData.customerId);
           sessionStorage.setItem('customerFirstName', customerData.firstName);
           sessionStorage.setItem('customerLastName', customerData.lastName);
@@ -348,39 +807,88 @@ const handleAddress1Change = (event) => {
           sessionStorage.setItem('customerAddressId', customerData.customerAddressId);
 
 
+          alert('address1 = ' + customerData.address1);
           sessionStorage.setItem('address1', customerData.address1);
           sessionStorage.setItem('countryId', customerData.countryId);
           sessionStorage.setItem('provinceId', customerData.provinceId);
+          sessionStorage.setItem('province', customerData.StateOrProvince);
           sessionStorage.setItem('cityId', customerData.cityId);
+          sessionStorage.setItem('city', customerData.City);
           sessionStorage.setItem('districtId', customerData.districtId);
+          sessionStorage.setItem('district', customerData.District);
           sessionStorage.setItem('postalcode', customerData.postalcode);
 
-          sessionStorage.setItem('countrys', JSON.stringify(customerData.countrys));
-          sessionStorage.setItem('provinces', JSON.stringify(customerData.provinces));
-          sessionStorage.setItem('cities', JSON.stringify(customerData.cities));
-          sessionStorage.setItem('districts', JSON.stringify(customerData.districts));
+          //sessionStorage.setItem('countrys', JSON.stringify(customerData.countrys));
+          //setCountry(customerData.countrys);
+          //sessionStorage.setItem('provinces', JSON.stringify(customerData.provinces));
+          //sessionStorage.setItem('cities', JSON.stringify(customerData.cities));
+          //sessionStorage.setItem('districts', JSON.stringify(customerData.districts));
       //var customerAddressId = customerData.customerAddressId;
 
       dispatch({ type: 'USER_LOGIN', payload: customerData });
       Cookies.set('userInfo', JSON.stringify(customerData));
 
       localStorage.setItem('userInfo', JSON.stringify(customerData));
+    }
+    
+
+      
       
 }
+  const CancelCustomerInfo = async () =>
+  {
+    setEditCustomerInfo(false);
+    setDisableCustomerInfo(true);
+    setApproveCustomerInfo(false);
+  }
+  
 
-  useEffect(() => {
-    
-    //alert("Get User");
-    if (Cookies.get('userInfo')) {
-      alert("Get UserInfo");
-      const user = JSON.parse(Cookies.get('userInfo'));
-      setValue('name', user.name);
-      setValue('email', user.email);
-      setValue('address', user.address);
-      setValue('phone', user.phone);
-      setImageUrl(user.image);
-    }
-  }, []);
+  const checkValid = (firstName, lastName, email, phoneNumber, address1, countryId, provinceString, districtString,cityString) =>
+{
+  var isComplete = true;
+  if(firstName.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(lastName.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(email.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(phoneNumber.length <= 0)
+  {
+    //alert("Contact Error")
+    var error = {};
+    error['message'] = 'เบอร์ติดต่อว่างไม่ได้';
+    setContactError(error);
+    isComplete = false;
+  }
+  if(address1.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(countryId === 0)
+  {
+    isComplete = false;
+  }
+  if(provinceString.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(districtString.length <= 0)
+  {
+    isComplete = false;
+  }
+  if(cityString.length <= 0)
+  {
+    isComplete = false;
+  }
+
+  return isComplete;
+}
 
   return (
     <Dashboard title="Update-Profile" description="This is edit profile page">
@@ -394,7 +902,7 @@ const handleAddress1Change = (event) => {
             </div>
           </div>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={onSubmit}>
           <div className="mt-5 md:mt-0 md:col-span-2">
             <div className="bg-white space-y-6">
               <div>
@@ -420,7 +928,7 @@ const handleAddress1Change = (event) => {
                           name="firstName"
                           type="text"
                           placeholder="John"
-                          isDisable={false}
+                          isDisable={IsDisableCustomerInfo}
                             dataValue={firstName}
                             canAutoChange={true}
                           handleDataChange={handleFirstNameChange}
@@ -434,7 +942,7 @@ const handleAddress1Change = (event) => {
                           name="lastName"
                           type="text"
                           placeholder="Doe"
-                          isDisable={false}
+                          isDisable={IsDisableCustomerInfo}
                             dataValue={lastName}
                             canAutoChange={true}
                           handleDataChange={handleLastNameChange}
@@ -449,7 +957,7 @@ const handleAddress1Change = (event) => {
                           name="email"
                           type="email"
                           placeholder="youremail@gmail.com"
-                          isDisable={false}
+                          isDisable={IsDisableCustomerInfo}
                           dataValue={email}
 
                           canAutoChange={true}
@@ -464,7 +972,7 @@ const handleAddress1Change = (event) => {
                           name="contact"
                           type="tel"
                           placeholder="+062-6532956"
-                          isDisable={false}
+                          isDisable={IsDisableCustomerInfo}
                           dataValue={phoneNumber}
                           canAutoChange={true}
                           handleDataChange={handleContactChange}
@@ -487,7 +995,7 @@ const handleAddress1Change = (event) => {
                         name="address"
                         type="text"
                         placeholder="123 Boulevard Rd, Beverley Hills"
-                        isDisable={false}
+                        isDisable={IsDisableCustomerInfo}
                         dataValue={address1}
                         canAutoChange={true}
                         handleDataChange={handleAddress1Change}
@@ -500,7 +1008,7 @@ const handleAddress1Change = (event) => {
                           label="Country"
                           name="province1"
                           type="text"
-                          isDisable={false}
+                          isDisable={IsDisableCustomerInfo}
                           handleItemChange={handleCountryChange}
                           dataList={countrys} selectedId={countryId}
                           />
@@ -509,37 +1017,91 @@ const handleAddress1Change = (event) => {
                       </div>
 
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        <ProvinceFormSelect register={register}
-                          label="Province"
-                          name="province"
-                          type="text"
-                          isDisable={false}
-                          handleItemChange={handleProvinceChange}
-                          dataList={provinces} selectedId={provinceId}
-                          />
+                        
+                      {
+                              isInputAddress === true 
+                              ?
+                                
+                                <EditableCustomerInput register={register}
+                                    id="province"
+                                    label="จังหวัด"
+                                    name="province"
+                                    type="input"
+                                    placeholder="Please insert state/province."
+                                    isDisable={IsDisableCustomerInfo}
+                                    dataValue={provinceText}
+                                    changeData={changePostalcode}
+                                    canAutoChange={true}
+                                    handleDataChange={handleProvinceTextChange}
+                                    />
+                              :
+                              
+                              <ProvinceFormSelect register={register}
+                              label="จังหวัด"
+                              name="province"
+                              type="text"
+                              isDisable={IsDisableCustomerInfo}
+                              handleItemChange={handleProvinceChange}
+                              dataList={provinces} selectedId={provinceId}
+                              />
+                            }
                         <Error errorName={errors.province} />
                       </div>
 
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        <CityFormSelect register={register}
-                          label="City"
-                          name="province2"
-                          type="text"
-                          isDisable={false}
-                          handleItemChange={handleCityChange}
-                          dataList={cities} selectedId={cityId}
-                          />
+                         {
+                              isInputAddress === true 
+                              ?
+                                <EditableCustomerInput register={register}
+                                  id="city"
+                                  label="เขต/อำเภอ"
+                                  name="province2"
+                                  type="input"
+                                  placeholder="Please insert city."
+                                  isDisable={IsDisableCustomerInfo}
+                                  dataValue={cityText}
+                                  changeData={changePostalcode}
+                                  canAutoChange={true}
+                                  handleDataChange={handleCityTextChange}
+                                  />
+                              :
+                              <CityFormSelect register={register}
+                              label="เขต/อำเภอ"
+                              name="province2"
+                              type="text"
+                              isDisable={IsDisableCustomerInfo}
+                              handleItemChange={handleCityChange}
+                              dataList={cities} selectedId={cityId}
+                              />
+                            }
                         <Error errorName={errors.city} />
                       </div>
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
-                        <DistrictFormSelect register={register}
-                          label="District"
-                          name="district"
-                          type="text"
-                          isDisable={false}
-                          handleItemChange={handleDistrictChange}
-                          dataList={districts} selectedId={districtId}
-                          />
+                      {isInputAddress === true 
+                            ?
+                              
+                              <EditableCustomerInput register={register}
+                              id="district"
+                              label="แขวง/ตำบล"
+                              name="district"
+                              type="input"
+                              placeholder="Please insert district."
+                              isDisable={IsDisableCustomerInfo}
+                              dataValue={districtText}
+                              changeData={changePostalcode}
+                              canAutoChange={true}
+                              handleDataChange={handleDistrictTextChange}
+                              />
+                            :
+                              <DistrictFormSelect register={register}
+                                label="แขวง/ตำบล"
+                                name="district"
+                                type="text"
+                                isDisable={IsDisableCustomerInfo}
+                                handleItemChange={handleDistrictChange}
+                                dataList={districts} selectedId={districtId}
+                                />
+                            }
                         <Error errorName={errors.district} />
                       </div>
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
@@ -606,6 +1168,20 @@ const handleAddress1Change = (event) => {
                         <Error errorName={errors.email} />
                       </div>
                     </div> */}
+                    {/* <div className="col-span-6 sm:col-span-3">
+                                  <button
+                                    type="button"
+                                    
+                                    onClick={() => EditCustomerInfo()}
+                                    className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                  >
+                                    แก้ไขข้อมูลลูกค้า{' '}
+                                    <span className="text-xl ml-2">
+                                      {' '}
+                                      <IoCreateOutline />
+                                    </span>
+                                  </button>
+                                </div>
                     <div className="col-span-6 sm:col-span-3 mt-5 text-right">
                       <button
                         disabled={loading}
@@ -614,6 +1190,58 @@ const handleAddress1Change = (event) => {
                       >
                         Update Profile
                       </button>
+                    </div> */}
+                    <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10 text-right">
+                      {
+                        IsEditCustomerInfo === true
+                        ?
+                        <>
+                          <div className="col-span-6 sm:col-span-3 gap-4 lg:gap-6">
+                          </div>
+                          <div className="col-span-6 sm:col-span-3 gap-4 lg:gap-6">
+                          
+                            <button
+                                  type="button"
+                                  
+                                  onClick={() => CancelCustomerInfo()}
+                                  className="bg-indigo-50 border border-indigo-100 md:text-sm leading-5 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-medium text-center justify-center rounded-md placeholder-white focus-visible:outline-none focus:outline-none  text-gray-700 hover:text-gray-800 hover:border-gray-300  px-5 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 h-12 mt-1 mr-2 text-sm lg:text-sm w-full sm:w-auto"
+                                >
+                                  ยกเลิก{' '}
+                                  
+                                </button>
+                            <button
+                              disabled={loading}
+                              type="button"
+                              onClick={() => SaveCustomerInfo()}
+                              className="md:text-sm leading-5 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-medium text-center justify-center border-0 border-transparent rounded-md placeholder-white focus-visible:outline-none focus:outline-none bg-cyan-500 text-white px-5 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 hover:text-white hover:bg-cyan-600 h-12 mt-1 text-sm lg:text-sm w-full sm:w-auto"
+                            >
+                              Update Profile
+                            </button>
+                            
+                          </div>
+                          </>
+                        :
+                        <>
+                          <div className="col-span-6 sm:col-span-3 gap-4 lg:gap-6">
+                          </div>
+                          <div className="col-span-6 sm:col-span-3 gap-4 lg:gap-6">
+                            
+                            <button
+                                    type="button"
+                                    onClick={() => EditCustomerInfo()}
+                                    className="bg-cyan-500 hover:bg-cyan-600 border border-cyan-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                                  >
+                                    แก้ไขข้อมูลลูกค้า{' '}
+                                    <span className="text-xl ml-2">
+                                      {' '}
+                                      <IoCreateOutline />
+                                    </span>
+                                  </button>
+                            
+                          </div>
+                        </>
+                      }
+                      
                     </div>
                   </div>
                 </div>

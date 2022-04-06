@@ -107,7 +107,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
     
     useEffect(async () => {
 
-
+      setPromotionLoading(true);
       
       //alert(JSON.stringify(promotions))
       if(Cookies.get('userInfo'))
@@ -135,16 +135,23 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
               companyId:catalogCompanyId
             });
             
+          sessionStorage.setItem('expiredDate',expiredDate);
           if(expiredDate === false)
           {
             //alert('Login');
             dispatch({ type: 'USER_LOGIN', payload: userLocal });
 
 
+            //alert('userLocal.customerId = ' + userLocal.customerId)
+            sessionStorage.setItem('customerId', userLocal.customerId); 
             sessionStorage.setItem('customerFirstName', userLocal.firstName);
             sessionStorage.setItem('customerLastName', userLocal.lastName);
             sessionStorage.setItem('customerEmail', userLocal.email);
             sessionStorage.setItem('customerPhoneNumber', userLocal.phone);
+
+            //alert('address1 = '+ userLocal.address1)
+            //alert('countryId = '+ userLocal.countryId)
+            //alert('countryId = '+ JSON.stringify(userLocal.provinces))
 
             sessionStorage.setItem('address1', userLocal.address1);
             sessionStorage.setItem('countryId', userLocal.countryId);
@@ -156,7 +163,6 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
             sessionStorage.setItem('countrys', JSON.stringify(userLocal.countrys));
             sessionStorage.setItem('provinces', JSON.stringify(userLocal.provinces));
             
-            alert(userLocal.cities);
             sessionStorage.setItem('cities', JSON.stringify(userLocal.cities));
             sessionStorage.setItem('districts', JSON.stringify(userLocal.districts));
           }
@@ -198,7 +204,11 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         sessionStorage.setItem('isForAllProduct', isForAllProduct);
         setPromotionCode(promotionCode);
       }
-      
+
+      //alert(JSON.stringify(countrys))
+      //alert('Storage = ' + sessionStorage.getItem('countrys'))
+      sessionStorage.setItem('countrys', 'JSON.stringify(countrys)');
+      sessionStorage.setItem('countrysJSON', JSON.stringify(countrys));
       sessionStorage.setItem('dataPath',dataPath);
       sessionStorage.setItem('catalogName',catalogName);
       sessionStorage.setItem('companyLogo',companyLogo);
@@ -297,6 +307,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         await GetProductData('','','','',0,catalogCompanyId,catalogLocationId,companyName,locationName,companyCode,catalogName,0,9,1,itemPerPage,'','','');
         
           
+        setPromotionLoading(false);
         setCategoryLoading(false);
         setNewProductLoading(false);
         setLoading(false);
@@ -340,15 +351,25 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
       });
 
       //alert(JSON.stringify(products));
-      //alert('products.catalogPromotionId = ' + products.catalogPromotionId)
-      setCatalogPromotionId(Number(products.catalogPromotionId));
-      setPromotionCode(products.catalogPromotionCode);
-      setCatalogPromotionName(products.catalogPromotionName);
-      setCatalogDiscountPercentage(products.catalogDiscountPercentage)
-      setCatalogPromotionIsAllProduct(products.catalogIsAllProduct);
-      setCatalogMinimumAmount(products.catalogMinimumAmount);
-      setCatalogProductType(products.catalogProductType)
+      //alert(JSON.stringify(products.catalogCouponCode));
+      if(products.catalogCouponCode !== undefined)
+      {
+        //alert("Have Promotion")
+        setCatalogPromotionId(Number(products.catalogPromotionId));
+        setPromotionCode(products.catalogCouponCode);
+        setCatalogPromotionName(products.catalogPromotionName);
+        setCatalogDiscountPercentage(products.catalogDiscountPercentage)
+        setCatalogPromotionIsAllProduct(products.catalogIsAllProduct);
+        setCatalogMinimumAmount(products.catalogMinimumAmount);
+        setCatalogProductType(products.catalogProductType)
 
+        SetPromotionData(products.catalogCouponCode,products.catalogEndTime,products.catalogMinimumAmount,products.catalogDiscountPercentage,true);
+      }
+      
+      sessionStorage.setItem('customerTypeId',products.customerTypeId);
+      sessionStorage.setItem('promotionId',products.promotionId);
+      
+      
 
       currentPage = products.currentPage;
       countPage = products.countPage;
@@ -511,10 +532,26 @@ const CancelPromotionCode = async(promotionCode) =>
           clearCouponData();
 }
 
+const SetPromotionData = (promotionCode,promotionEndTime,promotionMinimumAmount,promotionDiscountRate, isAuto) =>
+{
+  var couponData = [];
+  
+  var couponDetail = {
+    couponCode:promotionCode,
+    endTime:promotionEndTime,
+    minimumAmount:promotionMinimumAmount,
+    discountPercentage:promotionDiscountRate,
+
+  };
+  couponData.push(couponDetail);
+          
+  sessionStorage.setItem('couponInfo', JSON.stringify(couponData));
+  setCouponData(promotionCode, couponData, isAuto);
+}
 
     const ApplyPromotionCode = async(promotionCode,discountPercentage, isForAllProduct, minimumAmount, productIdList) =>
     {
-      
+      setPromotionLoading(true);
       //alert(sessionStorage.getItem('discountDetails'));
       //if(getPromotionCode !== null)
       //{
@@ -604,50 +641,50 @@ const CancelPromotionCode = async(promotionCode) =>
 
           setDiscountDetail(JSON.stringify(discountDetails))
 
-          var couponData = [];
-          //alert(JSON.stringify(promotion))
-          var couponDetail = {
-            couponCode:promotionCode,
-            endTime:promotion.endTime,
-            minimumAmount:promotion.minimumAmount,
-            discountPercentage:promotion.discountRate,
+          setPromotionLoading(false);
 
-          };
-          couponData.push(couponDetail);
+          SetPromotionData(promotionCode,promotion.endTime,promotion.minimumAmount,promotion.discountRate, false);
           
-          //alert(JSON.stringify(couponData));
-          sessionStorage.setItem('couponInfo', JSON.stringify(couponData));
-          //Cookies.set('couponInfo', JSON.stringify(couponData));
-          setCouponData(promotionCode, couponData);
           
 
     }
     const SearchProduct = async (searchText) => 
     {
       //alert("Searching = " + searchText);
+      var customerTypeId = sessionStorage.getItem('customerTypeId') ? Number(sessionStorage.getItem('customerTypeId')) : 9;//Default Customer
+      var promotionId = sessionStorage.getItem('promotionId') ? Number(sessionStorage.getItem('promotionId')) : 0;
+      //alert("promotionId = " + promotionId + ", customerTypeId = " + customerTypeId);
       RefreshProductList("","","","",catalogOrderId === undefined ? 0 : catalogOrderId,
       catalogCompanyId,companyCode,
       catalogLocationId === undefined ? 0 : catalogLocationId ,
       catalogName,
-      '','',0,9,1,30,searchText)
+      '','',promotionId,customerTypeId,1,itemPerPage,searchText)
     }
     const FilterCategory = async (categoty) => 
     {
+      
       //alert("categoty = " + categoty);
+
+      var customerTypeId = sessionStorage.getItem('customerTypeId') ? Number(sessionStorage.getItem('customerTypeId')) : 9;//Default Customer
+      var promotionId = sessionStorage.getItem('promotionId') ? Number(sessionStorage.getItem('promotionId')) : 0;
+      //alert("promotionId = " + promotionId + ", customerTypeId = " + customerTypeId);
       RefreshProductList("","","","",catalogOrderId === undefined ? 0 : catalogOrderId,
       catalogCompanyId,companyCode,
       catalogLocationId === undefined ? 0 : catalogLocationId ,
       catalogName,
-      '','',0,9,1,30,'',categoty)
+      '','',promotionId,customerTypeId,1,itemPerPage,'',categoty)
     }
     const FilterProduct = async (category,product) => 
     {
-      //alert("product = " + product);
+      
+      var customerTypeId = sessionStorage.getItem('customerTypeId') ? Number(sessionStorage.getItem('customerTypeId')) : 9;//Default Customer
+      var promotionId = sessionStorage.getItem('promotionId') ? Number(sessionStorage.getItem('promotionId')) : 0;
+      //alert("promotionId = " + promotionId + ", customerTypeId = " + customerTypeId);
       RefreshProductList("","","","",catalogOrderId === undefined ? 0 : catalogOrderId,
       catalogCompanyId,companyCode,
       catalogLocationId === undefined ? 0 : catalogLocationId ,
       catalogName,
-      '','',0,9,1,30,'',category,product)
+      '','',promotionId,customerTypeId,1,itemPerPage,'',category,product)
     }
     const RefreshProductList = async (liffId, lineUserId, linePOSId, groupId, orderId,companyId,companyCode,locationId,catalogName,companyName, locationName, promotionId,customerTypeId,page,itemPerPage,query,category,product) =>
     {
@@ -656,8 +693,8 @@ const CancelPromotionCode = async(promotionCode) =>
       query = query === undefined ? 'null' : query;
       category = category === undefined ? 'null' : category;
       product = product === undefined ? 'null' : product;
-      //alert("query = " + query);
-      const products = await ProductServices.fetchGetCoinPOSProductService({
+      //alert("customerTypeId = " + customerTypeId);
+      const products = await ProductServices.fetchRefreshCoinPOSProductService({
         liffId,
         lineUserId,
         linePOSId,
@@ -675,31 +712,36 @@ const CancelPromotionCode = async(promotionCode) =>
 
       
       currentPage = products.currentPage;
+      countPage = products.countPage;
       var productVariants = [];//products.productVariantPresenters;
-      if(products.productVariantPresenters !== null)
+      if(products !== undefined)
       {
-        for(var i = 0;i < products.productVariantPresenters.length; i++)
+        if(products.productVariantPresenters !== undefined)
         {
-          var productItem = {};
-          productItem['_id'] = Number(products.productVariantPresenters[i].ProductVariantId);
-          productItem['title'] = products.productVariantPresenters[i].Name;
-          productItem['quantity'] = products.productVariantPresenters[i].StockLevelDisplay;
-          productItem['image'] = products.productVariantPresenters[i].ImageUrl;
-          productItem['unit'] = products.productVariantPresenters[i].UPC;
-          productItem['slug'] = products.productVariantPresenters[i].UPC;
-          productItem['tag'] = products.productVariantPresenters[i].ProductId;
-          productItem['originalPrice'] = products.productVariantPresenters[i].PriceDisplay;
-          productItem['price'] = products.productVariantPresenters[i].PriceDisplay;
-          productItem['type'] = 'W';
-          productItem['sku'] = products.productVariantPresenters[i].SKU;
-          productItem['discount'] = 0;
-          productItem['description'] = products.productVariantPresenters[i].Description;
-          productItem['currencySign'] = products.currencySign;
+          for(var i = 0;i < products.productVariantPresenters.length; i++)
+          {
+            var productItem = {};
+            productItem['_id'] = Number(products.productVariantPresenters[i].ProductVariantId);
+            productItem['title'] = products.productVariantPresenters[i].Name;
+            productItem['quantity'] = products.productVariantPresenters[i].StockLevelDisplay;
+            productItem['image'] = products.productVariantPresenters[i].ImageUrl;
+            productItem['unit'] = products.productVariantPresenters[i].UPC;
+            productItem['slug'] = products.productVariantPresenters[i].UPC;
+            productItem['tag'] = products.productVariantPresenters[i].ProductId;
+            productItem['originalPrice'] = products.productVariantPresenters[i].PriceDisplay;
+            productItem['price'] = products.productVariantPresenters[i].PriceDisplay;
+            productItem['type'] = 'W';
+            productItem['sku'] = products.productVariantPresenters[i].SKU;
+            productItem['discount'] = 0;
+            productItem['description'] = products.productVariantPresenters[i].Description;
+            productItem['currencySign'] = products.currencySign;
 
 
-          productVariants.push(productItem);
+            productVariants.push(productItem);
+          }
         }
       }
+      
       
 
       pagingManager();
@@ -810,7 +852,27 @@ const CancelPromotionCode = async(promotionCode) =>
             <div className="mx-auto py-5 max-w-screen-2xl px-3 sm:px-10">
               {catalogPromotionId === 0 
               ?
-                <OfferCard promotions={promotions} selectedPromotion={promotionCode} companyId={catalogCompanyId} catalogName={catalogName} ApplyPromotionCode={ApplyPromotionCode} CancelPromotionCode={CancelPromotionCode}/>
+                promotionLoading ?
+                  <div className="bg-gray-100 lg:py-16 py-10">
+                    <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
+                    
+                      <div className="mb-10 flex justify-center">
+                        <div className="text-center w-full lg:w-2/5">
+                          <Loading loading={promotionLoading} />
+                          <p className="text-base font-sans text-gray-600 leading-6">
+                          กำลังปรับปรุงส่วนลด กรุณารอสักครู่
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                
+                :
+                  <OfferCard promotions={promotions} selectedPromotion={promotionCode} companyId={catalogCompanyId} catalogName={catalogName} ApplyPromotionCode={ApplyPromotionCode} CancelPromotionCode={CancelPromotionCode}/>
+                
+                
+                 
+                
               :
                 <div className="bg-orange-100 px-10 py-6 rounded-lg mt-6 lg:block">
                   <Banner promotionName={catalogPromotionName} discountPercentage={catalogDiscountPercentage} promotionIsAllProduct={catalogPromotionIsAllProduct} 
@@ -1008,9 +1070,9 @@ export const getServerSideProps = async ({req, res,params }) => {
     const customerTypeId = 9;
     var page = 1;
     var itemPerPage = 30;
-    const query = null;
-    const category = null;
-    const product = null;   
+    const query = '';
+    const category = '';
+    const product = '';   
 
     const title = "all-in-one, heavy-duty & modern ecommerce platform";
     const description = "CoinPOS Ecommerce Platform - All-in-one, heavy-duty, cost-effective and modern ecommerce platform for business of all sizes.";

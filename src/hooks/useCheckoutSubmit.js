@@ -61,7 +61,7 @@ const useCheckoutSubmit = () => {
     formState: { errors },
   } = useForm();
 
-  const { data } = useAsync(CouponServices.getAllCoupons);
+  //const { data } = useAsync(CouponServices.getAllCoupons);
 
   useEffect(() => {
 
@@ -119,6 +119,7 @@ const useCheckoutSubmit = () => {
     
     if(Cookies.get('userInfo'))
       {
+        alert('Remove UserInfo');
         Cookies.remove('userInfo');
       } 
       var userLocalJson = localStorage.getItem('userInfo');
@@ -126,42 +127,48 @@ const useCheckoutSubmit = () => {
       var userLocal = JSON.parse(userLocalJson)
       try
       {
-        const expiredDate = await UserServices.fetchCoinposCheckExpired(
+        /* const expiredDate = await UserServices.fetchCoinposCheckExpired(
           {
             email:userLocal.email,
             companyId:companyId
-          });
+          }); */
           
-        if(expiredDate === false)
+        const expiredDate = sessionStorage.getItem('expiredDate');
+        //alert('expiredDate = ' + expiredDate);
+        if(expiredDate === undefined)
         {
-          //alert('Login');
-          dispatch({ type: 'USER_LOGIN', payload: userLocal });
+          if(expiredDate === false)
+          {
+            alert('Login');
+            dispatch({ type: 'USER_LOGIN', payload: userLocal });
 
 
-          sessionStorage.setItem('customerFirstName', userLocal.firstName);
-          sessionStorage.setItem('customerLastName', userLocal.lastName);
-          sessionStorage.setItem('customerEmail', userLocal.email);
-          sessionStorage.setItem('customerPhoneNumber', userLocal.phone);
+            sessionStorage.setItem('customerFirstName', userLocal.firstName);
+            sessionStorage.setItem('customerLastName', userLocal.lastName);
+            sessionStorage.setItem('customerEmail', userLocal.email);
+            sessionStorage.setItem('customerPhoneNumber', userLocal.phone);
 
-          sessionStorage.setItem('address1', userLocal.address1);
-          sessionStorage.setItem('countryId', userLocal.countryId);
-          sessionStorage.setItem('provinceId', userLocal.provinceId);
-          sessionStorage.setItem('cityId', userLocal.cityId);
-          sessionStorage.setItem('districtId', userLocal.districtId);
-          sessionStorage.setItem('postalcode', userLocal.postalcode);
+            sessionStorage.setItem('address1', userLocal.address1);
+            sessionStorage.setItem('countryId', userLocal.countryId);
+            sessionStorage.setItem('provinceId', userLocal.provinceId);
+            sessionStorage.setItem('cityId', userLocal.cityId);
+            sessionStorage.setItem('districtId', userLocal.districtId);
+            sessionStorage.setItem('postalcode', userLocal.postalcode);
 
-          sessionStorage.setItem('countrys', JSON.stringify(userLocal.countrys));
-          sessionStorage.setItem('provinces', JSON.stringify(userLocal.provinces));
-          sessionStorage.setItem('cities', JSON.stringify(userLocal.cities));
-          sessionStorage.setItem('districts', JSON.stringify(userLocal.districts));
+            sessionStorage.setItem('countrys', JSON.stringify(userLocal.countrys));
+            sessionStorage.setItem('provinces', JSON.stringify(userLocal.provinces));
+            sessionStorage.setItem('cities', JSON.stringify(userLocal.cities));
+            sessionStorage.setItem('districts', JSON.stringify(userLocal.districts));
+          }
+          else
+          {
+            alert('Logout 11');
+            dispatch({ type: 'USER_LOGOUT' });
+            Cookies.remove('userInfo');
+            Cookies.remove('couponInfo');
+          }
         }
-        else
-        {
-          alert('Logout');
-          dispatch({ type: 'USER_LOGOUT' });
-          Cookies.remove('userInfo');
-          Cookies.remove('couponInfo');
-        }
+        
 
   
         
@@ -363,17 +370,15 @@ const useCheckoutSubmit = () => {
 
       //alert("orderId = " + orderId + " shippingId = " + shippingId + " shippingName = " + shippingName + " shippingFee = " + shippingFee + " companyId = " + companyId + " linePOSId = " + linePOSId + " liffId = " + liffId+ " pictureUrl = " +pictureUrl);
       shippingFee = shippingCost;
-      ProductServices.closeCoinPOSCart({
+      ProductServices.fetchCloseCoinPOSCart({
         orderId,shippingId,shippingName,shippingFee,companyId,linePOSId,liffId,pictureUrl,firstName,lastName,mobile,email,
         address1,country,city,stateOrProvince,postalCode,district,
         orderDetails,catalogName
       })
         .then((res) => {
-          alert(JSON.stringify(res))
+          
           //return
           //router.push(`/order/${res._id}`);
-          router.push(`/order/${res.orderId}`);
-          notifySuccess('Your Order Confirmed!');
           let orderInfo = {
             orderNumber: res.orderNumber,
             customerName: res.customerName,
@@ -399,6 +404,13 @@ const useCheckoutSubmit = () => {
           //sessionStorage.removeItem('products');
           emptyCart();
           setIsCheckoutSubmit(false);
+
+          alert(`/order/${res.orderId}`);
+          router.push(`/order/${res.orderId}`);
+          notifySuccess('Your Order Confirmed!');
+
+          alert(JSON.stringify(res))
+          
         })
         .catch((err) => {
           notifyError(err.message);
@@ -418,7 +430,7 @@ const useCheckoutSubmit = () => {
       notifyError('Please Input a Coupon Code!');
       return;
     }
-    const result = data.filter(
+    /* const result = data.filter(
       (coupon) => coupon.couponCode === couponRef.current.value
     );
 
@@ -443,26 +455,38 @@ const useCheckoutSubmit = () => {
       setDiscountPercentage(result[0].discountPercentage);
       dispatch({ type: 'SAVE_COUPON', payload: result[0] });
       Cookies.set('couponInfo', JSON.stringify(result[0]));
-    }
+    } */
   };
 
-  const setCouponData = (value, promotion) =>
+  const setCouponData = (value, promotion, isAuto) =>
   {
     //alert("Coupon value = " + value);
     //alert("Promotion value = " + JSON.stringify(promotion));
     //alert("Coupon Ref = " + couponRef.current.value);
 
     if (!value) {
-      notifyError('Please Input a Coupon Code!');
+      if(isAuto !== true)
+      {
+        notifyError('Please Input a Coupon Code!');
+      }
+      
       return;
     }
     if (promotion.length < 1) {
-      notifyError('Please Input a Valid Coupon!');
+      if(isAuto !== true)
+      {
+        notifyError('Please Input a Valid Coupon!');
+      }
+      
       return;
     }
 
     if (dayjs().isAfter(dayjs(promotion[0]?.endTime))) {
-      notifyError('This coupon is not valid!');
+      if(isAuto !== true)
+      {
+        notifyError('This coupon is not valid!');
+      }
+      
       return;
     }
     
@@ -489,7 +513,7 @@ const useCheckoutSubmit = () => {
     setMinimumAmount(0);
     setDiscountProductType('');
     setDiscountPercentage(0);
-    dispatch({ type: 'SAVE_COUPON', payload: promotion[0] });
+    //dispatch({ type: 'SAVE_COUPON', payload: promotion[0] });
     Cookies.remove('couponInfo');
     setCouponInfo('');
   }

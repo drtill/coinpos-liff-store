@@ -37,6 +37,8 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
   var locationEmail = '';
   var locationTel = '';
 
+  var customerId = 0;
+
   const [companyId, setCompanyId] = useState(0);
   const [locationId, setLocationId] = useState(0);
   const [linePOSId, setLinePOSId] = useState('');
@@ -156,6 +158,13 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
         
       }
 
+      if(sessionStorage.getItem('customerId'))
+      {
+        customerId = sessionStorage.getItem('customerId'); 
+        //alert('customerId = ' + customerId);
+              
+      }
+
   const { data } = useAsync(() => ProductServices.getDashboardOrderByUserId(
     {
       companyId,
@@ -204,15 +213,15 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
       try
       {
         //alert('Login 3');
-        const expiredDate = await UserServices.coinposCheckExpired(
+        const expiredDate = await UserServices.fetchCoinposCheckExpired(
           {
             email:userLocal.email,
             companyId:companyId
           });
-          
-        if(expiredDate === false)
+        alert('expiredDate = ' + expiredDate)
+        if(expiredDate === 'false')
         {
-          //alert('Login 4');
+          alert('Login 4');
           dispatch({ type: 'USER_LOGIN', payload: userLocal });
 
 
@@ -228,6 +237,7 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
           sessionStorage.setItem('districtId', userLocal.districtId);
           sessionStorage.setItem('postalcode', userLocal.postalcode);
 
+          alert('countrys = ' + JSON.stringify(userLocal.countrys));
           sessionStorage.setItem('countrys', JSON.stringify(userLocal.countrys));
           sessionStorage.setItem('provinces', JSON.stringify(userLocal.provinces));
           sessionStorage.setItem('cities', JSON.stringify(userLocal.cities));
@@ -257,8 +267,9 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
   return (
     <Layout
       title={title ? title : 'Dashboard'}
-      description={description ? description : 'This is User Dashboard'
+      description={description ? description : 'This is User Dashboard' 
       }
+      dataPath={dataPath}
       companyName={companyName} locationName={locationName} companyLogo={companyLogo}  
       locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
       locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
@@ -329,7 +340,7 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
                     className="text-emerald-600 bg-emerald-200"
                   />
                 </div>
-                <RecentOrder />
+                {/* <RecentOrder /> */}
               </div>
             )}
             {children}

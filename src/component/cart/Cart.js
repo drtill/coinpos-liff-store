@@ -164,6 +164,7 @@ const Cart = () => {
           ))}
         </div>
         <div className="mx-5 my-3">
+          
           {items.length <= 0 ? (
             checkoutClass
           ) : (

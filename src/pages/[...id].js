@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext,useEffect, useState } from 'react';
 import { useCart} from 'react-use-cart';
 import { useRouter } from 'next/router'
 
@@ -21,8 +21,11 @@ import MainCarousel from '@component/carousel/MainCarousel';
 import FeatureCategory from '@component/category/FeatureCategory';
 
 import useCheckoutSubmit from '@hooks/useCheckoutSubmit';
+import { UserContext } from '@context/UserContext';
 
 import Loading from '@component/preloader/Loading';
+
+import useLoginSubmit from '@hooks/useLoginSubmit';
 //const liffId = process.env.NEXT_PUBLIC_LIFF_ID
 const isLiffLogin = true;//process.env.NEXT_PUBLIC_ISLOGIN
 var itemPerPage = 30;
@@ -91,6 +94,10 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
     const [promotionCode,setPromotionCode] = useState('');
 
     const { setItems,clearCartMetadata,emptyCart, addItem, items } = useCart();
+    const {dispatch} = useContext(UserContext);
+
+    const { handleSubmit, submitHandler, register, errors } =
+    useLoginSubmit();
     
     useEffect(async () => {
       //alert("companyName = " + companyNameData)
@@ -98,7 +105,7 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
       //var getPromotionCode = localStorage.getItem('promotionCode')
 
       //alert("getPromotionCode = " + getPromotionCode);
-      
+      setPromotionLoading(true);
 
 
       sessionStorage.setItem('dataPath',dataPath);
@@ -151,7 +158,8 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
       sessionStorage.setItem('postalcode', postalcode);
 
       //alert(JSON.stringify(countrys))
-      sessionStorage.setItem('countrys', JSON.stringify(countrys));
+      sessionStorage.setItem('countrys', 'JSON.stringify(countrys)');
+      sessionStorage.setItem('countrysJSON', JSON.stringify(countrys));
       sessionStorage.setItem('provinces', JSON.stringify(provinces));
       sessionStorage.setItem('cities', JSON.stringify(cities));
       sessionStorage.setItem('districts', JSON.stringify(districts));
@@ -161,19 +169,19 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
       
       if(isLiffLogin === true)
       {
-        if(liffId.length === 0)
+        if(liffData.length === 0)
         {
           //alert("Liff Data is not found.");
           router.push('/404');
         }
         const liff = (await import('@line/liff')).default
         try {
-          await liff.init({ liffId });
+          await liff.init({ liffId:liffData });
         } catch (error) {
           console.error('liff init error', error.message)
         }
         if (!liff.isLoggedIn()) {
-          //alert("Login")
+          //alert("Will Login")
           var url = liffEndpoint + '/liffId=' + liffData + '?linePOSId=' + linePOSId + "&groupId=" + groupId + '&orderId=' + liffOrderId + '&companyId=' + liffCompanyId + '&locationId=' + liffLocationId;
           //var url = liffEndpoint + '/liffId=1656555843-E6WV7arj?linePOSId=U5bcb2afaf17c20551ab5afdcfec5c1d3&groupId=C2930285a261eeeb4b095a3219a32a7b7&orderId=4938&companyId=2&locationId=2&process=product'
           //alert(url);
@@ -181,6 +189,7 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
         }
         else
         {
+          //alert("Logined")
           let getProfile = await liff.getProfile();
 
           //alert("GetProfile")
@@ -202,13 +211,37 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
           var dataUser = {};
           dataUser['image'] = lineProfileImage;
           dataUser['name'] = lineUsername;
+
           //orderData['_id']
           //Cookies.set('lineUserName', lineUsername);
           Cookies.set('userInfo', JSON.stringify(dataUser));
+          sessionStorage.setItem('userInfo', JSON.stringify(dataUser));
+          localStorage.setItem('userInfo', JSON.stringify(dataUser));
+          dispatch({ type: 'USER_LOGIN', payload: dataUser });
           //Cookies.set('lineUserId', lineUserId);
           //Cookies.set('lineProfileImage', lineProfileImage);
+          var data = {};
+
+          var liffId = liffData;
+          var lineUserId = lineLiffUserId;
+          var linePOSId = linePOSIdData;
+          if(liffId.length > 0 &&  lineUserId.length > 0)
+          {
+            data["liffId"] = liffId;
+            data["lineUserId"] = lineUserId;
+            data["linePOSId"] = linePOSId;
+            var companyId = Number(liffCompanyId);
+            var paramPath = dataPath;
+          
+            data["companyId"] = companyId;
+            data["paramPath"] = paramPath;
+
+          
+          
+
+            submitHandler(data)
   
-  
+          }
         }
       }
       else
@@ -242,12 +275,24 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
     
           //alert("Get SaleOrder");
           //alert(JSON.stringify(salesOrder));
+          if(salesOrder.orderStatusId !== 1)
+          {
+            alert("Goto Order")
+            router.push('/order/' + salesOrder.orderId);
+
+            return ;
+          }
+          
     
+          sessionStorage.setItem('customerTypeId',salesOrder.customerTypeId);
+
           var salesOrderDetails = salesOrder.orderDetails;
 
+          var promotionCode = salesOrder.promotionCode;
           
           const productDs = [];
           const discountDetails = [];
+
           for(var i = 0;i<salesOrderDetails.length;i++)
           {
             var detail = {
@@ -272,19 +317,28 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
           }
           //alert("Set Cart")
           setItems(productDs);
-          sessionStorage.setItem('discountDetails', JSON.stringify(discountDetails));
-          setDiscountDetail(JSON.stringify(discountDetails))
+          if(promotionCode !== undefined && promotionCode !== null)
+          {
+            //alert("Set Promo")
+            sessionStorage.setItem('discountDetails', JSON.stringify(discountDetails));
+            sessionStorage.setItem('promotionCode', promotionCode);
+            SetPromotionData(promotionCode,'',0,discountDetails[0].discountRate, true);
+            setDiscountDetail(JSON.stringify(discountDetails))
+          }
+          
 
           //alert("Get Product")
-          await GetProductData(liffId,lineUserId,linePOSId,groupId,orderId,companyId,locationId,companyName,locationName,'','',0,9,1,itemPerPage,'','','');
+          await GetProductData(liffId,lineUserId,linePOSId,groupId,orderId,companyId,locationId,companyName,locationName,'','',0,salesOrder.customerTypeId,1,itemPerPage,'','','');
           //setProductList([]);
           //alert("Set Product")
           //pagingManager();
           //setProductList(products);
 
+          setPromotionLoading(false);
           setCategoryLoading(false);
           setNewProductLoading(false);
           setLoading(false);
+
       }
       catch (err) 
       {
@@ -294,6 +348,8 @@ const Details = ({params,dataPath,title,description, liffEndpoint,liffData,lineP
 
       
     }, [])
+
+    
 
     const GetProductData = async(liffId,
       lineUserId,
@@ -475,7 +531,7 @@ const CancelPromotionCode = async(promotionCode) =>
          
         orderDetails.push(orderDetail);
       }
-      const promotion = await ProductServices.cancelPromotionCode({
+      const promotionJson = await ProductServices.fetchCancelPromotionCode({
         companyId,
         locationId,
         orderId,
@@ -487,6 +543,7 @@ const CancelPromotionCode = async(promotionCode) =>
         catalogName:'',
         orderDetails:JSON.stringify(orderDetails)
       });
+      var promotion = JSON.parse(promotionJson);
       var salesOrderDetails = promotion.orderDetails;
 
           const productDs = [];
@@ -536,6 +593,8 @@ const CancelPromotionCode = async(promotionCode) =>
           clearCouponData();
 
           setPromotionLoading(false);
+
+          SetPromotionData(promotionCode,promotion.endTime,promotion.minimumAmount,promotion.discountRate,false);
 }
     const ApplyPromotionCode = async(promotionCode,discountPercentage, isForAllProduct, minimumAmount, productIdList) =>
     {
@@ -560,7 +619,7 @@ const CancelPromotionCode = async(promotionCode) =>
          
         orderDetails.push(orderDetail);
       }
-      const promotion = await ProductServices.applyPromotionCode({
+      const promotionJson = await ProductServices.fetchApplyPromotionCode({
         companyId,
         locationId,
         orderId,
@@ -572,8 +631,11 @@ const CancelPromotionCode = async(promotionCode) =>
         catalogName:'',
         orderDetails:JSON.stringify(orderDetails)
       });
+      var promotion = JSON.parse(promotionJson);
       var salesOrderDetails = promotion.orderDetails;
 
+      //alert("promotion = " + JSON.stringify(promotion));
+      //alert("SalesOrderDetails = " + JSON.stringify(salesOrderDetails));
           const productDs = [];
           const discountDetails = [];
           
@@ -619,20 +681,37 @@ const CancelPromotionCode = async(promotionCode) =>
           setDiscountDetail(JSON.stringify(discountDetails))
           setPromotionLoading(false);
     }
+
+    const SetPromotionData = (promotionCode,promotionEndTime,promotionMinimumAmount,promotionDiscountRate, isAuto) =>
+      {
+        var couponData = [];
+        
+        var couponDetail = {
+          couponCode:promotionCode,
+          endTime:promotionEndTime,
+          minimumAmount:promotionMinimumAmount,
+          discountPercentage:promotionDiscountRate,
+      
+        };
+        couponData.push(couponDetail);
+                
+        sessionStorage.setItem('couponInfo', JSON.stringify(couponData));
+        setCouponData(promotionCode, couponData, isAuto);
+      }
     const SearchProduct = async (searchText) => 
     {
       //alert("Searching = " + searchText);
-      RefreshProductList(liffData,lineUserId,linePOSId,groupId,liffOrderId,liffCompanyId,liffLocationId,'','',0,9,1,30,searchText)
+      RefreshProductList(liffData,lineUserId,linePOSId,groupId,liffOrderId,liffCompanyId,liffLocationId,'','',0,9,1,itemPerPage,searchText)
     }
     const FilterCategory = async (categoty) => 
     {
       //alert("categoty = " + categoty);
-      RefreshProductList(liffData,lineUserId,linePOSId,groupId,liffOrderId,liffCompanyId,liffLocationId,'','',0,9,1,30,'',categoty)
+      RefreshProductList(liffData,lineUserId,linePOSId,groupId,liffOrderId,liffCompanyId,liffLocationId,'','',0,9,1,itemPerPage,'',categoty)
     }
     const FilterProduct = async (category,product) => 
     {
       //alert("product = " + product);
-      RefreshProductList(liffData,lineUserId,linePOSId,groupId,liffOrderId,liffCompanyId,liffLocationId,'','',0,9,1,30,'',category,product)
+      RefreshProductList(liffData,lineUserId,linePOSId,groupId,liffOrderId,liffCompanyId,liffLocationId,'','',0,9,1,itemPerPage,'',category,product)
     }
     const RefreshProductList = async (liffId, lineUserId, linePOSId, groupId, orderId,companyId,locationId,companyName, locationName, promotionId,customerTypeId,page,itemPerPage,query,category,product) =>
     {
@@ -641,7 +720,7 @@ const CancelPromotionCode = async(promotionCode) =>
       query = query === undefined ? 'null' : query;
       category = category === undefined ? 'null' : category;
       product = product === undefined ? 'null' : product;
-      const products = await ProductServices.getCoinPOSProductService({
+      const products = await ProductServices.fetchRefreshCoinPOSProductService({
         liffId,
         lineUserId,
         linePOSId,
@@ -656,7 +735,10 @@ const CancelPromotionCode = async(promotionCode) =>
         promotionId,customerTypeId,page,itemPerPage,query,category,product
       });
 
+      //alert(products);
       currentPage = products.currentPage;
+      countPage = products.countPage;
+      
       var productVariants = [];//products.productVariantPresenters;
       for(var i = 0;i < products.productVariantPresenters.length; i++)
       {
@@ -996,9 +1078,9 @@ export const getServerSideProps = async ({req, res,params }) => {
     const customerTypeId = 9;
     var page = 1;
     var itemPerPage = 30;
-    const query = null;
-    const category = null;
-    const product = null;   
+    const query = '';
+    const category = '';
+    const product = '';   
 
     const title = "all-in-one, heavy-duty & modern ecommerce platform";
     const description = "CoinPOS Ecommerce Platform - All-in-one, heavy-duty, cost-effective and modern ecommerce platform for business of all sizes.";
@@ -1109,12 +1191,12 @@ export const getServerSideProps = async ({req, res,params }) => {
   
   var dataPath = 'liffId=' + liffId + '?linePOSId=' + linePOSId + '&groupId=' + groupId + '&orderId=' + liffOrderId + '&companyId=' + liffCompanyId + '&locationId=' + liffLocationId;
   
-  var liffEndpoint = await  UserServices.getLiffURLTemplate();
+  var liffEndpoint = await  UserServices.fetchGetLiffURLTemplate();
 
   var catalogName = '';
   var companyCode = '';
 
-  const products = await ProductServices.getDefaultDataCompany({
+  const products = await ProductServices.fetchGetDefaultDataCompany({
     //const products = await ProductServices.getCoinPOSProductService({
       liffId,
       lineUserId,

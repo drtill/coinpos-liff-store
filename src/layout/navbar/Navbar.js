@@ -42,7 +42,8 @@ const Navbar = ({companyLogo, dataPath, RefreshProductList, FilterProduct}) => {
 
   
   useEffect(() => {
-    if(Cookies.get('userInfo'))
+      //alert("Check UserInfo")
+      if(Cookies.get('userInfo'))
       {
         Cookies.remove('userInfo');
       } 
@@ -64,7 +65,7 @@ const Navbar = ({companyLogo, dataPath, RefreshProductList, FilterProduct}) => {
         }
       }
       
-  }, []);
+  });
 
   return (
     <>

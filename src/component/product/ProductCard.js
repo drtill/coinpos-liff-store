@@ -19,7 +19,7 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
   const handleUpdateItem = async(item,_qty, _updateType) =>{
     updateItemQuantity(item.id,_qty);
 
-    alert("items count = " + items.length);
+    //alert("items count = " + items.length);
     if(_qty === 0)
     {
       if(liffId.length > 0)
@@ -262,7 +262,7 @@ const ProductCard = ({ product, liffId, lineUserId, linePOSId, groupId, orderId,
     {
       promotionCode = sessionStorage.getItem('promotionCode');
     }
-    alert(promotionCode);
+    //alert(promotionCode);
     //alert("liffId = " + liffId + " lineUserId = " + lineUserId + " OrderId = " + orderId)
     const products = await ProductServices.addToCoinPOSCart({
       orderId,
