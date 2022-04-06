@@ -30,6 +30,8 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
       
       var companyId = 0;
       var paramPath = '';
+      var targetPage = '';
+      var catalogName = '';
       if(sessionStorage.getItem('companyId'))
       {
         companyId = sessionStorage.getItem('companyId'); 
@@ -48,9 +50,19 @@ const Login = ({ setShowResetPassword, setModalOpen }) => {
         //alert("catalogName = " + paramPath);
           
       }
+      if(sessionStorage.getItem('targetPage'))
+      {
+        targetPage = sessionStorage.getItem('targetPage');
+      }
+      if(sessionStorage.getItem('catalogName'))
+      {
+        catalogName = sessionStorage.getItem('catalogName');
+      }
       
+      data["targetPage"] = targetPage;
       data["companyId"] = companyId;
       data["paramPath"] = paramPath;
+      data["catalogName"] = catalogName;
 
       
       

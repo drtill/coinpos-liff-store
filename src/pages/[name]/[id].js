@@ -1,5 +1,6 @@
 import { useContext,useEffect, useState } from 'react';
 import { useCart} from 'react-use-cart';
+import { useRouter } from 'next/router'
 
 import { UserContext } from '@context/UserContext';
 
@@ -25,10 +26,12 @@ import FeatureCategory from '@component/category/FeatureCategory';
 import useCheckoutSubmit from '@hooks/useCheckoutSubmit';
 
 import Loading from '@component/preloader/Loading';
+
+import LoginModal from '@component/modal/LoginModal';
 //const liffId = process.env.NEXT_PUBLIC_LIFF_ID
 const isLiffLogin = true;//process.env.NEXT_PUBLIC_ISLOGIN
 var itemPerPage = 30;
-const Catalog = ({params,companyCode,dataPath,title,description,countPage,currentPage,
+const Catalog = ({params,targetPage,companyCode,dataPath,title,description,countPage,currentPage,
   products,salesOrder, orderDetails,categories,shippingServices,bankNameAndAccounts,
   currencySign, companyName, locationName,companyLogo,
   catalogCompanyId,catalogName,catalogLocationId,catalogOrderId,
@@ -51,7 +54,10 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
     } = useCheckoutSubmit();
     
     const { dispatch } = useContext(UserContext);
+
+    const [modalOpen, setModalOpen] = useState(false);
     
+    const router = useRouter();
     
     const [companyId, setCompanyId] = useState(catalogCompanyId);
     const [locationId, setLocationId] = useState(catalogLocationId);
@@ -104,6 +110,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
 
 
     const { setItems,clearCartMetadata,emptyCart, addItem, items } = useCart();
+    
     
     useEffect(async () => {
 
@@ -304,7 +311,33 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
         }
         
         //alert('catalogLocationId = ' + catalogLocationId)
-        await GetProductData('','','','',0,catalogCompanyId,catalogLocationId,companyName,locationName,companyCode,catalogName,0,9,1,itemPerPage,'','','');
+        //alert('targetPage = ' + targetPage)
+        if(targetPage.length > 0)
+        {
+          //alert('Go');
+          if(targetPage === 'update-profile')
+          {
+            var userLocal = JSON.parse(userLocalJson)
+            alert('catalogName = ' + catalogName);
+            if (userLocal?.email) 
+            {
+              sessionStorage.setItem('catalogName',catalogName);
+              router.push('/user/' + targetPage);
+            } else {
+              sessionStorage.setItem('targetPage','/user/' + targetPage);
+              sessionStorage.setItem('catalogName',catalogName);
+              setModalOpen(!modalOpen);
+              //router.push('/user/' + targetPage);
+            }
+            
+          }
+          
+        }
+        else
+        {
+          await GetProductData('','','','',0,catalogCompanyId,catalogLocationId,companyName,locationName,companyCode,catalogName,0,9,1,itemPerPage,'','','');
+        }
+        
         
           
         setPromotionLoading(false);
@@ -334,7 +367,7 @@ const Catalog = ({params,companyCode,dataPath,title,description,countPage,curren
       catalogName,
       promotionId,customerTypeId,page,itemPerPage,query,category,product) =>
     {
-      //alert('locationId = ' + locationId);
+      alert('locationId = ' + locationId);
       const products = await ProductServices.fetchGetCoinPOSProductService({
         liffId,
         lineUserId,
@@ -841,6 +874,9 @@ const SetPromotionData = (promotionCode,promotionEndTime,promotionMinimumAmount,
 
     return (
         <>
+        {modalOpen && (
+          <LoginModal modalOpen={modalOpen} setModalOpen={setModalOpen} targetPage={targetPage} />
+        )}
       <Layout title={title} description={description} dataPath={dataPath} companyName={companyName} locationName={locationName} companyLogo={companyLogo} 
       locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
       locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
@@ -1060,7 +1096,23 @@ export const getServerSideProps = async ({req, res,params }) => {
     var dataParam = params.id;
     var companyCode = params.name;
     var dataPath = companyCode + "/" + dataParam;
-    
+    var coinPOSData = req.url;
+    var targetPage = '';
+    if(coinPOSData.length > 0)
+    {
+      var parmsData = coinPOSData.split('?');
+      if(parmsData.length > 1)
+      {
+        //const liffQuery = parmsData[1];
+        var pageQuery = parmsData[1];
+        var pageQueryData = pageQuery.split("=");
+        if(pageQueryData[0] === 'page')
+        {
+          targetPage = pageQueryData[1];
+        
+        }
+      }
+    }
 
     var catalogName = dataParam;
     var companyName = '';
@@ -1256,6 +1308,7 @@ export const getServerSideProps = async ({req, res,params }) => {
     return {
       props: { 
         params: dataParam,
+        targetPage:targetPage,
         companyCode:companyCode,
         dataPath:dataPath,
         title:title,

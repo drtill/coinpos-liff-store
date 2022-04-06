@@ -218,10 +218,10 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
             email:userLocal.email,
             companyId:companyId
           });
-        alert('expiredDate = ' + expiredDate)
+        //alert('expiredDate = ' + expiredDate)
         if(expiredDate === 'false')
         {
-          alert('Login 4');
+          //alert('Login 4');
           dispatch({ type: 'USER_LOGIN', payload: userLocal });
 
 
@@ -237,7 +237,7 @@ const Dashboard = ({ title, description, children, companyLogo }) => {
           sessionStorage.setItem('districtId', userLocal.districtId);
           sessionStorage.setItem('postalcode', userLocal.postalcode);
 
-          alert('countrys = ' + JSON.stringify(userLocal.countrys));
+          //alert('countrys = ' + JSON.stringify(userLocal.countrys));
           sessionStorage.setItem('countrys', JSON.stringify(userLocal.countrys));
           sessionStorage.setItem('provinces', JSON.stringify(userLocal.provinces));
           sessionStorage.setItem('cities', JSON.stringify(userLocal.cities));

@@ -67,6 +67,8 @@ const Navbar = ({companyLogo, dataPath, RefreshProductList, FilterProduct}) => {
       
   });
 
+  
+
   return (
     <>
       <CartDrawer />
@@ -77,16 +79,24 @@ const Navbar = ({companyLogo, dataPath, RefreshProductList, FilterProduct}) => {
       <div className="bg-cyan-500 sticky top-0 z-20">
         <div className="max-w-screen-2xl mx-auto px-3 sm:px-10">
           <div className="top-bar h-16 lg:h-auto flex items-center justify-between py-4 mx-auto">
-            <Link href={"/" + dataPath}>
-              <a className="mr-3 lg:mr-12 xl:mr-12 hidden md:hidden lg:block">
-                <Image
-                  width={70}
-                  height={70}
-                  src={companyLogo === undefined ? 'http://coinpos-uat.azurewebsites.net/img/logo2.png' : companyLogo}
-                  alt="logo"
-                />
-              </a>
-            </Link>
+            {
+              (companyLogo === undefined || companyLogo === null || companyLogo.length === 0)
+              ?
+              <></>
+              :
+              <Link href={"/" + dataPath}>
+                <a className="mr-3 lg:mr-12 xl:mr-12 hidden md:hidden lg:block">
+                  <Image
+                    width={70}
+                    height={70}
+                    src={companyLogo === undefined ? 'https://coinpos-uat.azurewebsites.net/img/logo2.png' : companyLogo}
+                    alt="logo"
+                  />
+                </a>
+              </Link>
+              
+            }
+            
             <div className="w-full transition-all duration-200 ease-in-out lg:flex lg:max-w-[520px] xl:max-w-[750px] 2xl:max-w-[900px] md:mx-12 lg:mx-4 xl:mx-0">
               <div className="w-full flex flex-col justify-center flex-shrink-0 relative z-30">
                 <div className="flex flex-col mx-auto w-full">

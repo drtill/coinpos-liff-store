@@ -34,7 +34,9 @@ const useLoginSubmit = (setModalOpen) => {
     liffId,
     lineUserId,
     linePOSId,
-    paramPath
+    paramPath,
+    targetPage,
+    catalogName
   }) => {
     //alert("Loading");
     setLoading(true);
@@ -88,6 +90,8 @@ const useLoginSubmit = (setModalOpen) => {
         Cookies.set('userInfo', JSON.stringify(userLogin));
 
         localStorage.setItem('userInfo', JSON.stringify(userLogin));
+
+        
       }
       else
       {
@@ -114,10 +118,21 @@ const useLoginSubmit = (setModalOpen) => {
         //alert("UserLogin = " + userLogin);
             //return;
             //router.push(redirect || '/checkout');
-        router.push(redirect || '/' + userLogin.paramPath);
+        if(targetPage.length > 0)
+        {
+          alert('targetPage = ' + targetPage + ' catalogName = ' + catalogName);
+          router.push(targetPage);
+        }
+        else
+        {
+          router.push(redirect || '/' + userLogin.paramPath);
+        }
+          
             //router.push(redirect);
 
             //alert('customerId = ' + userLogin.customerId)
+        sessionStorage.removeItem('targetPage');
+        
         sessionStorage.setItem('customerId', userLogin.customerId);
         sessionStorage.setItem('customerFirstName', userLogin.firstName);
         sessionStorage.setItem('customerLastName', userLogin.lastName);
@@ -191,6 +206,8 @@ const useLoginSubmit = (setModalOpen) => {
           notifyError(err ? err.response.data.message : err.message);
         });
     }
+
+    
   };
 
   const handleGoogleSignIn = (user) => {
