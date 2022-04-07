@@ -367,7 +367,7 @@ const Catalog = ({params,targetPage,companyCode,dataPath,title,description,count
       catalogName,
       promotionId,customerTypeId,page,itemPerPage,query,category,product) =>
     {
-      alert('locationId = ' + locationId);
+      //alert('locationId = ' + locationId);
       const products = await ProductServices.fetchGetCoinPOSProductService({
         liffId,
         lineUserId,
@@ -868,6 +868,28 @@ const SetPromotionData = (promotionCode,promotionEndTime,promotionMinimumAmount,
         setPaging(indents);
     }
     
+    const handleUpdateProfileClick = () =>
+    {
+      //alert("Footer Update profile click")
+      //return;
+      var userLocalJson = localStorage.getItem('userInfo');
+      var userLocal = JSON.parse(userLocalJson)
+      alert('catalogName = ' + catalogName);
+      var target = 'update-profile';
+      alert('targetPage = ' + target);
+      if (userLocal?.email) 
+      {
+        sessionStorage.setItem('catalogName',catalogName);
+        router.push('/user/' + target);
+      } 
+      else 
+      {
+        sessionStorage.setItem('targetPage','/user/' + target);
+        sessionStorage.setItem('catalogName',catalogName);
+        setModalOpen(!modalOpen);
+        //router.push('/user/' + targetPage);
+      }
+    }
 
 
 
@@ -881,7 +903,9 @@ const SetPromotionData = (promotionCode,promotionEndTime,promotionMinimumAmount,
       locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
       locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
       locationEmail={locationEmail} locationTel={locationTel}
-      RefreshProductList={SearchProduct} FilterProduct={FilterProduct} >
+      RefreshProductList={SearchProduct} 
+      FilterProduct={FilterProduct} 
+      updateProfileClick={handleUpdateProfileClick}>
         <div className="min-h-screen">
           <StickyCart discountDetails={discountDataDetails} currencySign={currencySign}/>
           <div className="bg-white">

@@ -12,7 +12,7 @@ import NavBarTop from './navbar/NavBarTop';
 const Layout = ({ title, description,dataPath, children, companyName, locationName, companyLogo,
   locationAddress1,locationAddress2,locationCity,locationStateOrProvince,locationCountry,locationPostalCode,
   locationEmail,locationTel,
-  RefreshProductList, FilterProduct }) => {
+  RefreshProductList, FilterProduct, updateProfileClick }) => {
 
   // var companyName = null;
   // var locationName = null;
@@ -61,6 +61,7 @@ const Layout = ({ title, description,dataPath, children, companyName, locationNa
             locationAddress1={locationAddress1} locationAddress2={locationAddress2} locationCity={locationCity}
             locationStateOrProvince={locationStateOrProvince} locationCountry={locationCountry} locationPostalCode={locationPostalCode}
             locationEmail={locationEmail} locationTel={locationTel}
+            updateProfileClick={updateProfileClick}
             />
           </div>
         </div>

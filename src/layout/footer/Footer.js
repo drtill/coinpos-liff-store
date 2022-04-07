@@ -16,6 +16,7 @@ import { UserContext } from '@context/UserContext';
 
 const Footer = ({companyLogo,dataPath, companyName, locationName, locationAddress1,locationAddress2,locationCity,locationStateOrProvince,locationCountry,locationPostalCode,
   locationEmail,locationTel,
+  updateProfileClick
   }) => {
   const {
     state: { userInfo },
@@ -37,7 +38,10 @@ const Footer = ({companyLogo,dataPath, companyName, locationName, locationAddres
     companyLine = sessionStorage.getItem('companyLine'); 
   }
 
+
+
   return (
+    
     <div className="pb-16 lg:pb-0 xl:pb-0 bg-white">
       <div className="mx-auto max-w-screen-2xl px-4 sm:px-10">
         <div className="grid grid-cols-2 md:grid-cols-7 xl:grid-cols-12 gap-5 sm:gap-9 lg:gap-11 xl:gap-7 py-10 lg:py-16 justify-between">
@@ -109,14 +113,19 @@ const Footer = ({companyLogo,dataPath, companyName, locationName, locationAddres
                 </Link>
               </li>
               <li className="flex items-baseline">
-                <Link
-                  /* href={`${userInfo?.email ? '/user/update-profile' : '#'}`} */
+                {/* <Link
+                  //href={`${userInfo?.email ? '/user/update-profile' : '#'}`}
                   href='/user/update-profile'
+                  onClick={() => updateProfileClick}
                 >
                   <a className="text-gray-600 inline-block w-full hover:text-cyan-500">
                     Updated Profile
                   </a>
-                </Link>
+                </Link> */}
+                <div onClick={updateProfileClick}>
+                  <a className="text-gray-600 inline-block w-full hover:text-cyan-500 cursor-pointer">
+                    Updated Profile
+                  </a></div>
               </li>
             </ul>
           </div>
